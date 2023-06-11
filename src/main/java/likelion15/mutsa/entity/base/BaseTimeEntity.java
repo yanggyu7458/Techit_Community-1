@@ -27,6 +27,7 @@ public class BaseTimeEntity extends BaseEntity{
 
     @LastModifiedBy
     private String modifiedBy;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createAt;

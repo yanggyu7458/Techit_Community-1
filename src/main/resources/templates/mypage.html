@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page</title>
+</head>
+<body>
+  <h1>내가 쓴 글</h1>
+  <div th:if="${myArticleList.isEmpty()}">
+      <p>작성한 글이 없습니다.</p>
+  </div>
+  <div th:unless="${myArticleList.isEmpty()}" th:each="article : ${myArticleList}">
+      <p>작성자: [[${article.user.getName()}]]</p>
+      <p>제목: [[${article.title}]]</p>
+      <p>내용: [[${article.content}]]</p>
+      <br>
+  </div>
+</body>
+</html>
