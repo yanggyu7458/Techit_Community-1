@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BoardCreate</title>
+</head>
+<body>
+    <h1>BoardCreate</h1>
+    <form action="/board/create" method="post">
+        <!--사용자가 제공 할 데이터에 알맡은 input과 label을 만든다.-->
+        <label for="title-input">제목:
+            <input type="text" id = "title-input" name = "title">
+        </label>
+        <br>
+        <label for="content-input">내용:
+            <input type="text" id = "content-input" name = "content">
+        </label>
+        <br>
+        <!--제출 버튼-->
+        <input type="submit">
+    </form>
+</body>
+</html>
