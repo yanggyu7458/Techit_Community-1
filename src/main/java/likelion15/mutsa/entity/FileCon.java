@@ -8,15 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SuperBuilder(toBuilder = true)
-public class Hello extends BaseEntity {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuperBuilder
+public class FileCon extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "hello_id", nullable = false)
+    @Column(name = "file_con_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
 }
