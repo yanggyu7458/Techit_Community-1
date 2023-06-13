@@ -29,4 +29,5 @@ public class BoardDTO {
     public void setContent(String content) {
         this.content = content;
     }
+
 }

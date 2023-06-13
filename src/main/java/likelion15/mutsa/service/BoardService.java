@@ -62,6 +62,23 @@ public class BoardService {
 
     }
 
+    public boolean deleteBoard(Long id) {
+        int target = -1;
+        //게시글 리스트를 살펴보기
+        for (int i = 0; i < boardList.size(); i++) {
+            if (boardList.get(i).getId().equals(id)) {
+                target = i;
+                break;
+            }
+        }
+
+        //검색 성공시
+        if(target != -1) {
+            boardList.remove(target);
+            return true;
+        } else return false;
+    }
+
 
 
 }

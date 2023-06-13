@@ -29,7 +29,7 @@ public class BoardController {
             String content
     ) {
         BoardDTO boardDTO = boardService.createBoard(title, content);
-        return "board";
+        return "redirect:/board";
     }
 
     @GetMapping("/board")
@@ -81,11 +81,20 @@ public class BoardController {
         return String.format("redirect:/%s", id);
     }
 
+    //delete 메소드 만들기
+    @GetMapping("/{id}/delete-view")
+    public String deleteView(
+            @PathVariable("id")
+            Long id,
+            Model model) {
+        BoardDTO dto = boardService.readBoard(id);
+        model.addAttribute("board", dto);
+        return "boardDelete";
+    }
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable("id") Long id) {
+        boardService.deleteBoard(id);
+        return "redirect:/board";
 
-
-
-
-
-
-
+    }
 }
