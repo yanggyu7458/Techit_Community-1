@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>[[${notice.id}]]. [[${notice.title}]]</h1>
+<p>[[${notice.content}]]</p>
+<a href="/notice">Back</a>
+<!-- /{id}/update-view -->
+<a th:href="@{/{id}/update-view (id=${notice.id})}">Update</a>
+<!-- /{id}/delete-view -->
+<a th:href="@{/{id}/delete-view (id=${notice.id})}">Delete</a>
+</body>
+</html>
