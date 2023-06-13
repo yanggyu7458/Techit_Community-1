@@ -18,28 +18,25 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+import static likelion15.mutsa.controller.TempSettings.logInId;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping
 @Slf4j
-public class HelloController {
-    public final HelloService helloService;
+public class MyPageController {
+    public final BoardService boardService;
+    public final UserService userService;
 
-    @GetMapping("/hello")
-    public String hello() {
-        Hello hi = helloService.save(Hello.builder()
-                .name("hi")
-                .build()
-        );
 
-        List<HelloResponse> byHello = helloService.findByHello();
-        ModelAndView modelAndView = new ModelAndView("/hello");
 
-        modelAndView.addObject("hello", byHello);
+    @GetMapping("/my-page")
+    public String myPage(Model model) {
 
-        log.info("test hello");
-        return "/hello";
+        Long logInId = 1L;
+        model.addAttribute("myArticleList", boardService.findOnesBoards(logInId));
+        model.addAttribute("myCommentList", boardService.findOnesComments(logInId));
+        return "my-page";
     }
-
 
 }

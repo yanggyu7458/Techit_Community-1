@@ -18,7 +18,7 @@ public class BoardRepository {
 
     public Board findOne(Long id) {return em.find(Board.class, id);}
 
-    public List<Board> findByUser_UserId(Long userId) {
+    public List<Board> findByUserId(Long userId) {
         return em.createQuery("select b from Board b where b.user.id = :user_id", Board.class)
                 .setParameter("user_id", userId)
                 .getResultList();

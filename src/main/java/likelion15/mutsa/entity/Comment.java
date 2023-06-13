@@ -32,4 +32,22 @@ public class Comment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DeletedStatus isDeleted;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user-id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board-id")
+    private Board board;
+
+    public void setUser(User user) { // 연관관계 편의 메서드
+        this.user = user;
+        user.getComments().add(this);
+    }
+
+    public void setBoard(Board board) { // 연관관계 편의 메서드
+        this.board = board;
+        board.getComments().add(this);
+    }
 }
