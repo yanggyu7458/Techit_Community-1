@@ -6,11 +6,13 @@
 </head>
 <body>
   <h1>회원가입</h1>
-  <form method="post">
+  <form th:action="@{/complete-join}" method="post">
       <label for="username">이름:</label>
       <input type="text" id="username" name="username" required><br>
+
       <label for="useremail">이메일 주소(ID):</label>
       <input type="text" id="useremail" name="email" required><br>
+
       <label for="userpassword">비밀번호:</label>
       <input type="text" id="userpassword" name="password" required><br><br>
 
