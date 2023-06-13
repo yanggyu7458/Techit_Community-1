@@ -8,13 +8,13 @@
   <h1>회원가입</h1>
   <form th:action="@{/complete-join}" method="post">
       <label for="username">이름:</label>
-      <input type="text" id="username" name="username" required><br>
+      <input type="text" id="username" name="username" required autofocus><br>
 
       <label for="useremail">이메일 주소(ID):</label>
-      <input type="text" id="useremail" name="email" required><br>
+      <input type="email" id="useremail" name="email" required><br>
 
       <label for="userpassword">비밀번호:</label>
-      <input type="text" id="userpassword" name="password" required><br><br>
+      <input type="password" id="userpassword" name="password" required><br><br>
 
       <label for="phoneNumber">휴대폰 번호:</label>
       <input type="text" id="phoneNumber" name="phoneNumber" required><br>
