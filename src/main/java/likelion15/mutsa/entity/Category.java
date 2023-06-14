@@ -28,4 +28,9 @@ public class Category extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserStatus auth;
+
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "category"
+    )
+    private Board board;
 }
