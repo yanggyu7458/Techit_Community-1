@@ -33,16 +33,14 @@ public class Board extends BaseEntity {
     )
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
-    )
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id",
             foreignKey = @ForeignKey(name = "FK_BOARD_CATEGORY")
     )
     private Category category;
 
     @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "comment")
+            mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,
