@@ -15,12 +15,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SuperBuilder(toBuilder = true)
-public class BaseTimeEntity {
+public class BaseTimeEntity extends BaseEntity{
+    @CreatedBy
+    @Column(updatable = false)
+    private String createdBy;
+
+    @LastModifiedBy
+    private String modifiedBy;
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createAt;

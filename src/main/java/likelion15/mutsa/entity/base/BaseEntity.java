@@ -8,18 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
-
 import org.springframework.data.annotation.LastModifiedBy;
-
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
-@MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SuperBuilder(toBuilder = true)
-public class BaseEntity extends BaseTimeEntity {
+public class BaseEntity {
     @CreatedBy
     @Column(updatable = false)
     private String createdBy;

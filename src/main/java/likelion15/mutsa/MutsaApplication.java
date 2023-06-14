@@ -11,7 +11,6 @@ public class MutsaApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MutsaApplication.class, args);
-
     }
 
 }
