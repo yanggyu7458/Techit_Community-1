@@ -63,8 +63,9 @@ public class MyPageController {
     public String myPage(Model model) {
 
         Long logInId = 1L;
+        User writer = userService.findOne(logInId);
         model.addAttribute("myArticleList", boardService.findOnesBoards(logInId));
-        model.addAttribute("myCommentList", boardService.findOnesComments(logInId));
+        model.addAttribute("myCommentList", boardService.findOnesComments(writer.getName()));
         return "my-page";
     }
 

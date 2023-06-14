@@ -18,6 +18,12 @@ public class UserRepository {
 
     public User findOne(Long id) {return em.find(User.class, id);}
 
+    public User findByName(String userName) {
+        return (User) em.createQuery("select  u from User u where u.name =:username")
+                .setParameter("username", userName)
+                .getSingleResult();
+    }
+
     public List<User> findAll() {
         return em.createQuery("select u from User u", User.class)
                 .getResultList();

@@ -18,6 +18,11 @@ public class UserService {
         return user.getId();
     }
 
+    public User findOne(Long id) {
+        return userRepository.findOne(id);
+
+    }
+
 //    public UserService() {
 //        makeNewUser("성광현");
 //        makeNewUser("김땡땡");

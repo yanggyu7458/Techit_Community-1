@@ -53,7 +53,6 @@ public class BoardService {
                 .comment(content)
                 .board(boardRepository.findOne(boardId))
                 .username(userRepository.findOne(userId).getName())
-                .user(userRepository.findOne(userId))
                 .isDeleted(DeletedStatus.NONE)
                 .build();
 
@@ -66,5 +65,5 @@ public class BoardService {
     public List<Board> findOnesBoards(Long userId) {return boardRepository.findByUserId(userId);}
 
     // 한 유저가 쓴 모든 댓글 조회
-    public List<Comment> findOnesComments(Long userId) {return commentRepository.findByUserId(userId);}
+    public List<Comment> findOnesComments(String userName) {return commentRepository.findByUserName(userName);}
 }

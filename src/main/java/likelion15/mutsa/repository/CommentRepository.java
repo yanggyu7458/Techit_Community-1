@@ -17,9 +17,11 @@ public class CommentRepository {
 
     public Comment findOne(Long id) {return em.find(Comment.class, id);}
 
-    public List<Comment> findByUserId(Long userId) {
-        return em.createQuery("select c from Comment c where c.user.id = :user_id", Comment.class)
-                .setParameter("user_id", userId)
+
+
+    public List<Comment> findByUserName(String userName) {
+        return em.createQuery("select c from Comment c where c.username = :user_name", Comment.class)
+                .setParameter("user_name", userName)
                 .getResultList();
     }
 }
