@@ -5,10 +5,17 @@ public class BoardDTO {
     private String title;
     private String content;
 
-    public BoardDTO(Long id, String title, String content) {
+
+
+    private Integer count;
+
+    public BoardDTO(Long id, String title, String content, Integer count) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.count = count;
+
+
     }
     public Long getId() {
         return id;
@@ -28,6 +35,9 @@ public class BoardDTO {
 
     public void setContent(String content) {
         this.content = content;
+    }
+    public Integer getCount() {
+        return count;
     }
 
 }

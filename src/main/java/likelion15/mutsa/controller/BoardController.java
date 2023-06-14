@@ -1,6 +1,7 @@
 package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
+import likelion15.mutsa.repository.BoardRepository;
 import likelion15.mutsa.service.BoardService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import static com.querydsl.core.types.dsl.Wildcard.count;
 
 @Controller
 public class BoardController {
@@ -17,6 +20,7 @@ public class BoardController {
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
     }
+
     @GetMapping("/board/create-view") //게시글 생성 페이지
     public String createView() {
         return "boardCreate";
@@ -26,9 +30,11 @@ public class BoardController {
             @RequestParam("title")
             String title,
             @RequestParam("content")
-            String content
+            String content,
+            @RequestParam("count")
+            Integer count
     ) {
-        BoardDTO boardDTO = boardService.createBoard(title, content);
+        BoardDTO boardDTO = boardService.createBoard(title, content, count);
         return "redirect:/board";
     }
 
@@ -47,6 +53,7 @@ public class BoardController {
             @PathVariable("id") Long id,
             Model model) {
         boardService.readBoard(id);
+        boardService.updateCount(id);
 
         model.addAttribute(
                 "board",
@@ -59,20 +66,19 @@ public class BoardController {
             //TODO 아이디와 Model 받아오기 / Long id, Model model
             @PathVariable("id") Long id,
             Model model) {
-        //TODO Model에 student 데이터 부여 studentService.readStudent(id)
+        //TODO Model에 board 데이터 부여 boardService.readStudent(id)
         BoardDTO dto = boardService.readBoard(id);
         model.addAttribute("board", dto);
         return "update";
     }
     @PostMapping("/{id}/update-view")
     public String update(
-            //TODO StudentController.read()을 참조
+            //TODO BoardController.read()을 참조
             @PathVariable("id")
             Long id,
-            //TODO StudentController.create()를 참조
+            //TODO BoardController.create()를 참조
             @RequestParam("title")
             String title,
-            @RequestParam("content")
             String content
     ) {
         //service 활용하기

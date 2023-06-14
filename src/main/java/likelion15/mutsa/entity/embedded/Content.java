@@ -18,8 +18,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Content {
 
-    @Column(nullable = false)
-    private String title;
+    //@Column(nullable = false)
+    //private String title;
 
     @Column(nullable = false,
             columnDefinition = "TEXT"

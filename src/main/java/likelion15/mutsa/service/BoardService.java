@@ -1,26 +1,35 @@
 package likelion15.mutsa.service;
 
+import jakarta.transaction.Transactional;
 import likelion15.mutsa.dto.BoardDTO;
+import likelion15.mutsa.repository.BoardRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class BoardService {
+    private final BoardRepository boardRepository;
+    @Transactional
+    public int updateCount(Long id) {
+        return boardRepository.updateCount(id);
+    }
 
     private final List<BoardDTO> boardList = new ArrayList<>();
 
     private Long nextId = 1L;
+    private Integer count;
 
-    public BoardService(){
-        createBoard("alex", "alex@gmail.com");
-        createBoard("brad", "brad@gmail.com");
-        createBoard("chad", "chad@gmail.com");
-    }
+//    public BoardService(){
+//        createBoard("alex", "alex@gmail.com");
+//        createBoard("brad", "brad@gmail.com");
+//        createBoard("chad", "chad@gmail.com");
+//    }
     public List<BoardDTO> readBoardAll() {
         return boardList;
     }
@@ -33,13 +42,12 @@ public class BoardService {
         return null;
     }
 
-    public BoardDTO createBoard(String title, String content) {
+    public BoardDTO createBoard(String title, String content, Integer count) {
         BoardDTO newBoard = new BoardDTO(
-                nextId, title, content
+                nextId, title, content, count
         );
         nextId++;
         boardList.add(newBoard);
-
         return newBoard;
     }
 
@@ -78,7 +86,6 @@ public class BoardService {
             return true;
         } else return false;
     }
-
 
 
 }

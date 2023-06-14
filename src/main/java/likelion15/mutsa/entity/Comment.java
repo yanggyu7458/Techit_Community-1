@@ -19,11 +19,10 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
-
     private Long pid;
 
     @Column(nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "TEXT", length = 500
     )
     private String comment;
 

@@ -19,6 +19,16 @@ public class Board extends BaseEntity {
     @Column(name = "board_id")
     private Long id;
 
+    @Column(nullable = false)
+    private String title;
+
     @Embedded
     private Content content;
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int count;//조회수
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

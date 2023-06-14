@@ -5,10 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-  <h1>[[${board.id}]]. [[${board.title}]]</h1>
+  <h1>[[${board.id}]]. [[${board.title}]] 조회수: [[${board.count}]]</h1>
   <p>내용: [[${board.content}]]</p>
+
   <a href="/board">Back</a>
   <a th:href="@{/{id}/update-view(id=${board.id})}">Edit</a>
   <a th:href="@{/{id}/delete-view(id=${board.id})}">Delete</a>
+
 </body>
 </html>
