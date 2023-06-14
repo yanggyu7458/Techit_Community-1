@@ -26,4 +26,22 @@ public class Likes extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DeletedStatus isDeleted;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_LIKES_USER"))
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_LIKES_BOARD"))
+    private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "comment_id", foreignKey = @ForeignKey(name = "FK_LIKES_COMMENT"))
+    private Comment comment;
 }

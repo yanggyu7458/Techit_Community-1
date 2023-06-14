@@ -50,11 +50,18 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserAuth auth;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "user"
+    )
     private List<Board> boards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Comment> comments = new ArrayList<>();
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "user",
+            cascade = CascadeType.ALL)
+    private Profile profile;
 
-
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "user"
+    )
+    private List<UserBoardTag> userBoardTags = new ArrayList<>();
 }

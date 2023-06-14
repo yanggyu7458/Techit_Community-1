@@ -25,21 +25,31 @@ public class Board extends BaseEntity {
     @Embedded
     private Content content;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "user_id",
+            foreignKey = @ForeignKey(name = "FK_BOARD_USER")
+    )
     private User user;
 
-    public void setUser(User user) { // 연관관계 편의 메서드
-        this.user = user;
-        user.getBoards().add(this);
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id",
+            foreignKey = @ForeignKey(name = "FK_BOARD_CATEGORY")
+    )
+    private Category category;
 
-    public void setComments(Comment comment) { // 연관관계 편의 메서드
-        this.comments.add(comment);
-        comment.setBoard(this);
-    }
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "board")
+    private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "board"
+    )
+    private List<Likes> likes = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "board"
+    )
+    private List<UserBoardTag> userBoardTags = new ArrayList<>();
 }

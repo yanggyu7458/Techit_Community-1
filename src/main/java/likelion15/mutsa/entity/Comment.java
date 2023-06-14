@@ -9,6 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,21 +36,14 @@ public class Comment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DeletedStatus isDeleted;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user-id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board-id")
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_COMMENT_BOARD"))
     private Board board;
 
-    public void setUser(User user) { // 연관관계 편의 메서드
-        this.user = user;
-        user.getComments().add(this);
-    }
-
-    public void setBoard(Board board) { // 연관관계 편의 메서드
-        this.board = board;
-        board.getComments().add(this);
-    }
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "comment"
+    )
+    private List<Likes> likes = new ArrayList<>();
 }
