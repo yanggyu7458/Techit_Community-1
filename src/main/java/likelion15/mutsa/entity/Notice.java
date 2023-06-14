@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,4 +23,8 @@ public class Notice extends BaseEntity {
 
     @Embedded
     private Content content;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "notice")
+    private List<FileCon> fileCons = new ArrayList<>();
 }

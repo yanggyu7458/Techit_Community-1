@@ -17,4 +17,27 @@ public class FileCon extends BaseEntity {
     @Column(name = "file_con_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "file_id", foreignKey = @ForeignKey(name = "FK_FILE_CON_FILE"))
+    private File file;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "profile_id", foreignKey = @ForeignKey(name = "FK_FILE_CON_PROFILE"))
+    private Profile profile;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_FILE_CON_BOARD"))
+    private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "notice_id", foreignKey = @ForeignKey(name = "FK_FILE_CON_NOTICE"))
+    private Notice notice;
 }
