@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,4 +32,8 @@ public class File extends BaseEntity {
 
     @Column(nullable = false)
     private Long size;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "file")
+    private List<FileCon> fileCon = new ArrayList<>();
 }
