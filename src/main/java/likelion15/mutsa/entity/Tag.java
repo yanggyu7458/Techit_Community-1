@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,4 +22,9 @@ public class Tag extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "tag"
+    )
+    private List<UserBoardTag> userBoardTags = new ArrayList<>();
 }
