@@ -17,7 +17,7 @@
    */
 
   /**
-   * Constants
+   * Constants..
    */
 
   const elementMap = new Map();
