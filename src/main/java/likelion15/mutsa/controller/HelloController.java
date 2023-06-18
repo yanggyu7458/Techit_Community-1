@@ -37,22 +37,5 @@ public class HelloController {
         return modelAndView;
     }
 
-    @GetMapping("/join")
-    public String join(){
 
-        return "join";
-    }
-    @GetMapping("/login")
-    public String login(){
-
-        return "login";
-    }
-    @PostMapping("/complete-join")
-    public String completeJoin(
-            @RequestParam("username")
-            String username,
-            Model model){
-        model.addAttribute("username", username);
-        return "complete-join";
-    }
 }
