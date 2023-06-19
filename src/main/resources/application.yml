@@ -28,14 +28,14 @@ spring:
     hibernate:
       naming:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-      ddl-auto: create
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+      ddl-auto: update
     open-in-view: true
     properties:
       hibernate:
         show_sql: true
         format_sql: true
         use_sql_comments: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
   thymeleaf:
     prefix: classpath:templates/
