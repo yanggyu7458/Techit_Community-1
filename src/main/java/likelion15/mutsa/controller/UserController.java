@@ -17,12 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    @GetMapping("/join")
-    public String join(){
 
+    // 회원가입 페이지
+    @GetMapping("/join-view")
+    public String joinView(){
         return "join";
     }
-    @PostMapping("/complete-join")
+    @GetMapping("/complete-join")
+    public String showCompleteJoin(){
+        return "complete-join";
+    }
+    @PostMapping("/join")
     public String completeJoin(
             @RequestParam("username")
             String username,
@@ -36,7 +41,9 @@ public class UserController {
         User user = userService.joinUser(username,email,password,phoneNumber);
         System.out.println("user = " + user);
         model.addAttribute("username", username);
-        return "complete-join";
+//        return "complete-join";
+        // redirect를하면 showCompleteJoin()함수를 호출하게된다.
+        return "redirect:/complete-join";
     }
     // 로그인 페이지
     @GetMapping("/login")
@@ -46,7 +53,14 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public String login(){
-//        User user = userService.login(email,password);
+//        Long userid = userService.login(email,password);
+//        if (userid != null) { //로그인 성공
+//            return "redirect:/"
+//        }
         return "redirect:/home";
+    }
+    @GetMapping("/home")
+    public String home(){
+        return "home";
     }
 }
