@@ -34,10 +34,17 @@ public class UserService {
     public Long login(String email, String password) {
         for (User user : userList) {
             if(user.getEmail().equals(email)){
-                if(user.getPassword().equals(password))
+                if(user.getPassword().equals(password)){
+                    System.out.println("id, pw존재함");
                     return user.getId();
+                }else{ //비밀번호가 일치하지 않는 경우
+                    System.out.println("비밀번호를 다시 확인해주세요.");
+                }
+            }else{
+                System.out.println("존재하지 않는 아이디입니다.");
             }
         }
+
         return null;
     }
 

@@ -1,5 +1,6 @@
 package likelion15.mutsa.controller;
 
+import jakarta.servlet.http.HttpSession;
 import likelion15.mutsa.dto.User;
 import likelion15.mutsa.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -48,19 +49,26 @@ public class UserController {
     // 로그인 페이지
     @GetMapping("/login")
     public String loginPage(){
+//        Long userid = (Long)session.getAttribute("userId");
+
+
         return "login";
     }
     // 로그인
     @PostMapping("/login")
-    public String login(){
-//        Long userid = userService.login(email,password);
-//        if (userid != null) { //로그인 성공
-//            return "redirect:/"
-//        }
-        return "redirect:/home";
+    public String login(@RequestParam("email") String email,
+                        @RequestParam("password") String password){
+        Long userid = userService.login(email, password);
+
+        if (userid != null) { //로그인 성공
+            System.out.println("로그인 성공");
+            return "redirect:/home";
+        }
+        else return "redirect:/login";
     }
     @GetMapping("/home")
     public String home(){
+
         return "home";
     }
 }
