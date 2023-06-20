@@ -61,10 +61,9 @@ public class UserController {
         Long userid = userService.login(email, password);
 
         if (userid != null) { //로그인 성공
-            System.out.println("로그인 성공");
             return "redirect:/home";
         }
-        else return "redirect:/login";
+        else return "redirect:/login"; //로그인 실패
     }
     @GetMapping("/home")
     public String home(){
