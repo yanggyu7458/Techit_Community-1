@@ -25,12 +25,15 @@ public class UserController {
     public String joinView(){
         return "join";
     }
+
+    //받는 쪽
     @GetMapping("/complete-join")
     public String showCompleteJoin(@RequestParam("username") String username, Model model) {
         model.addAttribute("username", username);
         return "complete-join";
     }
 
+    //보내는 쪽
     @PostMapping("/join")
     public String completeJoin(@RequestParam("username")String username,
                                @RequestParam("email")String email,
@@ -41,6 +44,7 @@ public class UserController {
         System.out.println("user = " + user);
         // redirect를 위해 get을 사용시 model날아가는 문제로 RedirectAttributes를 이용해서
         // username 을 showCompleteJoin()로 넘김(가입완료페이지에서 유저이름 나타내기)
+
         re.addAttribute("username", username);
         // redirect를하면showCompleteJoin()함수를 호출하게된다.
          return "redirect:/complete-join";
