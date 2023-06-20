@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,26 +26,24 @@ public class UserController {
         return "join";
     }
     @GetMapping("/complete-join")
-    public String showCompleteJoin(){
+    public String showCompleteJoin(@RequestParam("username") String username, Model model) {
+        model.addAttribute("username", username);
         return "complete-join";
     }
+
     @PostMapping("/join")
-    public String completeJoin(
-            @RequestParam("username")
-            String username,
-            @RequestParam("email")
-            String email,
-            @RequestParam("password")
-            String password,
-            @RequestParam("phoneNumber")
-            String phoneNumber,
-            Model model){
+    public String completeJoin(@RequestParam("username")String username,
+                               @RequestParam("email")String email,
+                               @RequestParam("password")String password,
+                               @RequestParam("phoneNumber")String phoneNumber,
+                                RedirectAttributes re) {
         User user = userService.joinUser(username,email,password,phoneNumber);
         System.out.println("user = " + user);
-        model.addAttribute("username", username);
-//        return "complete-join";
-        // redirect를하면 showCompleteJoin()함수를 호출하게된다.
-        return "redirect:/complete-join";
+        // redirect를 위해 get을 사용시 model날아가는 문제로 RedirectAttributes를 이용해서
+        // username 을 showCompleteJoin()로 넘김(가입완료페이지에서 유저이름 나타내기)
+        re.addAttribute("username", username);
+        // redirect를하면showCompleteJoin()함수를 호출하게된다.
+         return "redirect:/complete-join";
     }
     // 로그인 페이지
     @GetMapping("/login")

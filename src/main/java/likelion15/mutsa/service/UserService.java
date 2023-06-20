@@ -35,7 +35,7 @@ public class UserService {
         for (User user : userList) {
             if(user.getEmail().equals(email)){
                 if(user.getPassword().equals(password)){
-                    System.out.println("id, pw존재함");
+                    System.out.println("로그인 성공");
                     return user.getId();
                 }else{ //비밀번호가 일치하지 않는 경우
                     System.out.println("비밀번호를 다시 확인해주세요.");
