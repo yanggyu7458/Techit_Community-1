@@ -1,7 +1,7 @@
 package likelion15.mutsa.controller;
 
 import jakarta.servlet.http.HttpSession;
-import likelion15.mutsa.dto.User;
+import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +53,6 @@ public class UserController {
     @GetMapping("/login")
     public String loginPage(){
 //        Long userid = (Long)session.getAttribute("userId");
-
-
         return "login";
     }
     // 로그인

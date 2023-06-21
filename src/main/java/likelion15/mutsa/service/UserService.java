@@ -1,6 +1,7 @@
 package likelion15.mutsa.service;
 
-import likelion15.mutsa.dto.User;
+import likelion15.mutsa.entity.User;
+import likelion15.mutsa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +11,23 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private Long nextId = 1L;
+
+
+    private Long id = 1L;
     private final List<User> userList = new ArrayList<>();
+    private final UserRepository repository;
 
     // 회원가입 - 유저 객체 추가
-    public User joinUser(String username, String email, String password, String phoneNumber) {
-        User user = new User(nextId,username,email,password,phoneNumber);
-        nextId++;
+    public User joinUser(String name, String email, String password, String phoneNumber) {
+//        User user = new User(id,name,email,password,phoneNumber);
+        User user = User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .password(password)
+                .phoneNumber(phoneNumber)
+                .build();
+        id++;
         userList.add(user);
         return user;
     }
