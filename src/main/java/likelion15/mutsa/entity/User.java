@@ -7,6 +7,7 @@ import likelion15.mutsa.entity.enums.UserStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter //setter추가했음..
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class User extends BaseEntity {

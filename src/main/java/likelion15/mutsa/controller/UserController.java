@@ -35,30 +35,33 @@ public class UserController {
     }
 
     @PostMapping("/join")
-    public String completeJoin(@RequestParam("name")String name,
-                               @RequestParam("realName")String realName,
-                               @RequestParam("email")String email,
-                               @RequestParam("password")String password,
-                               @RequestParam("phoneNumber")String phoneNumber,
+    public String completeJoin(User user,
+//                               @RequestParam("name")String name,
+//                               @RequestParam("realName")String realName,
+//                               @RequestParam("email")String email,
+//                               @RequestParam("password")String password,
+//                               @RequestParam("phoneNumber")String phoneNumber,
                                 RedirectAttributes re) {
-//        User user = userService.joinUser(name,email,password,phoneNumber);
 
-        User user = User.builder()
-                        .name(name)
-                        .realName(realName)
-                        .email(email)
-                        .password(password)
-                        .phoneNumber(phoneNumber)
-                        .auth(UserAuth.USER)
-                        .status(UserStatus.U)
-                        .build();
+//        User user = User.builder()
+//                        .name(name)
+//                        .realName(realName)
+//                        .email(email)
+//                        .password(password)
+//                        .phoneNumber(phoneNumber)
+//                        .auth(UserAuth.USER)
+//                        .status(UserStatus.U)
+//                        .build();
+        user.setAuth(UserAuth.USER);
+        user.setStatus(UserStatus.U);
+
         user = userService.joinUser(user);
 
         System.out.println("user = " + user);
         // redirect를 위해 get을 사용시 model날아가는 문제로 RedirectAttributes를 이용해서
         // username 을 showCompleteJoin()로 넘김(가입완료페이지에서 유저이름 나타내기)
 
-        re.addAttribute("realName", realName);
+        re.addAttribute("realName", user.getRealName());
         // redirect를하면showCompleteJoin()함수를 호출하게된다.
          return "redirect:/complete-join";
     }
@@ -70,10 +73,12 @@ public class UserController {
     }
     // 로그인
     @PostMapping("/login")
-    public String login(@RequestParam("email") String email,
-                        @RequestParam("password") String password){
-        Long userid = userService.login(email, password);
-
+    public String login(User user
+//                        @RequestParam("email") String email,
+//                        @RequestParam("password") String password
+    ){
+        Long userid = userService.login(user.getEmail(), user.getPassword());
+        System.out.println(user.getEmail()+" /" +user.getPassword());
         if (userid != null) { //로그인 성공
             return "redirect:/home";
         }
