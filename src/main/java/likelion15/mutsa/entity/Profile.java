@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,4 +22,14 @@ public class Profile extends BaseEntity {
 
     private String content;
 
+    @OneToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_PROFILE_USER"))
+    private User user;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "profile"
+    )
+    private List<FileCon> fileCon = new ArrayList<>();
 }

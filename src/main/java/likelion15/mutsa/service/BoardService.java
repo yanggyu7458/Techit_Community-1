@@ -1,35 +1,25 @@
 package likelion15.mutsa.service;
 
-import jakarta.transaction.Transactional;
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.repository.BoardRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@RequiredArgsConstructor
 @Service
 public class BoardService {
     private final BoardRepository boardRepository;
-    @Transactional
-    public int updateCount(Long id) {
-        return boardRepository.updateCount(id);
-    }
+
+
 
     private final List<BoardDTO> boardList = new ArrayList<>();
 
-    private Long nextId = 1L;
-    private Integer count;
+    private Long boardId = 1L;
 
-//    public BoardService(){
-//        createBoard("alex", "alex@gmail.com");
-//        createBoard("brad", "brad@gmail.com");
-//        createBoard("chad", "chad@gmail.com");
-//    }
+    public BoardService(BoardRepository boardRepository){
+        this.boardRepository = boardRepository;
+    }
     public List<BoardDTO> readBoardAll() {
         return boardList;
     }
@@ -42,11 +32,11 @@ public class BoardService {
         return null;
     }
 
-    public BoardDTO createBoard(String title, String content, Integer count) {
+    public BoardDTO createBoard(Long id, String title, String content) {
         BoardDTO newBoard = new BoardDTO(
-                nextId, title, content, count
+                boardId, title,content
         );
-        nextId++;
+        boardId++;
         boardList.add(newBoard);
         return newBoard;
     }
@@ -69,7 +59,6 @@ public class BoardService {
         } else return null;
 
     }
-
     public boolean deleteBoard(Long id) {
         int target = -1;
         //게시글 리스트를 살펴보기
@@ -86,6 +75,5 @@ public class BoardService {
             return true;
         } else return false;
     }
-
 
 }

@@ -1,43 +1,36 @@
 package likelion15.mutsa.dto;
 
+import likelion15.mutsa.entity.User;
+import lombok.Data;
+
+@Data
 public class BoardDTO {
     private Long id;
+    private User user;
     private String title;
     private String content;
-
-
-
-    private Integer count;
-
-    public BoardDTO(Long id, String title, String content, Integer count) {
+    public BoardDTO(Long id, String title, String content) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.count = count;
-
-
-    }
-    public Long getId() {
-        return id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-    public Integer getCount() {
-        return count;
-    }
+//    public static BoardDTO fromEntity(Board entity) {
+//        BoardDTO boardDTO = new BoardDTO();
+//        boardDTO.setId(entity.getId());
+//        boardDTO.setContent(entity.getContent());
+//        boardDTO.setUser(entity.getUser());
+//
+//        return boardDTO;
+//
+//    }
+//    public BoardDTO build() {
+//        BoardDTO boardDTO = new BoardDTO();
+//        boardDTO.setId(id);
+//        boardDTO.setTitle(title);
+//        boardDTO.setContent(content);
+//        boardDTO.setUser(user);
+//        return boardDTO;
+//    }
 
 }

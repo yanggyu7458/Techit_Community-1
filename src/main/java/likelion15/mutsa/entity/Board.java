@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,16 +22,34 @@ public class Board extends BaseEntity {
     @Column(name = "board_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
-
     @Embedded
     private Content content;
 
-    @Column(columnDefinition = "integer default 0", nullable = false)
-    private int count;//조회수
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "user_id",
+            foreignKey = @ForeignKey(name = "FK_BOARD_USER")
+    )
     private User user;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id",
+            foreignKey = @ForeignKey(name = "FK_BOARD_CATEGORY")
+    )
+    private Category category;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "board")
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "board"
+    )
+    private List<Likes> likes = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "board"
+    )
+    private List<UserBoardTag> userBoardTags = new ArrayList<>();
 }

@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-  <h1>[[${board.id}]]. [[${board.title}]] 조회수: [[${board.count}]]</h1>
+  <h1>[[${board.id}]]. [[${board.title}]]</h1>
   <p>내용: [[${board.content}]]</p>
-
+  <!--comment section-->
+  <form th:action="@{/board/{id} (id=${board.id})}" method="post">
+      <input type="text" id="content" name="comment" class="form-control" placeholder="댓글을 입력해주세요.." aria-label="댓글을 입력해주세요.." aria-describedby="basic-addon2">
+      <div class="card-footer">
+          <button class="btn btn-primary">등록</button>
+      </div>
+  </form>
+  <p>댓글 목록</p>
+  <div th:each="comment: ${commentList}">
+      <p>번호: [[${comment.id}]]</p>
+      <p>내용: [[${comment.comment}]]</p>
+  </div>
   <a href="/board">Back</a>
   <a th:href="@{/{id}/update-view(id=${board.id})}">Edit</a>
   <a th:href="@{/{id}/delete-view(id=${board.id})}">Delete</a>
-
 </body>
 </html>

@@ -14,9 +14,8 @@
 <div th:unless="${boardList.isEmpty()}"
      th:each="board: ${boardList}">
     <p>번호: [[${board.id}]]</p>
-    <p>제목: <a th:href="@{/{id} (id=${board.id})}">[[${board.title}]]</a></p>
+    <p>제목: <a th:href="@{/board/{id} (id=${board.id})}">[[${board.title}]]</a></p>
     <p>내용: [[${board.content}]]</p>
-    <p>조회수: [[${board.count}]]</p>
     <hr>
 </div>
 <a href="/board/create-view">Create</a>
