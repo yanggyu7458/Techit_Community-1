@@ -2,7 +2,9 @@ package likelion15.mutsa.repository;
 
 import jakarta.persistence.EntityManager;
 
+import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
+import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,6 +26,12 @@ public class CommentRepository {
         return em.createQuery("select c from Comment c where c.username = :user_name and c.isDeleted =:isDeleted", Comment.class)
                 .setParameter("user_name", userName)
                 .setParameter("isDeleted", DeletedStatus.NONE)
+                .getResultList();
+    }
+
+    public List<Comment> findAllByLikesAndUserName(String userName) {
+        return em.createQuery("select c from Comment c, Likes l where c.username =:username and l.comment.id = c.id")
+                .setParameter("username", userName)
                 .getResultList();
     }
 

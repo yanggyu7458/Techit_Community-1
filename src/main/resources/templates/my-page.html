@@ -16,7 +16,6 @@
     </nav>
 
     <div class="card w-90 col-sm-9 ms-3 pt-3 pb-3 pe-3 ps-3">
-
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <button class="nav-link active" id="article-tab" data-bs-toggle="tab" data-bs-target="#article-tab-pane" type="button" role="tab" aria-controls="article-tab-pane" aria-selected="true">내가 쓴 게시글</button>
@@ -49,6 +48,27 @@
                         </div>
                     </div>
                 </div>
+                <nav aria-label="Page navigation example" >
+                    <ul class="pagination justify-content-center mt-3"
+                        th:with="start=${(myArticleList.number/myArticleList.totalPages)*myArticleList.totalPages + 1}, end=(${(myArticleList.totalPages == 0) ? 1 : (start + (myArticleList.totalPages - 1) < myArticleList.totalPages ? start + (myArticleList.totalPages - 1) : myArticleList.totalPages)})">
+                        <li class="page-item" >
+                            <a class="page-link" th:href="@{/my-page?page=0}" th:text="'<<'" ></a>
+                        </li>
+                        <li class="page-item" >
+                            <a class="page-link" th:href="@{/my-page(page=${start - myArticleList.totalPages})}" th:text="'<'" ></a>
+                        </li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}">
+                            <a class="page-link" th:text="${page}" th:href="@{/my-page(page=${page - 1})}" ></a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
             </div>
 
             <div class="tab-pane fade" id="comment-tab-pane">
@@ -71,36 +91,43 @@
             </div>
 
             <div class="tab-pane fade" id="likes-article-tab-pane">
-                <div class="card mt-2" th:if="${myArticleLikeList.isEmpty()}">
+                <div class="card mt-2" th:if="${myArticleLikesList.isEmpty()}">
                     <p>좋아요한 글이 없습니다.</p>
+                </div>
+                <div class="card mt-2" th:unless="${myArticleLikesList.isEmpty()}" th:each="article : ${myArticleLikesList}" >
+                    <div class="row justify-content-between">
+                        <div class="col-9 pt-1 ms-2">
+                            <h5 class="card-title">[[${article.content.title}]]</h5>
+                            <p class="card-text">[[${article.content.content}]]...</p>
+                        </div>
+                        <div class="col-2 me-2 align-self-center">
+                            <a href="#" class="btn btn-primary float-end">좋아요 취소</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="likes-comment-tab-pane">
-                <div class="card mt-2" th:if="${myCommentLikeList.isEmpty()}">
+                <div class="card mt-2" th:if="${myCommentLikesList.isEmpty()}">
                     <p>좋아요한 댓글이 없습니다.</p>
+                </div>
+                <div class="card mt-2" th:unless="${myCommentLikesList.isEmpty()}" th:each="comment : ${myCommentLikesList}">
+                    <div class="row justify-content-between">
+                        <div class="col-9 pt-1 ms-2">
+                            <h5 class="card-title">[[${comment.board.content.title}]]</h5>
+                            <p class="card-text">[[${comment.comment}]]...</p>
+
+                        </div>
+                        <div class="col-2 me-2 align-self-center">
+                            <a href="#" class="btn btn-primary float-end">좋아요 취소</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
     </div>
 </div>
-  <nav aria-label="Page navigation example" >
-      <ul class="pagination justify-content-center mt-3">
-          <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-              </a>
-          </li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-              </a>
-          </li>
-      </ul>
-  </nav>
+
 
 <!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
   <div th:replace="~{fragments/footer :: footer}" />

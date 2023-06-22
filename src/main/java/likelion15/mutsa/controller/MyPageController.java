@@ -1,10 +1,10 @@
 package likelion15.mutsa.controller;
 
 
-import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
+import likelion15.mutsa.repository.BoardPage;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,29 +13,29 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping
+
 @Slf4j
 @RequestMapping("/my-page")
 public class MyPageController {
     public final BoardService boardService;
     public final UserService userService;
+    public final BoardPage boardPage;
 
     @GetMapping("/ini")
     public void ini() {
         User user1 = User.builder()
-                .email("qwe1@gmail.com")
-                .realName("성광현")
-                .name("땡땡")
-                .password("1234")
-                .phoneNumber("010-4949-5895")
-                .auth(UserAuth.USER)
-                .status(UserStatus.U)
+                        .email("qwe1@gmail.com")
+                        .realName("성광현")
+                        .name("땡땡")
+                        .password("1234")
+                        .phoneNumber("010-4949-5895")
+                        .auth(UserAuth.USER)
+                        .status(UserStatus.U)
                 .build();
+
 
         Long saveId1 = userService.join(user1);
 
@@ -60,15 +60,24 @@ public class MyPageController {
         boardService.writeComment(saveId1, 1L, "1번 게시글에 쓴 댓글입니다.");
         boardService.writeComment(saveId1, 2L, "2번 게시글에 쓴 첫번째 댓글입니다.");
         boardService.writeComment(saveId1, 2L, "2번 게시글에 쓴 두번째 댓글입니다.");
+        boardService.likeComment(saveId1, 1L);
+        boardService.likeArticle(saveId1, 2L);
     }
 
     @GetMapping("")
-    public String myPage(Model model) {
+    public String myPage(
+            Model model,
+            @RequestParam(value = "page", defaultValue = "0") int pageNum,
+            @RequestParam(value = "limit", defaultValue = "1") int pageLimit
+    ) {
 
         Long logInId = 1L;
         User writer = userService.findOne(logInId);
-        model.addAttribute("myArticleList", boardService.findOnesBoards(logInId));
+//        model.addAttribute("myArticleList", boardService.findOnesBoards(logInId));
+        model.addAttribute("myArticleList", boardService.readBoardPaged(pageNum, pageLimit, writer));
         model.addAttribute("myCommentList", boardService.findOnesComments(writer.getName()));
+        model.addAttribute("myCommentLikesList", boardService.findOnesLikesComments(writer.getName()));
+        model.addAttribute("myArticleLikesList", boardService.findOnesLikesBoards(writer.getId()));
 
         return "my-page";
     }
