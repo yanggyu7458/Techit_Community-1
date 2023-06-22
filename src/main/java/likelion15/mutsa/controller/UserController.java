@@ -2,6 +2,8 @@ package likelion15.mutsa.controller;
 
 import jakarta.servlet.http.HttpSession;
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.entity.enums.UserAuth;
+import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,26 +28,37 @@ public class UserController {
         return "join";
     }
 
-    //받는 쪽
     @GetMapping("/complete-join")
-    public String showCompleteJoin(@RequestParam("username") String username, Model model) {
-        model.addAttribute("username", username);
+    public String showCompleteJoin(@RequestParam("realName") String realName, Model model) {
+        model.addAttribute("realName", realName);
         return "complete-join";
     }
 
-    //보내는 쪽
     @PostMapping("/join")
-    public String completeJoin(@RequestParam("username")String username,
+    public String completeJoin(@RequestParam("name")String name,
+                               @RequestParam("realName")String realName,
                                @RequestParam("email")String email,
                                @RequestParam("password")String password,
                                @RequestParam("phoneNumber")String phoneNumber,
                                 RedirectAttributes re) {
-        User user = userService.joinUser(username,email,password,phoneNumber);
+//        User user = userService.joinUser(name,email,password,phoneNumber);
+
+        User user = User.builder()
+                        .name(name)
+                        .realName(realName)
+                        .email(email)
+                        .password(password)
+                        .phoneNumber(phoneNumber)
+                        .auth(UserAuth.USER)
+                        .status(UserStatus.U)
+                        .build();
+        user = userService.joinUser(user);
+
         System.out.println("user = " + user);
         // redirect를 위해 get을 사용시 model날아가는 문제로 RedirectAttributes를 이용해서
         // username 을 showCompleteJoin()로 넘김(가입완료페이지에서 유저이름 나타내기)
 
-        re.addAttribute("username", username);
+        re.addAttribute("realName", realName);
         // redirect를하면showCompleteJoin()함수를 호출하게된다.
          return "redirect:/complete-join";
     }

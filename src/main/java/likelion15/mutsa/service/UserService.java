@@ -13,21 +13,13 @@ import java.util.List;
 public class UserService {
 
 
-    private Long id = 1L;
     private final List<User> userList = new ArrayList<>();
     private final UserRepository repository;
 
     // 회원가입 - 유저 객체 추가
-    public User joinUser(String name, String email, String password, String phoneNumber) {
-//        User user = new User(id,name,email,password,phoneNumber);
-        User user = User.builder()
-                .id(id)
-                .name(name)
-                .email(email)
-                .password(password)
-                .phoneNumber(phoneNumber)
-                .build();
-        id++;
+    public User joinUser(User user) {
+        // User Entity에 setter가 없어서 setter추가 안하고 builder로 id추가함.
+
         userList.add(user);
         return user;
     }
@@ -47,7 +39,7 @@ public class UserService {
             if(user.getEmail().equals(email)){
                 if(user.getPassword().equals(password)){
                     System.out.println("로그인 성공");
-                    return user.getId();
+                    return 1L; // db에서 id받아오기 전에 임시로 설정
                 }else{ //비밀번호가 일치하지 않는 경우
                     System.out.println("비밀번호를 다시 확인해주세요.");
                 }
@@ -58,5 +50,4 @@ public class UserService {
 
         return null;
     }
-
 }

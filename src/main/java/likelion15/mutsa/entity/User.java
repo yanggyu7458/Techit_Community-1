@@ -65,23 +65,30 @@ public class User extends BaseEntity {
     )
     private List<UserBoardTag> userBoardTags = new ArrayList<>();
 
-    public User(Long id,String name,String email,String password,String phoneNumber){
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-    }
+//    public User(Long id,String name,String email,String password,String phoneNumber){
+//        this.id = id;
+//        this.name = name;
+//        this.email = email;
+//        this.password = password;
+//        this.phoneNumber = phoneNumber;
+//    }
 
     //콘솔에 println(user)을 찍을 때 객체 정보가 들어가서 찍히게 함.
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", realName='" + realName + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", status=" + status +
+                ", auth=" + auth +
+                ", boards=" + boards +
+                ", profile=" + profile +
+                ", userBoardTags=" + userBoardTags +
                 '}';
     }
 }
