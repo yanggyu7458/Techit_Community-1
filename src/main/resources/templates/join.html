@@ -23,6 +23,11 @@
       <input type="text" id="phoneNumber" name="phoneNumber" required><br>
 
       <input type="submit" value="가입하기">
+
+      <!-- 중복된 이메일인 경우 에러 메시지 표시 -->
+      <div style="color: red;">
+          [[${error}]]
+      </div>
   </form>
 </body>
 </html>
