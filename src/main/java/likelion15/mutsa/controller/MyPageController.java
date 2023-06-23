@@ -4,7 +4,7 @@ package likelion15.mutsa.controller;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
-import likelion15.mutsa.repository.BoardPage;
+import likelion15.mutsa.repository.BoardPageRepository;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class MyPageController {
     public final BoardService boardService;
     public final UserService userService;
-    public final BoardPage boardPage;
+    public final BoardPageRepository boardPageRepository;
 
     @GetMapping("/ini")
     public void ini() {
@@ -34,7 +34,7 @@ public class MyPageController {
                         .phoneNumber("010-4949-5895")
                         .auth(UserAuth.USER)
                         .status(UserStatus.U)
-                .build();
+                        .build();
 
 
         Long saveId1 = userService.join(user1);
@@ -73,6 +73,7 @@ public class MyPageController {
 
         Long logInId = 1L;
         User writer = userService.findOne(logInId);
+
 //        model.addAttribute("myArticleList", boardService.findOnesBoards(logInId));
         model.addAttribute("myArticleList", boardService.readBoardPaged(pageNum, pageLimit, writer));
         model.addAttribute("myCommentList", boardService.findOnesComments(writer.getName()));

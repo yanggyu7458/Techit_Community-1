@@ -23,16 +23,4 @@ public class UserService {
 
     }
 
-//    public UserService() {
-//        makeNewUser("성광현");
-//        makeNewUser("김땡땡");
-//    }
-//
-//    public void makeNewUser(String name) {
-//        User user = new User();
-//        user.setName(name);
-//        join(user);
-//    }
-
-
 }

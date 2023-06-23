@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
-    private final BoardPage boardPage;
+    private final BoardPageRepository boardPageRepository;
     @Transactional
     public Long writeArticle(Long userId, String title, String content) {
         // 게시글 등록
@@ -131,7 +130,7 @@ public class BoardService {
                 pageNum, pageLimit, Sort.by("id").descending()
         );
         Page<Board> boardPages
-                = boardPage.findAllByUser(user, pageable);
+                = boardPageRepository.findAllByUser(user, pageable);
         // map: 전달받은 함수를 각 원소에 인자로 전달한 결과를 다시모아서 Stream으로
         // Page.map: 전달받은 함수를 각 원소에 인자로 전달한 결과를 다시 모아서 Page로
 
