@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import likelion15.mutsa.entity.base.BaseEntity;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class Comment extends BaseEntity {
@@ -29,7 +29,7 @@ public class Comment extends BaseEntity {
     )
     private String comment;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String username;
 
     @Enumerated(EnumType.STRING)

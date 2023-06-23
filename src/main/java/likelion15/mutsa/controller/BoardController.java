@@ -1,7 +1,9 @@
 package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
+import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.CommentService;
 import org.springframework.stereotype.Controller;
@@ -99,13 +101,28 @@ public String create(BoardDTO boardDTO) {
         return "redirect:/board";
 
     }
-    @PostMapping("/board/{id}")
-    public String commentWrite(
-            @PathVariable("id") Long boardId,
-            @RequestParam("comment") String comment) throws Exception {
-        commentService.createComment(boardId, comment);
-        boardService.readBoard(boardId);
-        return "redirect:/board/{id}";
-    }
+//    @PostMapping("/board/{id}")
+//    public String commentWrite(
+//            CommentDTO commentDTO, Long boardId) throws Exception {
+//        commentService.createComment(commentDTO);
+//       boardService.readBoard(boardId);
+//        return "redirect:/board/{id}";
+//    }
+@PostMapping("/board/{id}")
+public String commentWrite(@PathVariable("id") Long boardId,
+                           //@RequestParam("pid") Long pid,
+                           @RequestParam("comment") String comment
+                           ) {
+    CommentDTO commentDTO = CommentDTO.builder()
+            .boardId(boardId)
+            //.pid(pid)
+            .comment(comment)
+            //.username(username)
+            .build();
+
+    Comment createdComment = commentService.createComment(commentDTO);
+
+    return "redirect:/board/" + boardId;
+}
 
 }

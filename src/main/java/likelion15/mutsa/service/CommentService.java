@@ -1,7 +1,11 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.CommentDTO;
+import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.Comment;
+import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.repository.BoardRepository;
+import likelion15.mutsa.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,32 +17,36 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CommentService {
+    private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final List<CommentDTO> commentList = new ArrayList<>();
-    private Long commentId = 1L;
-    public CommentDTO createComment(Long boardId, String comment) {
-        //Optional<Board> optionalBoardDTO = boardRepository.findById(boardId);
-        //optionalBoardDTO.orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id= " + boardId));
-        CommentDTO commentDTO = new CommentDTO(
-                commentId, comment
-        );
-        commentId++;
-        commentList.add(commentDTO);
-        log.info(commentDTO.toString());
+    public Comment createComment(CommentDTO commentDTO) {
+        Board board = boardRepository.findById(commentDTO.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + commentDTO.getBoardId()));
 
-        return commentDTO;
+        Comment comment = Comment.builder()
+                .pid(commentDTO.getPid())
+                .comment(commentDTO.getComment())
+                .username(commentDTO.getUsername())
+                .isDeleted(DeletedStatus.NOT_DELETED)
+                .board(board)
+                .build();
+
+        commentList.add(commentDTO); // CommentDTO를 commentList에 추가합니다.
+
+        return commentRepository.save(comment);
     }
     public List<CommentDTO> readCommentAll() {
         return commentList;
     }
-    public CommentDTO readComment(Long id) {
-        for (CommentDTO commentDTO: commentList) {
-            if(commentDTO.getId().equals(id)) {
-                return commentDTO;
-            }
-        }
-        return null;
-    }
+//    public CommentDTO readComment(Long id) {
+//        for (CommentDTO commentDTO: commentList) {
+//            if(commentDTO.getId().equals(id)) {
+//                return commentDTO;
+//            }
+//        }
+//        return null;
+//    }
     public CommentDTO updateComment(Long id, String comment) {
         int target = -1;
         for (int i = 0; i < commentList.size(); i++) {

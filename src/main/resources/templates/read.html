@@ -17,7 +17,7 @@
   </form>
   <p>댓글 목록</p>
   <div th:each="comment: ${commentList}">
-      <p>번호: [[${comment.id}]]</p>
+      <!--<p>번호: [[${comment.pid}]]</p>-->
       <p>내용: [[${comment.comment}]]</p>
   </div>
   <a href="/board">Back</a>
