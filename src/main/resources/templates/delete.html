@@ -5,7 +5,7 @@
   <title>Delete</title>
 </head>
 <body>
-<h1>Delete [[${Notice.name}]]?</h1>
+<h1>Delete [[${notice.title}]]?</h1>
 <form th:action="@{/{id}/delete (id=${notice.id})}" method="post">
   <!--  create / update 와는 다르게  -->
   <!--  delete 의 경우 추가적인 데이터를 필요로 하지 않는다.  -->

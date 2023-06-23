@@ -1,6 +1,7 @@
 package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.NoticeDto;
+import likelion15.mutsa.dto.CommentDto;
 import likelion15.mutsa.service.NoticeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,11 +55,30 @@ public class NoticeController {
         model.addAttribute(
                 "notice",
                 noticeService.readNotice(id)
+
+        );
+        model.addAttribute(
+                "commentList",
+                noticeService.readComment(id)
         );
         return "read";
     }
 
-    // TODO url 설정 / ("/{id}/edit") 또는 ("/{id}/update-view") / @GetMapping
+    @PostMapping("/{id}/comment")
+    public String addComment(
+            @PathVariable("id") Long id,
+            @RequestParam("content") String content) {
+        CommentDto commentDto =
+                noticeService.createComment(id, content);
+
+        return String.format("redirect: /%s", id);
+    }
+
+
+
+
+
+
     @GetMapping("/{id}/update-view")
     public String updateView(
             // TODO 아이디와 Model 받아오기 / Long id, Model model

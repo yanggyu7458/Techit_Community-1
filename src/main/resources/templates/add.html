@@ -9,6 +9,10 @@
 <form th:action="@{/add}" method="post" style="line-height: 50px">
     <label for="title">제목: <input id="title" name="title"></label>
     <br>
+<!--    <label for="file">파일 첨부: </label>-->
+<!--    파일 첨부-->
+    <input type="file" name="uploadfile">
+    <br>
     <label for="content">내용: <input id="content" name="content" style="width:1000px; height:200px;"></label>
     <br>
     <input type="submit">
