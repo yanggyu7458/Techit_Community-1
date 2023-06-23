@@ -21,9 +21,7 @@ public class UserService {
 
     // 회원가입 - 유저 객체 추가
     public User joinUser(User user) {
-        // User Entity에 setter가 없어서 setter추가 안하고 builder로 id추가함.
 
-        //jpa로 추가 하려고하는부분
         repository.save(user);
         System.out.println(user.getId());
 //        userList.add(user);
@@ -39,7 +37,6 @@ public class UserService {
 //        return null;
 //    }
 
-    // email,password정보에 해당하는 id를 반환
     public Long login(String email, String password) {
 //        for (User user : userList) {
 //            if(user.getEmail().equals(email)){
@@ -53,11 +50,16 @@ public class UserService {
 //                System.out.println("존재하지 않는 아이디입니다.");
 //            }
 //        }
-        Optional<User> findUser = repository.findByEmail(email);
-        if (findUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-
+        User user = repository.findByEmail(email);
+        if (user== null){
+            System.out.println("존재하지 않는 아이디입니다.");
+        }
+        else if(user.getPassword().equals(password)){
+            System.out.println("로그인 성공");
+            return user.getId();
+        }else{
+            System.out.println("비밀번호를 다시 확인해주세요.");
+        }
         return null;
     }
 }
