@@ -7,12 +7,14 @@ import jakarta.persistence.Enumerated;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Embeddable
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SuperBuilder
 public class Content {
 
     @Column(nullable = false)

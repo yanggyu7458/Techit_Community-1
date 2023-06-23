@@ -1,6 +1,7 @@
 package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
+import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.CommentService;
 import org.springframework.stereotype.Controller;
@@ -30,17 +31,11 @@ public class BoardController {
 //    public BoardDTO create(@RequestBody BoardDTO boardDTO) {
 //        return boardService.createBoard(boardDTO);
 //    }
-    @PostMapping("/board/create")
-    public String create(
-            Long id,
-            @RequestParam("title")
-            String title,
-            @RequestParam("content")
-            String content
-    ) {
-        BoardDTO boardDTO = boardService.createBoard(id, title, content);
-        return "redirect:/board";
-    }
+@PostMapping("/board/create")
+public String create(BoardDTO boardDTO) {
+    Board board = boardService.createBoard(boardDTO);
+    return "redirect:/board";
+}
 
     @GetMapping("/board")
     public String board(
@@ -81,14 +76,10 @@ public class BoardController {
             //TODO StudentController.read()을 참조
             @PathVariable("id")
             Long id,
-            //TODO StudentController.create()를 참조
-            @RequestParam("title")
-            String title,
-            @RequestParam("content")
-            String content
+            BoardDTO boardDTO
     ) {
         //service 활용하기
-        boardService.updateBoard(id, title, content);
+        boardService.updateBoard(id, boardDTO);
         //상세보기 페이지로 PRG
         return String.format("redirect:/%s", id);
     }

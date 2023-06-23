@@ -4,15 +4,14 @@ import jakarta.persistence.*;
 import likelion15.mutsa.entity.base.BaseEntity;
 import likelion15.mutsa.entity.embedded.Content;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class Board extends BaseEntity {
