@@ -28,11 +28,18 @@ public class JoinService {
     // 회원가입 - 유저 객체 추가
     public User joinUser(User user) {
 
-        user.setAuth(UserAuth.USER);
-        user.setStatus(UserStatus.U);
+        User user1 = User.builder()
+                .name(user.getName())
+                .realName(user.getRealName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .phoneNumber(user.getPhoneNumber())
+                .auth(UserAuth.USER)
+                .status(UserStatus.U)
+                .build();
 
-        repository.save(user);
-        return user;
+        repository.save(user1);
+        return user1;
     }
 
     // 중복 이메일 검사
