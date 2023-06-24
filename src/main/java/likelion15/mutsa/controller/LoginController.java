@@ -1,6 +1,7 @@
 package likelion15.mutsa.controller;
 
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.service.JoinService;
 import likelion15.mutsa.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LoginController {
 
     private final LoginService loginService;
+    private final JoinService joinService;
 
     // 로그인 페이지
     @GetMapping("/login")

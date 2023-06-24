@@ -21,13 +21,15 @@
 
       <label for="phoneNumber">휴대폰 번호:</label>
       <input type="text" id="phoneNumber" name="phoneNumber" required><br>
-
+      <button th:onclick="'window.location.href = \'/login\''">로그인 하러가기</button>
       <input type="submit" value="가입하기">
 
+
+
       <!-- 중복된 이메일인 경우 에러 메시지 표시 -->
-      <div style="color: red;">
-          [[${error}]]
-      </div>
   </form>
+  <div style="color: red;">
+      [[${error}]]
+  </div>
 </body>
 </html>

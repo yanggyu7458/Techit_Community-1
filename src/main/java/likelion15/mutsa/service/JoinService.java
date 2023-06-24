@@ -1,6 +1,8 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.entity.enums.UserAuth;
+import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.repository.UserRepos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JoinService {
     private final UserRepos repository;
+
+    public void createUser(){ // for test
+        User user = User.builder()
+                .realName("김다미")
+                .name("미미")
+                .email("mimi@gmail.com")
+                .password("1234")
+                .phoneNumber("01012341234")
+                .auth(UserAuth.USER)
+                .status(UserStatus.U)
+                .build();
+
+        repository.save(user);
+
+    }
+
 
     // 회원가입 - 유저 객체 추가
     public User joinUser(User user) {
@@ -19,9 +37,12 @@ public class JoinService {
         return user;
     }
 
-    //중복 이메일 검사
-    public boolean isEmailExists(String email) {
-        User user = repository.findByEmail(email);
-        return user != null;
+    // 중복 이메일 검사
+    public boolean checkEmailDuplicate(String email) {
+        return repository.existsByEmail(email);
+    }
+    // 중복 닉네임 검사
+    public boolean checkUsernameDuplicate(String name) {
+        return repository.existsByName(name);
     }
 }
