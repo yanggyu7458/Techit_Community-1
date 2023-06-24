@@ -43,4 +43,6 @@ public class JoinService {
     public boolean checkUsernameDuplicate(String name) {
         return repository.existsByName(name);
     }
+
+
 }
