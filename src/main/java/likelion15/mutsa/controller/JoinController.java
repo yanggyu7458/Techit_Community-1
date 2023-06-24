@@ -43,16 +43,6 @@ public class JoinController {
     public String completeJoin(User user,
                                RedirectAttributes re,Model model) {
 
-//        User user = User.builder()
-//                        .name(name)
-//                        .realName(realName)
-//                        .email(email)
-//                        .password(password)
-//                        .phoneNumber(phoneNumber)
-//                        .auth(UserAuth.USER)
-//                        .status(UserStatus.U)
-//                        .build();
-
         if (joinService.checkEmailDuplicate(user.getEmail())) {
             re.addFlashAttribute("error","이미 가입된 이메일입니다.");
             return "redirect:/join-view";
@@ -60,8 +50,6 @@ public class JoinController {
             re.addFlashAttribute("error","이미 존재하는 닉네임입니다.");
             return "redirect:/join-view";
         }
-        user.setAuth(UserAuth.USER);
-        user.setStatus(UserStatus.U);
 
         user = joinService.joinUser(user);
 

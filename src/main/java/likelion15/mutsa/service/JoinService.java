@@ -24,16 +24,14 @@ public class JoinService {
                 .build();
 
         repository.save(user);
-
     }
-
-
     // 회원가입 - 유저 객체 추가
     public User joinUser(User user) {
 
+        user.setAuth(UserAuth.USER);
+        user.setStatus(UserStatus.U);
+
         repository.save(user);
-        System.out.println(user.getId());
-//        userList.add(user);
         return user;
     }
 
