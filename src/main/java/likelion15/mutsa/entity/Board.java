@@ -16,6 +16,7 @@ import java.util.List;
 @SuperBuilder
 public class Board extends BaseEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
@@ -38,17 +39,28 @@ public class Board extends BaseEntity {
     )
     private Category category;
 
-    @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "board"
-    )
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "board"
     )
     private List<UserBoardTag> userBoardTags = new ArrayList<>();
+
+    public void addLikes(Likes like) {
+        this.likes.add(like);
+        like.setBoard(this);
+    }
+
+    public void removeLikes(Likes like) {
+        this.likes.remove(like);
+        like.setBoard(null);
+    }
+
+    public int getLikesCount() {
+        return likes != null ? likes.size() : 0;
+    }
 }

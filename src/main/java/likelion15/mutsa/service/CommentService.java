@@ -25,12 +25,14 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + commentDTO.getBoardId()));
 
         Comment comment = Comment.builder()
-                .pid(commentDTO.getPid())
+                .id(commentDTO.getId())
                 .comment(commentDTO.getComment())
                 .username(commentDTO.getUsername())
                 .isDeleted(DeletedStatus.NOT_DELETED)
                 .board(board)
                 .build();
+        board.getComments().add(comment); // 댓글과 게시글의 관계 설정
+        //boardRepository.save(board);
 
         commentList.add(commentDTO); // CommentDTO를 commentList에 추가합니다.
 

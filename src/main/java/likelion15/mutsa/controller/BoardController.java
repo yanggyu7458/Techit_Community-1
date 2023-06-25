@@ -6,6 +6,10 @@ import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.CommentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,11 +45,14 @@ public String create(BoardDTO boardDTO) {
 
     @GetMapping("/board")
     public String board(
+            @RequestParam(value = "page", defaultValue = "1") int page,
             Model model) {
-        model.addAttribute(
-                "boardList",
-                boardService.readBoardAll()
-        );
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
+        Page<BoardDTO> boardPage = boardService.readBoardAllPaged(page);
+
+        model.addAttribute("boardList", boardPage.getContent());
+        model.addAttribute("currentPage", boardPage.getNumber() + 1);
+        model.addAttribute("totalPages", boardPage.getTotalPages());
 
         return "board";
     }
@@ -101,28 +108,50 @@ public String create(BoardDTO boardDTO) {
         return "redirect:/board";
 
     }
+    @PostMapping("/board/{id}")
+    public String commentWrite(@PathVariable("id") Long boardId,
+                               //@RequestParam("id") Long id,
+                               @RequestParam("comment") String comment
+                               ) {
+        CommentDTO commentDTO = CommentDTO.builder()
+                .boardId(boardId)
+                //.id(id)
+                .comment(comment)
+                //.username(username)
+                .build();
+
+        Comment createdComment = commentService.createComment(commentDTO);
+
+        return "redirect:/board/" + boardId;
+    }
 //    @PostMapping("/board/{id}")
-//    public String commentWrite(
-//            CommentDTO commentDTO, Long boardId) throws Exception {
+//    public String commentWrite(@PathVariable("id") Long boardId,  @RequestParam("comment") String comment, Principal principal) {
+//        if (boardId == null) {
+//            throw new IllegalArgumentException("게시글 ID를 찾을 수 없습니다.");
+//        }
+//        //String username = principal.getName();
+//        CommentDTO commentDTO = CommentDTO.builder()
+//                .comment(comment)
+//                //.username(username)
+//                .boardId(boardId)
+//                .build();
+//
 //        commentService.createComment(commentDTO);
-//       boardService.readBoard(boardId);
-//        return "redirect:/board/{id}";
+//
+//        return "redirect:/board/" + boardId;
 //    }
-@PostMapping("/board/{id}")
-public String commentWrite(@PathVariable("id") Long boardId,
-                           //@RequestParam("pid") Long pid,
-                           @RequestParam("comment") String comment
-                           ) {
-    CommentDTO commentDTO = CommentDTO.builder()
-            .boardId(boardId)
-            //.pid(pid)
-            .comment(comment)
-            //.username(username)
-            .build();
 
-    Comment createdComment = commentService.createComment(commentDTO);
+    //좋아요 기능
+    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
+    public String likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
+        boardService.likeBoard(boardId);
+        return "redirect:/board/" + boardId;  // 경로 변수명을 boardId로 변경
+    }
 
-    return "redirect:/board/" + boardId;
-}
+    @PostMapping("/board/{id}/unlike")
+    public String unlikeBoard(@PathVariable("id") Long boardId) {
+        boardService.unlikeBoard(boardId);
+        return "redirect:/board/{id}";
+    }
 
 }
