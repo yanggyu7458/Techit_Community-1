@@ -2,9 +2,7 @@ package likelion15.mutsa.repository;
 
 import jakarta.persistence.EntityManager;
 
-import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
-import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,7 +16,9 @@ public class CommentRepository {
 
     private final EntityManager em;
 
-    public void save(Comment comment) {em.persist(comment);}
+    public Comment save(Comment comment) {em.persist(comment);
+        return comment;
+    }
 
     public Comment findOne(Long id) {return em.find(Comment.class, id);}
 

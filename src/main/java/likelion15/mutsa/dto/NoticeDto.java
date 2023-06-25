@@ -1,55 +1,32 @@
 package likelion15.mutsa.dto;
 
+import likelion15.mutsa.entity.Notice;
+import likelion15.mutsa.entity.embedded.Content;
+import likelion15.mutsa.entity.enums.DeletedStatus;
+import likelion15.mutsa.entity.enums.VisibleStatus;
+import lombok.Data;
+
+@Data
 public class NoticeDto {
     private Long id;
     private String title;
-//    private String writer;
-//    private String regDate;
     private String content;
+    private DeletedStatus isDeleted;
+    private VisibleStatus status;
 
-    public NoticeDto(Long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
 
-    public Long getId() {
-        return id;
-    }
+    public static NoticeDto fromEntity(Notice entity) {
+        NoticeDto noticeDto = new NoticeDto();
+        noticeDto.setId(entity.getId());
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+        // Content에서 필요한 정보 추출
+        Content content = entity.getContent();
+        noticeDto.setTitle(content.getTitle());
+        noticeDto.setContent(content.getContent());
+        noticeDto.setIsDeleted(content.getIsDeleted());
+        noticeDto.setStatus(content.getStatus());
 
-    public String getTitle() {
-        return title;
-    }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-//    public String getWriter() {
-//        return writer;
-//    }
-//
-//    public void setWriter(String writer) {
-//        this.writer = writer;
-//    }
-//
-//    public String getRegDate() {
-//        return regDate;
-//    }
-//
-//    public void setRegDate(String regDate) {
-//        this.regDate = regDate;
-//    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+        return noticeDto;
     }
 }
