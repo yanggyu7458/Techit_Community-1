@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>[[${notice.id}]]. [[${notice.title}]]</h1>
+<p>[[${notice.content}]]</p>
+
+<a href="/notice">Back</a>
+<!-- /{id}/update-view -->
+<a th:href="@{/{id}/update-view (id=${notice.id})}">Update</a>
+<!-- /{id}/delete-view -->
+<a th:href="@{/{id}/delete-view (id=${notice.id})}">Delete</a>
+
+
+<div>
+
+    <form method="post" th:action="@{/{id}/comment (id=${notice.id})}">
+
+        <p>
+            <label>댓글</label>
+        </p>
+        <p>
+            <textarea rows="1" cols="50" name="content"></textarea>
+        </p>
+        <p>
+            <button type="submit">댓글 작성</button>
+        </p>
+    </form>
+
+</div>
+<div th:if="${commentList.isEmpty()}">
+    <p>...</p>
+</div>
+<div th:unless="${commentList.isEmpty()}" th:each="comment: ${commentList}">
+    <p>[[${comment.content}]]</p>
+    <hr>
+</div>
+
+
+</body>
+</html>
