@@ -26,9 +26,9 @@ public class TableInitializer {
 
             userService.join(
                     User.builder()
-                    .email("qwe1@gmail.com")
-                    .realName("성광현")
-                    .name("땡땡")
+                    .email(emails[i])
+                    .realName(realNames[i])
+                    .name(names[i])
                     .password("1234")
                     .phoneNumber("010-4949-5895")
                     .auth(UserAuth.USER)
@@ -37,14 +37,9 @@ public class TableInitializer {
             );
         }
 
-        for (int i = 0; i < boardCount; i++) {
-
-            for (Long j = 0L; j < userCount/2; j++) {
-                String content = contents[i];
-                String title = titles[i];
-
-                boardService.writeArticle(j, title, content);
-            }
+        for (int i = 0; i < 20; i++) {
+            boardService.writeArticle(1L, titles[i], contents[i]);
+            boardService.writeComment(1L, 1L, titles[i] );
         }
     }
 
