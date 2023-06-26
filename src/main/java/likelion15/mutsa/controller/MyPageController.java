@@ -45,9 +45,48 @@ public class MyPageController {
 
     @GetMapping("/profile")
     public String profile(
-
+            Model model
     ) {
+        Long logInId = 1L;
+        User user = userService.findOne(logInId);
+        model.addAttribute(user);
+
+
         return "profile";
     }
+    @PostMapping("/profile/{id}/name")
+    public String updateName(@PathVariable("id") Long id, @RequestParam("name") String name) {
+        userService.updateName(id, name);
+        return "redirect:/my-page/profile";
+    }
+
+    @PostMapping("/profile/{id}/email")
+    public String updateEmail(@PathVariable("id") Long id, @RequestParam("email") String email) {
+        userService.updateEmail(id, email);
+        return "redirect:/my-page/profile";
+    }
+
+    @PostMapping("/profile/{id}/password")
+    public String updatePassword(
+            @PathVariable("id") Long id,
+            @RequestParam("password") String password,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("newPasswordCheck") String newPasswordCheck
+    ) {
+
+        userService.updatePassword(id, password, newPassword, newPasswordCheck);
+
+        return "redirect:/my-page/profile";
+    }
+
+    @PostMapping("/profile/{id}/phonenumber")
+    public String updatePhoneNumber(@PathVariable("id") Long id, @RequestParam("phoneNumber") String phoneNumber) {
+
+        userService.updatePhoneNumber(id, phoneNumber);
+        return "redirect:/my-page/profile";
+    }
+
+//    @PutMapping("/users/{id}/{fieldName}")
+//    public String updateUser
 
 }
