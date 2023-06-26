@@ -1,5 +1,6 @@
 package likelion15.mutsa.controller;
 
+import likelion15.mutsa.dto.JoinDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.JoinService;
 import likelion15.mutsa.service.LoginService;
@@ -27,16 +28,16 @@ public class LoginController {
     }
     // 로그인
     @PostMapping("/login")
-    public String login(User user
+    public String login(JoinDto joinDto
 //                        @RequestParam("email") String email,
 //                        @RequestParam("password") String password
     ){
-        Long userid = loginService.login(user.getEmail(), user.getPassword());
-        System.out.println(user.getEmail()+" /" +user.getPassword());
-        if (userid != null) { //로그인 성공
+        Long userid = loginService.login(joinDto.getEmail(), joinDto.getPassword());
+        System.out.println(joinDto.getEmail()+" /" +joinDto.getPassword());
+        if (userid != null) { // 로그인 성공
             return "redirect:/home";
         }
-        else return "redirect:/login"; //로그인 실패
+        else return "redirect:/login"; // 로그인 실패
     }
     @GetMapping("/home")
     public String home(){

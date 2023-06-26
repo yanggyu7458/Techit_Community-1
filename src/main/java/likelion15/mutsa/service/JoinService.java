@@ -1,5 +1,6 @@
 package likelion15.mutsa.service;
 
+import likelion15.mutsa.dto.JoinDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
@@ -26,20 +27,20 @@ public class JoinService {
         repository.save(user);
     }
     // 회원가입 - 유저 객체 추가
-    public User joinUser(User user) {
+    public User joinUser(JoinDto joinDto) {
 
-        User user1 = User.builder()
-                .name(user.getName())
-                .realName(user.getRealName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .phoneNumber(user.getPhoneNumber())
+        User user = User.builder()
+                .name(joinDto.getName())
+                .realName(joinDto.getRealName())
+                .email(joinDto.getEmail())
+                .password(joinDto.getPassword())
+                .phoneNumber(joinDto.getPhoneNumber())
                 .auth(UserAuth.USER)
                 .status(UserStatus.U)
                 .build();
 
-        repository.save(user1);
-        return user1;
+        repository.save(user);
+        return user;
     }
 
     // 중복 이메일 검사
