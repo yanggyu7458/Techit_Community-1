@@ -25,6 +25,11 @@ public class Board extends BaseEntity {
     @Embedded
     private Content content;
 
+    @Column(name = "view_count")
+    private int viewCount;
+
+
+
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
@@ -63,4 +68,5 @@ public class Board extends BaseEntity {
     public int getLikesCount() {
         return likes != null ? likes.size() : 0;
     }
+
 }

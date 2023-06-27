@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>게시판</title>
+    <title>게시글 목록</title>
     <style>
         /* 게시글 목록 스타일 */
         .board-list {
@@ -46,12 +46,23 @@
         .create-button {
             display: block;
             margin-top: 20px;
+            margin-bottom: 20px;
         }
         .create-button a {
             text-decoration: none;
             padding: 5px 10px;
             background-color: #333;
             color: #fff;
+        }
+
+        /* 검색 부분 스타일 */
+        .search-form {
+            margin-top: 20px;
+        }
+        .search-form input,
+        .search-form select,
+        .search-form button {
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -73,19 +84,26 @@
         <hr>
     </div>
 </div>
-<!-- 페이징 -->
-<div>
-    <div class="pagination" style="display: inline;">
-        <span class="page-item" th:classappend="${currentPage == 1} ? disabled"><a class="page-link" th:href="@{/board?page=1}">처음</a></span>
-        <span class="page-item" th:classappend="${currentPage == 1} ? disabled"><a class="page-link" th:href="@{/board(page=${currentPage - 1})}">이전</a></span>
-        <span class="page-item" th:classappend="${i == currentPage} ? active" th:each="i: ${#numbers.sequence(1, totalPages)}" th:if="${i >= 1 and i <= totalPages}">
-            <a class="page-link" th:href="@{/board(page=${i})}">[[${i}]]</a>
-        </span>
-        <span class="page-item" th:classappend="${currentPage == totalPages} ? disabled"><a class="page-link" th:href="@{/board(page=${currentPage + 1})}">다음</a></span>
-        <span class="page-item" th:classappend="${currentPage == totalPages} ? disabled"><a class="page-link" th:href="@{/board(page=${totalPages})}">마지막</a></span>
-    </div>
-</div>
+<a href="/board/create-view" class="create-button">글 작성</a>
 <br>
-<a href="/board/create-view">글 작성</a>
+<!-- 페이징 -->
+<div class="pagination">
+    <span class="page-item" th:classappend="${currentPage == 1} ? disabled"><a class="page-link" th:href="@{/board?page=1}">처음</a></span>
+    <span class="page-item" th:classappend="${currentPage == 1} ? disabled"><a class="page-link" th:href="@{/board(page=${currentPage - 1})}">이전</a></span>
+    <span class="page-item" th:classappend="${i == currentPage} ? active" th:each="i: ${#numbers.sequence(1, totalPages)}" th:if="${i >= 1 and i <= totalPages}">
+        <a class="page-link" th:href="@{/board(page=${i})}">[[${i}]]</a>
+    </span>
+    <span class="page-item" th:classappend="${currentPage == totalPages} ? disabled"><a class="page-link" th:href="@{/board(page=${currentPage + 1})}">다음</a></span>
+    <span class="page-item" th:classappend="${currentPage == totalPages} ? disabled"><a class="page-link" th:href="@{/board(page=${totalPages})}">마지막</a></span>
+</div>
+<!--게시글 검색-->
+<form class="search-form" th:action="@{/board/list}" method="get">
+    <input type="text" name="keyword" placeholder="검색어 입력">
+    <select name="searchOption">
+        <option value="title">제목으로 검색</option>
+        <option value="titleAndContent">제목 + 내용으로 검색</option>
+    </select>
+    <button type="submit">검색</button>
+</form>
 </body>
 </html>

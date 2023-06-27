@@ -9,10 +9,7 @@ import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.YesOrNo;
 import likelion15.mutsa.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,10 +37,10 @@ public class BoardService {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
-            return BoardDTO.fromEntity(board);
+            BoardDTO boardDTO = BoardDTO.fromEntity(board);
+            boardDTO.increaseViewCount(); // 조회수 증가
+            return boardDTO;
         }
-        // 게시글이 존재하지 않을 경우 예외 처리 등을 수행할 수 있습니다.
-        // 여기서는 null을 반환하도록 설정했습니다.
         return null;
     }
     public Page<BoardDTO> readBoardAllPaged(int page) {
@@ -109,6 +106,48 @@ public class BoardService {
 
         board.removeLikes(likes);
         boardRepository.save(board);
+    }
+    public List<BoardDTO> searchBoards(String keyword, String searchOption) {
+        Content content = Content.builder().build();
+        ExampleMatcher matcher = ExampleMatcher.matching();
+
+        if ("title".equals(searchOption)) {
+            content.setTitle(keyword);
+            matcher.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        } else if ("titleAndContent".equals(searchOption)) {
+            content.setTitle(keyword);
+            content.setContent(keyword);
+            matcher.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+            matcher.withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        }
+
+        Example<Board> example = Example.of(Board.builder().content(content).build(), matcher);
+
+        List<BoardDTO> boardList = new ArrayList<>();
+        for (Board board : boardRepository.findAll(example)) {
+            boardList.add(BoardDTO.fromEntity(board));
+        }
+        return boardList;
+    }
+
+    public Page<BoardDTO> searchBoardsPaged(String keyword, String searchOption, Pageable pageable) {
+        Content content = Content.builder().build();
+        ExampleMatcher matcher = ExampleMatcher.matching();
+
+        if ("title".equals(searchOption)) {
+            content.setTitle(keyword);
+            matcher.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        } else if ("titleAndContent".equals(searchOption)) {
+            content.setTitle(keyword);
+            content.setContent(keyword);
+            matcher.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                    .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        }
+
+        Example<Board> example = Example.of(Board.builder().content(content).build(), matcher);
+
+        Page<Board> boardPage = boardRepository.findAll(example, pageable);
+        return boardPage.map(BoardDTO::fromEntity);
     }
 
 }

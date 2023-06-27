@@ -61,6 +61,7 @@ public String create(BoardDTO boardDTO) {
     public String read(
             @PathVariable("id") Long id,
             Model model) {
+        //BoardDTO boardDTO = boardService.readBoard(id);
         boardService.readBoard(id);
 
         model.addAttribute(
@@ -124,22 +125,24 @@ public String create(BoardDTO boardDTO) {
 
         return "redirect:/board/" + boardId;
     }
-//    @PostMapping("/board/{id}")
-//    public String commentWrite(@PathVariable("id") Long boardId,  @RequestParam("comment") String comment, Principal principal) {
-//        if (boardId == null) {
-//            throw new IllegalArgumentException("게시글 ID를 찾을 수 없습니다.");
-//        }
-//        //String username = principal.getName();
-//        CommentDTO commentDTO = CommentDTO.builder()
-//                .comment(comment)
-//                //.username(username)
-//                .boardId(boardId)
-//                .build();
-//
-//        commentService.createComment(commentDTO);
-//
-//        return "redirect:/board/" + boardId;
-//    }
+    @GetMapping("/board/list")
+    public String searchBoards(
+            @RequestParam("keyword") String keyword,
+            @RequestParam("searchOption") String searchOption,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
+        Page<BoardDTO> boardPage = boardService.searchBoardsPaged(keyword, searchOption, pageable);
+
+        model.addAttribute("boardList", boardPage.getContent());
+        model.addAttribute("currentPage", boardPage.getNumber() + 1);
+        model.addAttribute("totalPages", boardPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("searchOption", searchOption);
+        return "list";
+    }
+
 
     //좋아요 기능
     @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
@@ -153,5 +156,18 @@ public String create(BoardDTO boardDTO) {
         boardService.unlikeBoard(boardId);
         return "redirect:/board/{id}";
     }
+    //조회수 기능
+//    @GetMapping("/{id}")
+//    public String viewBoard(@PathVariable("id") Long id, Model model) {
+//        BoardDTO boardDTO = boardService.readBoard(id);
+//        if (boardDTO == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found with id: " + id);
+//        }
+//
+//        boardDTO.increaseViewCount(); // 조회수 증가
+//
+//        model.addAttribute("board", boardDTO);
+//        return "read";
+//    }
 
 }

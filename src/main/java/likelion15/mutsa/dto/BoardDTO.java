@@ -15,7 +15,9 @@ public class BoardDTO {
     private String content;
     private DeletedStatus isDeleted;
     private VisibleStatus status;
-    private int likesCount; // 수정: 좋아요 수
+    private int likesCount; //좋아요 수
+    private int viewCount; // 조회수
+
 
     public static BoardDTO fromEntity(Board entity) {
         BoardDTO boardDTO = new BoardDTO();
@@ -28,8 +30,12 @@ public class BoardDTO {
         boardDTO.setIsDeleted(content.getIsDeleted());
         boardDTO.setStatus(content.getStatus());
         boardDTO.setLikesCount(entity.getLikesCount());
+        boardDTO.increaseViewCount();
 
         return boardDTO;
+    }
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 }
 
