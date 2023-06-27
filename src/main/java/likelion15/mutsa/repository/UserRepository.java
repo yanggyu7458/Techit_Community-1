@@ -13,12 +13,12 @@ public class UserRepository {
     private final EntityManager em;
 
     public void save(User user) {em.persist(user);}
-    public void update(User user) {em.merge(user);}
+    public void update(User user) {em.persist(user);}
 
     public User findOne(Long id) {return em.find(User.class, id);}
 
     public User findByName(String userName) {
-        return (User) em.createQuery("select  u from User u where u.name =:username")
+        return (User) em.createQuery("select u from User u where u.name =:username")
                 .setParameter("username", userName)
                 .getSingleResult();
     }
