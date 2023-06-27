@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 @Controller
 public class NoticeController {
@@ -32,12 +37,12 @@ public class NoticeController {
 
     @GetMapping("/notice/add-view")
     public String addNoticeView() {
-        return "add";
+        return "noticeAdd";
     }
 
     @PostMapping("/notice/add")
-    public String addNotice(NoticeDto noticeDto) {
-        Notice notice = noticeService.createNotice(noticeDto);
+    public String addNotice(NoticeDto noticeDto, @RequestParam("files") MultipartFile file) {
+        Notice notice = noticeService.createNotice(noticeDto, file);
 
         return "redirect:/notice";
     }
@@ -54,7 +59,7 @@ public class NoticeController {
 
         );
 
-        return "read";
+        return "noticeRead";
     }
 
 
@@ -71,7 +76,7 @@ public class NoticeController {
         model.addAttribute("notice", dto);
 
 
-        return "update";
+        return "noticeUpdate";
     }
 
     @PostMapping("/notice/{id}/update")
@@ -87,12 +92,6 @@ public class NoticeController {
         return String.format("redirect:/notice/%s", id);
     }
 
-    // TODO
-    // deleteView 메소드 만들기
-    // GetMapping 을 써서...
-    // Long id는 어떻게...
-    // studentDto 를 가지고...
-    // return...
     @GetMapping("/notice/{id}/delete-view")
     public String deleteView(
             @PathVariable("id")
@@ -102,7 +101,7 @@ public class NoticeController {
         NoticeDto noticeDto
                 = noticeService.readNotice(id);
         model.addAttribute("notice", noticeDto);
-        return "delete";
+        return "noticeDelete";
     }
 
     @PostMapping("/notice/{id}/delete")
