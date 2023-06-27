@@ -6,12 +6,12 @@
 </head>
 <body>
 <h1>Delete [[${notice.title}]]?</h1>
-<form th:action="@{/{id}/delete (id=${notice.id})}" method="post">
+<form th:action="@{/notice/{id}/delete (id=${notice.id})}" method="post">
   <!--  create / update 와는 다르게  -->
   <!--  delete 의 경우 추가적인 데이터를 필요로 하지 않는다.  -->
   <!--  그래서 추가적인 input 요소 없이 input type="submit" 만 만들면 된다.  -->
   <input type="submit" value="Delete" >
 </form>
-<a th:href="@{/{id} (id=${notice.id})}">Back</a>
+<a th:href="@{/notice/{id} (id=${notice.id})}">Back</a>
 </body>
 </html>
