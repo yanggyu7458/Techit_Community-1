@@ -2,9 +2,6 @@ package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;

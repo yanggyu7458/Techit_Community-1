@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notice List</title>
+</head>
+<body>
+<h1>공지사항</h1>
+<div th:if="${noticeList.isEmpty()}">
+    <p>...</p>
+</div>
+<div th:unless="${noticeList.isEmpty()}" th:each="notice: ${noticeList}">
+    <h2><a th:href="@{/notice/{id} (id=${notice.id})}">[[${notice.title}]]</a></h2>
+    <p>[[${notice.content}]]</p>
+    <hr>
+</div>
+<a th:href="@{/notice/add-view}">등록</a>
+</body>
+</html>

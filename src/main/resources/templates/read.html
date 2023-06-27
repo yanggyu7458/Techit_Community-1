@@ -5,9 +5,23 @@
     <title>Title</title>
 </head>
 <body>
+<<<<<<< HEAD
   <h1>[[${board.id}]]. [[${board.title}]]</h1>
   <p>내용: [[${board.content}]]</p>
   <a href="/board">Back</a>
   <a th:href="@{/{id}/update-view(id=${board.id})}">Edit</a>
+=======
+<h1>[[${notice.id}]]. [[${notice.title}]]</h1>
+<p>[[${notice.content}]]</p>
+
+<a href="/notice">Back</a>
+<!-- /{id}/update-view -->
+<a th:href="@{/notice/{id}/update-view (id=${notice.id})}">Update</a>
+<!-- /{id}/delete-view -->
+<a th:href="@{/notice/{id}/delete-view (id=${notice.id})}">Delete</a>
+
+
+
+>>>>>>> origin/develop
 </body>
 </html>

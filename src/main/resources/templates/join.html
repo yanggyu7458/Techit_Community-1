@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join</title>
+</head>
+<body>
+  <h1>회원가입</h1>
+  <form th:action="@{/join}" method="post" onsubmit="return validateForm()">
+      <label for="realName">성명:</label>
+      <input type="text" id="realName" name="realName" required autofocus><br>
+
+      <label for="name">닉네임:</label>
+      <input type="text" id="name" name="name" required autofocus><br>
+
+      <label for="email">이메일 주소(ID):</label>
+      <input type="email" id="email" name="email" required><br>
+
+      <label for="password">비밀번호:</label>
+      <input type="password" id="password" name="password" minlength="4" required><br>
+
+      <label for="passwordCheck">비밀번호확인:</label>
+      <input type="password" id="passwordCheck" name="passwordCheck" required><br>
+
+      <!-- 비밀번호와 비밀번호확인이 일치하지 않는 경우 메시지 표시 -->
+      <p id="passwordMismatch" style="color: red; display: none;">
+          비밀번호가 일치하지 않습니다.
+      </p>
+
+      <label for="phoneNumber">휴대폰 번호:</label>
+      <input type="number" id="phoneNumber" name="phoneNumber" required><br>
+      <button th:onclick="'window.location.href = \'/login\''">로그인 하러가기</button>
+      <input type="submit" value="가입하기">
+
+      <!-- 중복된 이메일인 경우 에러 메시지 표시 -->
+      <div style="color: red;">
+          [[${error}]]
+      </div>
+  </form>
+
+  <script>
+      function validateForm() {
+          const password = document.getElementById('password').value;
+          const passwordCheck = document.getElementById('passwordCheck').value;
+          const passwordMismatchMessage = document.getElementById('passwordMismatch');
+
+          if (password !== passwordCheck) {
+              passwordMismatchMessage.style.display = 'block';
+              return false; // Prevent form submission
+          } else {
+              passwordMismatchMessage.style.display = 'none';
+              return true; // Allow form submission
+          }
+      }
+  </script>
+</body>
+</html>
