@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <head>
     <!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
-  <head th:replace="~{fragments/header :: header}"/>
+    <head th:replace="~{fragments/header :: header}"/>
 </head>
 <body>
 <!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
-  <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <div class="d-flex flex-row">
 
     <nav class="nav flex-sm-column ms-2">
-        <a class="nav-link active" aria-current="page" href="#">내 글</a>
-        <a class="nav-link" href="#">프로필</a>
+        <a class="nav-link active" aria-current="page" href="/my-page">내 글</a>
+        <a class="nav-link" href="/my-page/profile">프로필</a>
         <a class="nav-link" href="#">알림 설정</a>
         <a class="nav-link disabled">차단유저 관리</a>
     </nav>
@@ -48,23 +48,25 @@
                         </div>
                     </div>
                 </div>
-                <nav aria-label="Page navigation example" >
+                <nav aria-label="Page navigation" >
                     <ul class="pagination justify-content-center mt-3"
-                        th:with="start=${(myArticleList.number/myArticleList.totalPages)*myArticleList.totalPages + 1}, end=(${(myArticleList.totalPages == 0) ? 1 : (start + (myArticleList.totalPages - 1) < myArticleList.totalPages ? start + (myArticleList.totalPages - 1) : myArticleList.totalPages)})">
+                        th:with="maxApearancePageNum=4, lastPage = ${myArticleList.totalPages},
+                        start=${(myArticleList.number/maxApearancePageNum) * maxApearancePageNum + 1},
+                        end=(${(lastPage == 0) ? 1 : (start + (maxApearancePageNum - 1) < lastPage ? start + (maxApearancePageNum - 1) : lastPage)})">
                         <li class="page-item" >
-                            <a class="page-link" th:href="@{/my-page?page=0}" th:text="'<<'" ></a>
+                            <a class="page-link" th:href="@{/my-page?page=0}" th:text="'&laquo;'" ></a>
                         </li>
                         <li class="page-item" >
-                            <a class="page-link" th:href="@{/my-page(page=${start - myArticleList.totalPages})}" th:text="'<'" ></a>
+                            <a class="page-link" th:href="@{/my-page(page=${ (start == 1) ? 0 : start - 2})}" th:text="'&lsaquo;'" ></a>
                         </li>
                         <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}">
                             <a class="page-link" th:text="${page}" th:href="@{/my-page(page=${page - 1})}" ></a>
                         </li>
-
                         <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
+                            <a class="page-link" th:href="@{/my-page(page=${ (end == lastPage) ? end - 1 : end })}" th:text="'&rsaquo;'"></a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{/my-page(page=${lastPage - 1})}" th:text="'&raquo;'"></a>
                         </li>
                     </ul>
                 </nav>
@@ -105,6 +107,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="tab-pane fade" id="likes-comment-tab-pane">
                 <div class="card mt-2" th:if="${myCommentLikesList.isEmpty()}">
@@ -130,6 +133,6 @@
 
 
 <!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
-  <div th:replace="~{fragments/footer :: footer}" />
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>
