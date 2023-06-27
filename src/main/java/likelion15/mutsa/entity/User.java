@@ -15,7 +15,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter //setter추가했음..
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class User extends BaseEntity {

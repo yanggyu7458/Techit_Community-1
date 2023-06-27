@@ -1,5 +1,6 @@
 package likelion15.mutsa.controller;
 
+import likelion15.mutsa.dto.JoinDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
@@ -40,22 +41,22 @@ public class JoinController {
     }
 
     @PostMapping("/join")
-    public String completeJoin(User user,
-                               RedirectAttributes re,Model model) {
+    public String completeJoin(JoinDto joinDto,
+                               RedirectAttributes re, Model model) {
 
-        if (joinService.checkEmailDuplicate(user.getEmail())) {
+        if (joinService.checkEmailDuplicate(joinDto.getEmail())) {
             re.addFlashAttribute("error","이미 가입된 이메일입니다.");
             return "redirect:/join-view";
-        } else if (joinService.checkUsernameDuplicate(user.getName())) {
+        } else if (joinService.checkUsernameDuplicate(joinDto.getName())) {
             re.addFlashAttribute("error","이미 존재하는 닉네임입니다.");
             return "redirect:/join-view";
         }
 
-        user = joinService.joinUser(user);
+        User user = joinService.joinUser(joinDto);
 
         System.out.println("user = " + user);
 
-        re.addAttribute("realName", user.getRealName());
+        re.addAttribute("realName", joinDto.getRealName());
         return "redirect:/complete-join";
     }
 }

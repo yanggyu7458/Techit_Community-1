@@ -17,7 +17,7 @@
       <input type="email" id="email" name="email" required><br>
 
       <label for="password">비밀번호:</label>
-      <input type="password" id="password" name="password" required><br>
+      <input type="password" id="password" name="password" minlength="4" required><br>
 
       <label for="passwordCheck">비밀번호확인:</label>
       <input type="password" id="passwordCheck" name="passwordCheck" required><br>
@@ -28,7 +28,7 @@
       </p>
 
       <label for="phoneNumber">휴대폰 번호:</label>
-      <input type="text" id="phoneNumber" name="phoneNumber" required><br>
+      <input type="number" id="phoneNumber" name="phoneNumber" required><br>
       <button th:onclick="'window.location.href = \'/login\''">로그인 하러가기</button>
       <input type="submit" value="가입하기">
 

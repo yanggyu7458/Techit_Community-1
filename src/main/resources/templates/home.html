@@ -6,5 +6,8 @@
 </head>
 <body>
 <h1>Home page</h1>
+<p th:text="'Logged in as: ' + ${realName}" th:if="${realName}"></p>
+<button><a href="/logout">Log out</a></button>
+
 </body>
 </html>
