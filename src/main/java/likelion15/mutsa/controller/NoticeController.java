@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class NoticeController {
@@ -32,7 +31,7 @@ public class NoticeController {
 
     @GetMapping("/notice/add-view")
     public String addNoticeView() {
-        return "add";
+        return "noticeAdd";
     }
 
     @PostMapping("/notice/add")
@@ -54,7 +53,7 @@ public class NoticeController {
 
         );
 
-        return "read";
+        return "noticeRead";
     }
 
 
@@ -71,7 +70,7 @@ public class NoticeController {
         model.addAttribute("notice", dto);
 
 
-        return "update";
+        return "noticeUpdate";
     }
 
     @PostMapping("/notice/{id}/update")
@@ -102,7 +101,7 @@ public class NoticeController {
         NoticeDto noticeDto
                 = noticeService.readNotice(id);
         model.addAttribute("notice", noticeDto);
-        return "delete";
+        return "noticeDelete";
     }
 
     @PostMapping("/notice/{id}/delete")
