@@ -2,10 +2,12 @@ package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
+import likelion15.mutsa.dto.JoinDto;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.CommentService;
+import likelion15.mutsa.service.JoinService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +24,12 @@ public class BoardController {
     //BoardService 를 Controller 에도 사용
     private final BoardService boardService;
     private final CommentService commentService;
+    private final JoinService joinService;
 
-    public BoardController(BoardService boardService, CommentService commentService) {
+    public BoardController(BoardService boardService, CommentService commentService, JoinService joinService) {
         this.boardService = boardService;
         this.commentService = commentService;
+        this.joinService = joinService;
     }
 
 
@@ -38,7 +42,8 @@ public class BoardController {
 //        return boardService.createBoard(boardDTO);
 //    }
 @PostMapping("/board/create")
-public String create(BoardDTO boardDTO) {
+public String create(BoardDTO boardDTO, JoinDto joinDto) {
+    //User user = joinService.joinUser(joinDto);
     Board board = boardService.createBoard(boardDTO);
     return "redirect:/board";
 }
@@ -69,7 +74,7 @@ public String create(BoardDTO boardDTO) {
                 boardService.readBoard(id)
         );
         model.addAttribute("commentList", commentService.readCommentAll());
-        return "read";
+        return "readBoard";
     }
     @GetMapping("/{id}/update-view")
     public String updateView(
@@ -83,7 +88,6 @@ public String create(BoardDTO boardDTO) {
     }
     @PostMapping("/{id}/update-view")
     public String update(
-            //TODO StudentController.read()을 참조
             @PathVariable("id")
             Long id,
             BoardDTO boardDTO
@@ -91,7 +95,7 @@ public String create(BoardDTO boardDTO) {
         //service 활용하기
         boardService.updateBoard(id, boardDTO);
         //상세보기 페이지로 PRG
-        return String.format("redirect:/%s", id);
+        return String.format("redirect:/board/%s", id);
     }
     //delete 메소드 만들기
     @GetMapping("/{id}/delete-view")

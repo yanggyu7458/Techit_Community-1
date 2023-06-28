@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,10 @@ public class Board extends BaseEntity {
     @Column(name = "view_count")
     private int viewCount;
 
-
+    //
+    @Column
+    private Long fileId;
+    //
 
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL

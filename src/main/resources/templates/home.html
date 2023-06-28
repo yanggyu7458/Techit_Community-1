@@ -1,10 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<!-- css, js 불러오기. -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <!-- Required meta tags -->
     <meta charset="UTF-8">
-    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrinkto-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- Custom styles for this template -->
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.js}"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+    <title>Techit Community</title>
 </head>
-<body>
     <h1>Welcome!</h1>
+=======
+<h1>Home page</h1>
+<p th:text="'Logged in as: ' + ${realName}" th:if="${realName}"></p>
+<a href="/board">게시판으로 이동</a>
+<button><a href="/logout">Log out</a></button>
+
+>>>>>>> origin/develop
 </body>
 </html>

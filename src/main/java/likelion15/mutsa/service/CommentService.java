@@ -1,5 +1,6 @@
 package likelion15.mutsa.service;
 
+import jakarta.transaction.Transactional;
 import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
@@ -16,10 +17,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final List<CommentDTO> commentList = new ArrayList<>();
+    @Transactional
     public Comment createComment(CommentDTO commentDTO) {
         Board board = boardRepository.findById(commentDTO.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + commentDTO.getBoardId()));
