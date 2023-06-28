@@ -1,12 +1,11 @@
 package likelion15.mutsa.controller;
 
 
+import jakarta.annotation.PostConstruct;
+import likelion15.mutsa.dto.PasswordDto;
 import likelion15.mutsa.entity.User;
-import likelion15.mutsa.entity.enums.UserAuth;
-import likelion15.mutsa.entity.enums.UserStatus;
-import likelion15.mutsa.repository.BoardPageRepository;
-import likelion15.mutsa.service.BoardService;
-import likelion15.mutsa.service.UserService;
+import likelion15.mutsa.service.MyActivityService;
+import likelion15.mutsa.service.MyProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -16,77 +15,91 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-
 @Slf4j
 @RequestMapping("/my-page")
 public class MyPageController {
-    public final BoardService boardService;
-    public final UserService userService;
-    public final BoardPageRepository boardPageRepository;
+    private final MyActivityService myActivityService;
+    private final MyProfileService myProfileService;
 
-    @GetMapping("")
-    public String myPage(
+    @GetMapping("/boards")
+    public String readAllBoards(
             Model model,
             @RequestParam(value = "page", defaultValue = "0") int pageNum,
             @RequestParam(value = "limit", defaultValue = "3") int pageLimit
     ) {
-
-        Long logInId = 1L;
-        User writer = userService.findOne(logInId);
-
-//        model.addAttribute("myArticleList", boardService.findOnesBoards(logInId));
-        model.addAttribute("myArticleList", boardService.readBoardPaged(pageNum, pageLimit, writer));
-        model.addAttribute("myCommentList", boardService.findOnesComments(writer.getName()));
-        model.addAttribute("myCommentLikesList", boardService.findOnesLikesComments(writer.getName()));
-        model.addAttribute("myArticleLikesList", boardService.findOnesLikesBoards(writer.getId()));
-
-        return "my-page";
+        User writer = myProfileService.readOne(1L);
+        model.addAttribute("myContents", myActivityService.readMyBoardsPaged(pageNum, pageLimit, writer.getId()));
+        return "my-activities";
     }
+
+    @GetMapping("/comments")
+    public String readAllComments(
+            Model model,
+            @RequestParam(value = "page", defaultValue = "0") int pageNum,
+            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+    ) {
+        User writer = myProfileService.readOne(1L);
+        model.addAttribute("myContents", myActivityService.readMyCommentsPaged(pageNum, pageLimit, writer.getName()));
+        return "my-activities";
+    }
+    @GetMapping("/likes-boards")
+    public String readAllLikesBoards(
+            Model model,
+            @RequestParam(value = "page", defaultValue = "0") int pageNum,
+            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+    ) {
+        User writer = myProfileService.readOne(1L);
+        model.addAttribute("myContents", myActivityService.readMyLikesBoardsPaged(pageNum, pageLimit, writer.getId()));
+        return "my-activities";
+    }
+
+    @GetMapping("/likes-comments")
+    public String readAllLikesComments(
+            Model model,
+            @RequestParam(value = "page", defaultValue = "0") int pageNum,
+            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+    ) {
+        User writer = myProfileService.readOne(1L);
+        model.addAttribute("myContents", myActivityService.readMyLikesCommentsPaged(pageNum, pageLimit, writer.getName()));
+        return "my-activities";
+    }
+
 
     @GetMapping("/profile")
     public String profile(
             Model model
     ) {
-        Long logInId = 1L;
-        User user = userService.findOne(logInId);
-        model.addAttribute(user);
-
-
-        return "profile";
+        User writer = myProfileService.readOne(1L);
+        model.addAttribute(writer);
+        return "my-profile";
     }
     @PostMapping("/profile/{id}/name")
     public String updateName(@PathVariable("id") Long id, @RequestParam("name") String name) {
-        userService.updateName(id, name);
+        myProfileService.updateName(id, name);
         return "redirect:/my-page/profile";
     }
 
     @PostMapping("/profile/{id}/email")
     public String updateEmail(@PathVariable("id") Long id, @RequestParam("email") String email) {
-        userService.updateEmail(id, email);
+        myProfileService.updateEmail(id, email);
         return "redirect:/my-page/profile";
     }
 
     @PostMapping("/profile/{id}/password")
     public String updatePassword(
             @PathVariable("id") Long id,
-            @RequestParam("password") String password,
-            @RequestParam("newPassword") String newPassword,
-            @RequestParam("newPasswordCheck") String newPasswordCheck
+            PasswordDto passwordDto
     ) {
-
-        userService.updatePassword(id, password, newPassword, newPasswordCheck);
-
+        myProfileService.updatePassword(id, passwordDto);
         return "redirect:/my-page/profile";
     }
 
     @PostMapping("/profile/{id}/phonenumber")
     public String updatePhoneNumber(@PathVariable("id") Long id, @RequestParam("phoneNumber") String phoneNumber) {
-
-        userService.updatePhoneNumber(id, phoneNumber);
+        myProfileService.updatePhoneNumber(id, phoneNumber);
         return "redirect:/my-page/profile";
     }
 
-//    @PutMapping("/users/{id}/{fieldName}")
-//    public String updateUser
+
 
 }
