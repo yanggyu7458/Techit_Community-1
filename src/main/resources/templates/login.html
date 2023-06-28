@@ -13,6 +13,10 @@
         <input type="password" id="userpassword" name="password" required><br><br>
         <button th:onclick="'window.location.href = \'/join-view\''">회원가입</button>
         <input type="submit" value="login">
+        <!-- 로그인 실패인 경우 에러 메시지 표시 -->
+        <div style="color: red;">
+            [[${loginError}]]
+        </div>
 </form>
 </body>
 </html>

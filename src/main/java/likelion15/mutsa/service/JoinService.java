@@ -43,8 +43,8 @@ public class JoinService {
         return user;
     }
 
-    // 중복 이메일 검사
-    public boolean checkEmailDuplicate(String email) {
+    // 회원가입-중복 이메일 검사, 로그인-이메일 존재 여부 검사
+    public boolean IsExistEmail(String email) {
         return repository.existsByEmail(email);
     }
     // 중복 닉네임 검사

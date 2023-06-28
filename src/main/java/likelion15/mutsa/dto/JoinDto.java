@@ -21,4 +21,8 @@ public class JoinDto {
 //    private Profile profile;
     private UserAuth auth;
     private UserStatus status;
+
+    public JoinDto(String realName){
+        this.realName = realName;
+    }
 }
