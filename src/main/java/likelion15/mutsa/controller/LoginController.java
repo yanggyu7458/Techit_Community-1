@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -34,19 +35,20 @@ public class LoginController {
     // 로그인
     @PostMapping("/login")
     public String login(JoinDto joinDto,
-                        HttpSession session,
-                        RedirectAttributes re
+                        RedirectAttributes re,
+                        HttpServletRequest httpServletRequest
     ) {
 
-        Long userid = loginService.login(joinDto.getEmail(), joinDto.getPassword());
+        Long userId = loginService.login(joinDto.getEmail(), joinDto.getPassword());
         System.out.println(joinDto.getEmail() + " /" + joinDto.getPassword());
-        if (userid != null) { // 로그인 성공
+        if (userId != null) { // 로그인 성공
             // 세션을 생성하기 전에 기존의 세션 파기
+            httpServletRequest.getSession().invalidate();
+            HttpSession session = httpServletRequest.getSession(true);
 
-
-            // 세션에 realName을 넣어줌
-            session.setAttribute("realName", joinDto.getRealName());
-            session.setMaxInactiveInterval(120); //세션 2분동안 유지(테스트)
+            // 세션에 userId를 넣어줌
+            session.setAttribute("userId", userId);
+            session.setMaxInactiveInterval(1800); // 1800=30분
             return "redirect:/home";
         } else { // 로그인 실패
             if(!joinService.IsExistEmail(joinDto.getEmail())){
@@ -59,22 +61,33 @@ public class LoginController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        // 세션 무효화
+    public String logout(HttpServletRequest request) {
 
-        session.invalidate();
+        //세션이 없으면 null return
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
         return "redirect:/login";
     }
     @GetMapping("/home")
-    public String home(HttpSession session, Model model){
-        // 세션에서 사용자 정보 확인
+    public String home(Model model,
+                       @SessionAttribute(name="userId",required = false) Long userId,
+                       HttpServletRequest httpServletRequest){
 
-        String realName = (String) session.getAttribute("realName");
-        if (realName != null) {
-            // 로그인한 사용자 정보 전달
-            System.out.println("홈에서 넘어옴 로그인된 사용자:"+ realName);
-            model.addAttribute("realName", realName);
+        if(userId == null)
+            System.out.println("로그인 하지 않음");
+        else{
+            User loginUser = loginService.getLoginUser(userId);
+            // 84-86줄 추가하긴 하였는데 확신X
+            if(loginUser == null){
+                httpServletRequest.getSession().invalidate();
+            }
+            System.out.println("로그인 유저의 Id:"+userId);
+            model.addAttribute("name", loginUser.getName());
         }
+
         return "home";
     }
 }
