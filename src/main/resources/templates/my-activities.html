@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<head>
+    <!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+    <head th:replace="~{fragments/header :: header}"/>
+</head>
+<body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
+<div class="d-flex flex-row">
+
+    <nav th:replace="~{fragments/sidebar :: sidebar}"/>
+
+    <div class="card w-90 col-sm-9 ms-3 pt-3 pb-3 pe-3 ps-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class="nav-link active" aria-selected="true" th:onclick="|location.href='@{/my-page/boards}'|" id="board-tab" data-bs-toggle="tab" data-bs-target="#board-tab-pane" type="button" role="tab" aria-controls="board-tab-pane">내가 쓴 게시글</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" aria-selected="false" th:onclick="|location.href='@{/my-page/comments}'|" id="comment-tab" data-bs-toggle="tab" data-bs-target="#comment-tab-pane" type="button" role="tab" aria-controls="comment-tab-pane" >내가 쓴 댓글</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" aria-selected="false" th:onclick="|location.href='@{/my-page/likes-boards}'|" id="likes-board-tab"  data-bs-toggle="tab" data-bs-target="#likes-board-tab-pane" type="button" role="tab" aria-controls="likes-board-tab-pane">좋아요 표시한 글</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" aria-selected="false" th:onclick="|location.href='@{/my-page/likes-comments}'|" id="likes-comment-tab" data-bs-toggle="tab" data-bs-target="#likes-comment-tab-pane" type="button" role="tab" aria-controls="likes-comment-tab-pane">좋아요 표시한 댓글</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="board-tab-pane">
+                <div class="card mt-2" th:if="${myContents.isEmpty()}">
+                    <p>작성한 글이 없습니다.</p>
+                </div>
+                <div class="card mt-2" th:unless="${myContents.isEmpty()}" th:each="board : ${myContents}" >
+                    <div class="row justify-content-between">
+                        <div class="col-9 pt-1 ms-2">
+                            <h5 class="card-title">[[${board.content.title}]]</h5>
+                            <p class="card-text">[[${board.content.content}]]...</p>
+                        </div>
+                        <div class="col-2 me-2 align-self-center">
+                            <a href="#" class="btn btn-primary float-end">글로 이동</a>
+                        </div>
+                    </div>
+                </div>
+                <nav aria-label="Page navigation" >
+                    <ul class="pagination justify-content-center mt-3"
+                        th:with="maxApearancePageNum=4, lastPage = ${myContents.totalPages},
+                        start=${(myContents.number/maxApearancePageNum) * maxApearancePageNum + 1},
+                        end=(${(lastPage == 0) ? 1 : (start + (maxApearancePageNum - 1) < lastPage ? start + (maxApearancePageNum - 1) : lastPage)})">
+                        <li class="page-item" >
+                            <a class="page-link" th:href="@{/my-page/boards?page=0}" th:text="'&laquo;'" ></a>
+                        </li>
+                        <li class="page-item" >
+                            <a class="page-link" th:href="@{/my-page/boards(page=${ (start == 1) ? 0 : start - 2})}" th:text="'&lsaquo;'" ></a>
+                        </li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}">
+                            <a class="page-link" th:text="${page}" th:href="@{/my-page/boards(page=${page - 1})}" ></a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{/my-page/boards(page=${ (end == lastPage) ? end - 1 : end })}" th:text="'&rsaquo;'"></a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{/my-page/boards(page=${lastPage - 1})}" th:text="'&raquo;'"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
+</body>
+</html>

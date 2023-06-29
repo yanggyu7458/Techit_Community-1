@@ -1,11 +1,16 @@
 package likelion15.mutsa.dataInit;
 
 import jakarta.annotation.PostConstruct;
+import likelion15.mutsa.entity.Likes;
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
-import likelion15.mutsa.service.BoardService;
-import likelion15.mutsa.service.UserService;
+import likelion15.mutsa.entity.enums.YesOrNo;
+import likelion15.mutsa.repository.BoardRepository;
+import likelion15.mutsa.repository.LikesRepository;
+import likelion15.mutsa.repository.UserRepository;
+import likelion15.mutsa.service.MyActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,18 +18,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TableInitializer {
-    private final BoardService boardService;
-    private final UserService userService;
-    private int boardCount;
+    private final MyActivityService myActivityService;
+    private final UserRepository userRepository;
+    private final LikesRepository likesRepository;
+    private final BoardRepository boardRepository;
+
     private int userCount = 10;
-    private int commentCount;
 
     @PostConstruct
     @Transactional
     public void entityInitializer() {
         for (int i = 0; i < userCount; i++) {
 
-            userService.join(
+            userRepository.save(
                     User.builder()
                     .email(emails[i])
                     .realName(realNames[i])
@@ -38,14 +44,11 @@ public class TableInitializer {
         }
 
         for (int i = 0; i < 20; i++) {
-            boardService.writeArticle(1L, titles[i], contents[i]);
-            boardService.writeComment(1L, 1L, titles[i] );
+            myActivityService.writeArticle(1L, titles[i], contents[i]);
+            myActivityService.writeComment(1L, 1L, titles[i] );
         }
     }
 
-    public void UserEntityFieldGenerator() {
-
-    }
 
     // 이름 20개
     String[] realNames = {"김영희", "이지원", "박민준", "최서연", "정민지", "강준호", "윤지우", "한승민", "서예진", "임동현", "김서연", "이민재", "송지원", "장민서", "황현우", "나윤서", "정주희", "박준영", "김지호", "이하윤"};

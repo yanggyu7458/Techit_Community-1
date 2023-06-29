@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+<head th:replace="~{fragments/header :: header}"/>
+    <meta charset="UTF-8">
+    <title>addNotice</title>
+</head>
+
+
+<body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
+<h1>공지 등록</h1>
+<form th:action="@{/notice/add}" method="post" style="line-height: 50px" enctype="multipart/form-data">
+    <label for="title">제목: <input id="title" name="title"></label>
+    <br>
+    파일 선택 : <input type="file" multiple="multiple" name="files">
+    <br>
+    <label for="content">내용: <input id="content" name="content" style="width:1000px; height:200px;"></label>
+    <br>
+    <input type="submit">
+</form>
+</body>
+</html>
