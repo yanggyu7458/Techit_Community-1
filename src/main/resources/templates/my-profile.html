@@ -8,12 +8,7 @@
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <div class="d-flex flex-row">
 
-  <nav class="nav flex-sm-column ms-2">
-    <a class="nav-link active" aria-current="page" href="/my-page">내 글</a>
-    <a class="nav-link" href="/my-page/profile">프로필</a>
-    <a class="nav-link" href="#">알림 설정</a>
-    <a class="nav-link disabled">차단유저 관리</a>
-  </nav>
+  <nav th:replace="~{fragments/sidebar :: sidebar}"/>
 
   <div class="card w-90 col-sm-9 ms-3 pt-3 pb-3 pe-3 ps-3">
     <div class="card mt-2">
@@ -82,13 +77,9 @@
             <br>
           </form>
 
-
-
+          </div>
         </div>
-
       </div>
-    </div>
-
     </div>
   </div>
 </div>
