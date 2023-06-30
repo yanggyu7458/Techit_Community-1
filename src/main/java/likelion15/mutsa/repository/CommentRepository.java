@@ -1,42 +1,32 @@
 package likelion15.mutsa.repository;
 
-import jakarta.persistence.EntityManager;
-
 import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.entity.enums.DeletedStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
+    //userId로 작성한 게시물 전체 조회
+    Page<Comment> findAllByUsername(String username, Pageable pageable);
 
-@Repository
-@RequiredArgsConstructor
-public class CommentRepository {
+    // userId로 좋아요한 게시물 전체 조회
+    @Query("SELECT c FROM Comment c JOIN FETCH c.likes l WHERE c.username = :username and c.isDeleted = :isDeleted")
+    Page<Comment> findAllByUsernameWithLikes(@Param("username") String username, @Param("isDeleted") DeletedStatus deletedStatus, Pageable pageable);
 
-    private final EntityManager em;
-
-    public Comment save(Comment comment) {em.persist(comment);
-        return comment;
+    default Page<Comment> findAllByUsernameWithLikes(String username, Pageable pageable) {
+        return findAllByUsernameWithLikes(username, DeletedStatus.NONE, pageable);
     }
 
-    public Comment findOne(Long id) {return em.find(Comment.class, id);}
+    // 댓글 삭제
+    @Query("update Comment c set c.isDeleted = :isDeleted where c.id = :commentId")
+    void updateIsDeletedById(@Param("commentId") Long commentId, @Param("isDeleted") DeletedStatus deletedStatus);
 
-    public List<Comment> findByUserName(String userName) {
-        return em.createQuery("select c from Comment c where c.username = :user_name and c.isDeleted =:isDeleted", Comment.class)
-                .setParameter("user_name", userName)
-                .setParameter("isDeleted", DeletedStatus.NONE)
-                .getResultList();
+    default void updateIsDeletedById(Long commentId) {
+        updateIsDeletedById(commentId, DeletedStatus.DELETE);
     }
 
-    public List<Comment> findAllByLikesAndUserName(String userName) {
-        return em.createQuery("select c from Comment c, Likes l where c.username =:username and l.comment.id = c.id")
-                .setParameter("username", userName)
-                .getResultList();
-    }
-
-    public void deleteComment(Long id) {
-        em.createQuery("delete from Comment c where c.id =:id", Comment.class)
-                .setParameter("id", id);
-    }
 }
