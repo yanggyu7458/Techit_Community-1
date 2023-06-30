@@ -145,13 +145,9 @@ public class BoardService {
         ExampleMatcher matcher = ExampleMatcher.matching();
 
         if ("title".equals(searchOption)) {
-            content.setTitle(keyword);
-            matcher.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+            return boardRepository.searchByTitleLike(keyword, pageable).map(BoardDTO::fromEntity);
         } else if ("titleAndContent".equals(searchOption)) {
-            content.setTitle(keyword);
-            content.setContent(keyword);
-            matcher.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                    .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+            return boardRepository.searchByTitleOrContentLike(keyword, pageable).map(BoardDTO::fromEntity);
         }
 
         Example<Board> example = Example.of(Board.builder().content(content).build(), matcher);
