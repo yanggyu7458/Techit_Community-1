@@ -1,6 +1,7 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.JoinDto;
+import likelion15.mutsa.entity.Profile;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
@@ -21,6 +22,7 @@ public class JoinService {
                 .password("1234")
                 .phoneNumber("01012341234")
                 .auth(UserAuth.USER)
+                .profile(Profile.builder().build())
                 .status(UserStatus.U)
                 .build();
 
@@ -36,6 +38,7 @@ public class JoinService {
                 .password(joinDto.getPassword())
                 .phoneNumber(joinDto.getPhoneNumber())
                 .auth(UserAuth.USER)
+                .profile(Profile.builder().build())
                 .status(UserStatus.U)
                 .build();
 
@@ -43,8 +46,8 @@ public class JoinService {
         return user;
     }
 
-    // 중복 이메일 검사
-    public boolean checkEmailDuplicate(String email) {
+    // 회원가입-중복 이메일 검사, 로그인-이메일 존재 여부 검사
+    public boolean IsExistEmail(String email) {
         return repository.existsByEmail(email);
     }
     // 중복 닉네임 검사

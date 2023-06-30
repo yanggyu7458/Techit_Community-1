@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+    <head th:replace="~{fragments/header :: header}"/>
     <meta charset="UTF-8">
     <title>Home</title>
 </head>
 <body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>Home page</h1>
-<p th:text="'Logged in as: ' + ${realName}" th:if="${realName}"></p>
-<button><a href="/logout">Log out</a></button>
+<!-- 세션에서 로그인 여부를 확인하여 로그인 또는 로그아웃 버튼을 보여줍니다. -->
+<div th:if="${name}">
+    <p th:text="'Logged in as: ' + ${name}"></p>
+    <button><a href="/logout">Log out</a></button>
+</div>
+<div th:unless="${name}">
+    <button><a href="/login">Log in</a></button>
+</div>
 
+
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>

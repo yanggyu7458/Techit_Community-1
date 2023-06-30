@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+    <head th:replace="~{fragments/header :: header}"/>
     <meta charset="UTF-8">
     <title>Join</title>
 </head>
 <body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
   <h1>회원가입</h1>
   <form th:action="@{/join}" method="post" onsubmit="return validateForm()">
       <label for="realName">성명:</label>
@@ -53,5 +57,7 @@
           }
       }
   </script>
+  <!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+  <div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>

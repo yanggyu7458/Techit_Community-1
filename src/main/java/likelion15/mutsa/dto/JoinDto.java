@@ -18,7 +18,10 @@ public class JoinDto {
     private String realName;
     private String phoneNumber;
     private String password;
-//    private Profile profile;
     private UserAuth auth;
     private UserStatus status;
+
+    public JoinDto(String realName){
+        this.realName = realName;
+    }
 }

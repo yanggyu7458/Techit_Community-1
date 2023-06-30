@@ -44,7 +44,7 @@ public class JoinController {
     public String completeJoin(JoinDto joinDto,
                                RedirectAttributes re, Model model) {
 
-        if (joinService.checkEmailDuplicate(joinDto.getEmail())) {
+        if (joinService.IsExistEmail(joinDto.getEmail())) {
             re.addFlashAttribute("error","이미 가입된 이메일입니다.");
             return "redirect:/join-view";
         } else if (joinService.checkUsernameDuplicate(joinDto.getName())) {
