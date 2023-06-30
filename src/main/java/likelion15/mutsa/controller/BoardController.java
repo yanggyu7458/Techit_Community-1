@@ -2,7 +2,6 @@ package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
-import likelion15.mutsa.dto.JoinDto;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.service.BoardService;
@@ -12,12 +11,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 public class BoardController {
@@ -41,12 +47,11 @@ public class BoardController {
 //    public BoardDTO create(@RequestBody BoardDTO boardDTO) {
 //        return boardService.createBoard(boardDTO);
 //    }
-@PostMapping("/board/create")
-public String create(BoardDTO boardDTO, JoinDto joinDto) {
-    //User user = joinService.joinUser(joinDto);
-    Board board = boardService.createBoard(boardDTO);
-    return "redirect:/board";
-}
+    @PostMapping("/board/create")
+    public String create(BoardDTO boardDTO, MultipartFile file) throws Exception {
+        Board board = boardService.createBoard(boardDTO, file);
+        return "redirect:/board";
+    }
 
     @GetMapping("/board")
     public String board(
@@ -66,15 +71,36 @@ public String create(BoardDTO boardDTO, JoinDto joinDto) {
     public String read(
             @PathVariable("id") Long id,
             Model model) {
-        //BoardDTO boardDTO = boardService.readBoard(id);
-        boardService.readBoard(id);
+        BoardDTO boardDTO = boardService.readBoard(id);
+        if (boardDTO != null) {
+            boardService.increaseViewCount(id); // 조회수 증가
 
-        model.addAttribute(
-                "board",
-                boardService.readBoard(id)
-        );
-        model.addAttribute("commentList", commentService.readCommentAll());
-        return "readBoard";
+            model.addAttribute("board", boardDTO);
+            model.addAttribute("commentList", commentService.readCommentAll());
+            return "readBoard";
+        } else {
+            // 게시글이 존재하지 않을 경우 예외 처리
+            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
+            return "redirect:/board";
+        }
+    }
+    @GetMapping("/board/{id}/download")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
+        BoardDTO boardDTO = boardService.readBoard(id);
+        if (boardDTO != null && boardDTO.getFile() != null) {
+            MultipartFile multipartFile = boardDTO.getFile();
+            byte[] fileContent = multipartFile.getBytes();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", multipartFile.getOriginalFilename());
+
+            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+        } else {
+            // 파일이 존재하지 않을 경우 예외 처리
+            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
+            return ResponseEntity.notFound().build();
+        }
     }
     @GetMapping("/{id}/update-view")
     public String updateView(

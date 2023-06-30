@@ -29,10 +29,6 @@ public class Board extends BaseEntity {
     @Column(name = "view_count")
     private int viewCount;
 
-    //
-    @Column
-    private Long fileId;
-    //
 
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
@@ -54,21 +50,39 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "board"
-    )
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "board")
     private List<UserBoardTag> userBoardTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<FileCon> fileCon = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private File file;
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    //좋아요
     public void addLikes(Likes like) {
         this.likes.add(like);
         like.setBoard(this);
     }
-
+    //좋아요 취소
     public void removeLikes(Likes like) {
         this.likes.remove(like);
         like.setBoard(null);
     }
 
+    public void addFileCon(FileCon fileCon) {
+        this.fileCon.add(fileCon);
+        fileCon.setBoard(this);
+    }
+
+    public void removeFileCon(FileCon fileCon) {
+        this.fileCon.remove(fileCon);
+        fileCon.setBoard(null);
+    }
     public int getLikesCount() {
         return likes != null ? likes.size() : 0;
     }

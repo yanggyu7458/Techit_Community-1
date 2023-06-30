@@ -6,6 +6,7 @@ import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -17,10 +18,10 @@ public class BoardDTO {
     private String content;
     private DeletedStatus isDeleted;
     private VisibleStatus status;
-    private Long fileId;
     private int likesCount; //좋아요 수
     private int viewCount; // 조회수
     private LocalDateTime createAt; // 작성일
+    private MultipartFile file; // 파일을 저장할 필드 추가
 
 
     public static BoardDTO fromEntity(Board entity) {
@@ -28,8 +29,6 @@ public class BoardDTO {
         boardDTO.setId(entity.getId());
         boardDTO.setLikesCount(entity.getLikesCount());
         boardDTO.increaseViewCount();
-        //파일 id
-        boardDTO.setFileId(entity.getFileId());
         // 작성일 설정
         boardDTO.setCreateAt(entity.getCreateAt());
         // Content에서 필요한 정보 추출

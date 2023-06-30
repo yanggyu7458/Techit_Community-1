@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>BoardCreate</h1>
-    <form action="/board/create" method="post">
+    <form action="/board/create" method="post" enctype="multipart/form-data">
         <!--사용자가 제공 할 데이터에 알맡은 input과 label을 만든다.-->
         <label for="title-input">제목:
             <input type="text" id = "title-input" name = "title">
@@ -15,6 +15,9 @@
         <label for="content-input">내용:
             <input type="text" id = "content-input" name = "content">
         </label>
+        <br>
+        <!--파일 선택추가-->
+        <input type="file" name="file">
         <br>
         <!--제출 버튼-->
         <input type="submit">

@@ -2,6 +2,7 @@ package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.File;
 import likelion15.mutsa.entity.Likes;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -12,11 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +32,7 @@ public class BoardService {
     private final BoardPageRepository boardPageRepository;
     private final BoardsRepository boardsRepository;
     private final JoinService joinService;
+    private final FileService fileService;
 
     private final List<BoardDTO> boardList = new ArrayList<>();
     private static final int PAGE_SIZE = 5;
@@ -56,7 +61,7 @@ public class BoardService {
         return boardPage.map(BoardDTO::fromEntity);
     }
 
-    public Board createBoard(BoardDTO boardDTO) {
+    public Board createBoard(BoardDTO boardDTO, MultipartFile file) throws Exception {
         Content content = Content.builder()
                 .title(boardDTO.getTitle())
                 .content(boardDTO.getContent())
@@ -66,6 +71,33 @@ public class BoardService {
         Board board = Board.builder()
                 .content(content)
                 .build();
+        // 파일 정보 저장
+        // 파일 정보 저장
+        if (file != null && !file.isEmpty()) {
+            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+
+            File fileEntity = File.builder()
+                    .path(projectPath)
+                    .name(fileName)
+                    .size(file.getSize())
+                    .isDeleted(DeletedStatus.NOT_DELETED)
+                    .build();
+
+            file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
+
+            // 파일 정보를 Board 엔티티에 저장
+            board.setFile(fileEntity);
+
+//            // FileConDTO 객체 생성 및 board_id 설정
+//            FileConDTO fileConDTO = new FileConDTO();
+//            fileConDTO.setBoardId(board.getId()); // 생성된 board의 id 설정
+//
+//            // FileCon 엔티티 저장
+//            fileService.saveFileCon(fileConDTO);
+        }
+
         return boardRepository.save(board);
     }
 
@@ -86,6 +118,14 @@ public class BoardService {
         if (optionalBoard.isPresent())
             boardRepository.deleteById(id);
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+    public void increaseViewCount(Long id) {
+        Optional<Board> optionalBoard = boardRepository.findById(id);
+        if (optionalBoard.isPresent()) {
+            Board board = optionalBoard.get();
+            board.setViewCount(board.getViewCount() + 1); // 조회수 증가
+            boardRepository.save(board);
+        }
     }
 
     //좋아요 기능
