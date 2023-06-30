@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import likelion15.mutsa.entity.base.BaseEntity;
 import likelion15.mutsa.entity.embedded.Content;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,10 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class Board extends BaseEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,14 @@ public class Board extends BaseEntity {
 
     @Embedded
     private Content content;
+
+    @Column(name = "view_count")
+    private int viewCount;
+
+    //
+    @Column
+    private Long fileId;
+    //
 
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
@@ -39,17 +48,29 @@ public class Board extends BaseEntity {
     )
     private Category category;
 
-    @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL,
-            mappedBy = "board"
-    )
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Likes> likes = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "board"
     )
     private List<UserBoardTag> userBoardTags = new ArrayList<>();
+
+    public void addLikes(Likes like) {
+        this.likes.add(like);
+        like.setBoard(this);
+    }
+
+    public void removeLikes(Likes like) {
+        this.likes.remove(like);
+        like.setBoard(null);
+    }
+
+    public int getLikesCount() {
+        return likes != null ? likes.size() : 0;
+    }
+
 }

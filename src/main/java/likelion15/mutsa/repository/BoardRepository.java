@@ -1,42 +1,32 @@
 package likelion15.mutsa.repository;
 
-import jakarta.persistence.EntityManager;
 import likelion15.mutsa.entity.Board;
-import likelion15.mutsa.entity.Likes;
-import likelion15.mutsa.entity.User;
-import likelion15.mutsa.entity.enums.DeletedStatus;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Optional;
 
-@Repository
-@RequiredArgsConstructor
-public class BoardRepository {
+public interface BoardRepository extends JpaRepository<Board, Long> {
+    @Override
+    Optional<Board> findById(Long id);
+    @Query("SELECT b FROM Board b WHERE b.content.title like  %:title%" )
+    Page<Board> searchByTitleLike(@Param("title") String keyword, Pageable pageable);
 
-    private final EntityManager em;
+    @Query("SELECT b FROM Board b WHERE b.content.title LIKE %:keyword% OR b.content.content LIKE %:keyword%")
+    Page<Board> searchByTitleOrContentLike(@Param("keyword") String keyword, Pageable pageable);
 
-    public void save(Board board) {em.persist(board);}
+    //userId로 작성한 게시물 전체 조회
+    Page<Board> findAllByUser_Id(Long userId, Pageable pageable);
 
-    public Board findOne(Long id) {return em.find(Board.class, id);}
+    // userId로 좋아요한 게시물 전체 조회
+    @Query("SELECT b FROM Board b JOIN FETCH b.likes l WHERE b.user.id = :userId")
+    Page<Board> findAllByUserIdWithLikes(Long userId, Pageable pageable);
 
 
-    public List<Board> findByUserId(Long userId) {
-        return em.createQuery("select b from Board b where b.user.id =:user_id and b.content.isDeleted =:isDeleted", Board.class)
-                .setParameter("user_id", userId)
-                .setParameter("isDeleted", DeletedStatus.NONE)
-                .getResultList();
-    }
 
-    public List<Board> findAllByLikesAndUserId(User user) {
-        return em.createQuery("select b from Board b, Likes l where b.user.id =:userId and l.board.id = b.id")
-                .setParameter("userId", user.getId())
-                .getResultList();
-    }
 
-    public void deleteBoard(Long id) {
-        em.createQuery("delete from Board b where b.id =:boardId", Board.class)
-                .setParameter("boardId", id);
-    }
+
 }

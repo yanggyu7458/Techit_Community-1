@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class NoticeController {
@@ -54,7 +53,7 @@ public class NoticeController {
 
         );
 
-        return "read";
+        return "readBoard";
     }
 
 
@@ -71,7 +70,7 @@ public class NoticeController {
         model.addAttribute("notice", dto);
 
 
-        return "update";
+        return "updateNotice";
     }
 
     @PostMapping("/notice/{id}/update")

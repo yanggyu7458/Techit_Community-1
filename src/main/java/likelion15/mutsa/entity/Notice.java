@@ -27,12 +27,4 @@ public class Notice extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "notice")
     private List<FileCon> fileCons = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
-    )
-    @JoinColumn(name = "file_con_id",
-            foreignKey = @ForeignKey(name = "FK_NOTICE_FILE")
-    )
-    private FileCon fileCon;
 }
