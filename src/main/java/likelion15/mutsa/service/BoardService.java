@@ -23,14 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import likelion15.mutsa.repository.LikesRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final LikesRepository likesRepository;
     private final BoardPageRepository boardPageRepository;
     private final BoardsRepository boardsRepository;
     private final JoinService joinService;
@@ -38,6 +40,8 @@ public class BoardService {
 
     private final List<BoardDTO> boardList = new ArrayList<>();
     private static final int PAGE_SIZE = 5;
+    private final LikesRepository likesRepository;
+
 
     public List<BoardDTO> readBoardAll() {
         List<BoardDTO> boardList = new ArrayList<>();
@@ -94,7 +98,7 @@ public class BoardService {
             // FileCon 엔티티 생성
             FileCon fileCon = new FileCon();
             fileCon.setBoard(board);
-           // board.addFileCon(fileCon);
+            // board.addFileCon(fileCon);
 
 //            // FileCon 엔티티 저장
 //            Board savedBoard = boardRepository.save(board); // board 저장 후 반환된 객체 사용
@@ -292,4 +296,13 @@ public class BoardService {
 //        return likes.getId();
 //    }
 
+    // comment 좋아요 갯수 반환
+    public int getCntCommentLikes(Long commentId) {
+        return likesRepository.countLikesByComment_Id(commentId);
+    }
+
+    // board 좋아요 갯수 반환
+    public int getCntBoardLikes(Long boardId) {
+        return likesRepository.countLikesByBoard_Id(boardId);
+    }
 }

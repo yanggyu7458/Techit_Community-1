@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<div th:fragment="boards" class="row justify-content-between"
+     th:with="title=${content.content.title}, maincontent=${content.content.content}">
+  <div class="col-9 pt-1 ms-2">
+    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}" class="card-title">[[]]</h5>
+    <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100)+ '...'}" class="card-text"></p>
+  </div>
+  <div class="col-2 me-2 align-self-center">
+    <a href="#" class="btn btn-primary float-end">수정</a>
+    <a href="#" class="btn btn-primary float-end">삭제</a>
+  </div>
+</div>
+
+<div th:fragment="comments" class="row justify-content-between"
+     th:with="title=${content.board.content.title}, maincontent=${content.comment}">
+  <div class="col-9 pt-1 ms-2">
+    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}" class="card-title">[[]]</h5>
+    <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100)+ '...'}" class="card-text"></p>
+  </div>
+  <div class="col-2 me-2 align-self-center">
+    <a href="#" class="btn btn-primary float-end">수정</a>
+    <a href="#" class="btn btn-primary float-end">삭제</a>
+  </div>
+</div>
+
+<div th:fragment="likes-boards" class="row justify-content-between"
+     th:with="title=${content.content.title}, maincontent=${content.content.content}">
+  <div class="col-9 pt-1 ms-2">
+    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30) + '...'}" class="card-title">[[]]</h5>
+    <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100) + '...'}" class="card-text"></p>
+  </div>
+  <div class="col-2 me-2 align-self-center">
+    <a href="#" class="btn btn-primary float-end">좋아요 취소</a>
+  </div>
+</div>
+
+<div th:fragment="likes-comments" class="row justify-content-between"
+     th:with="title=${content.board.content.title}, maincontent=${content.comment}">
+  <div class="col-9 pt-1 ms-2">
+    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}" class="card-title"></h5>
+    <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100) + '...'}" class="card-text"></p>
+  </div>
+  <div class="col-2 me-2 align-self-center">
+    <a href="#" class="btn btn-primary float-end">좋아요 취소</a>
+  </div>
+</div>

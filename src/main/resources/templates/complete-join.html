@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+    <head th:replace="~{fragments/header :: header}"/>
     <meta charset="UTF-8">
     <title>Complete Join</title>
 </head>
 <body>
-
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>회원가입이 완료되었습니다.</h1>
 <h2>[[${realName}]]님 환영합니다.</h2>
 <button th:onclick="'window.location.href = \'/login\''">로그인 하러가기</button>
 <button th:onclick="'window.location.href = \'/home\''">홈으로 가기</button>
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>
