@@ -14,10 +14,16 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @SuperBuilder
 public class FileCon extends BaseEntity {
-    public FileCon(Board board) {
-        this.board = board;
-        if (board != null) {
-            board.getFileCon().add(this);
+//    public FileCon(Board board) {
+//        this.board = board;
+//        if (board != null) {
+//            board.getFileCon().add(this);
+//        }
+//    }
+    public FileCon(File file) {
+        this.file = file;
+        if (file != null) {
+            file.getFileCon().add(this);
         }
     }
     @Id
@@ -49,10 +55,10 @@ public class FileCon extends BaseEntity {
     @JoinColumn(name = "notice_id", foreignKey = @ForeignKey(name = "FK_FILE_CON_NOTICE"))
     private Notice notice;
 
-    public void setBoard(Board board) {
-        this.board = board;
-        if (board != null) {
-            board.getFileCon().add(this);
+    public void setFile(File file) {
+        this.file = file;
+        if (file != null) {
+            file.getFileCon().add(this);
         }
     }
 }

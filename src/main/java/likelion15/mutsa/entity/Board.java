@@ -59,8 +59,8 @@ public class Board extends BaseEntity {
     @OneToOne(cascade = CascadeType.PERSIST)
     private File file;
 
-    public void setFile(File file) {
-        this.file = file;
+    public Long getId() {
+        return id;
     }
 
     //좋아요
@@ -72,11 +72,6 @@ public class Board extends BaseEntity {
     public void removeLikes(Likes like) {
         this.likes.remove(like);
         like.setBoard(null);
-    }
-
-    public void addFileCon(FileCon fileCon) {
-        this.fileCon.add(fileCon);
-        fileCon.setBoard(this);
     }
 
     public void removeFileCon(FileCon fileCon) {

@@ -3,7 +3,6 @@ package likelion15.mutsa.controller;
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.entity.Board;
-import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.CommentService;
 import likelion15.mutsa.service.JoinService;
@@ -27,7 +26,6 @@ import java.io.IOException;
 
 @Controller
 public class BoardController {
-    //BoardService 를 Controller 에도 사용
     private final BoardService boardService;
     private final CommentService commentService;
     private final JoinService joinService;
@@ -43,10 +41,7 @@ public class BoardController {
     public String createView() {
         return "boardCreate";
     }
-//    @PostMapping("/board/create")
-//    public BoardDTO create(@RequestBody BoardDTO boardDTO) {
-//        return boardService.createBoard(boardDTO);
-//    }
+
     @PostMapping("/board/create")
     public String create(BoardDTO boardDTO, MultipartFile file) throws Exception {
         Board board = boardService.createBoard(boardDTO, file);
@@ -76,6 +71,7 @@ public class BoardController {
             boardService.increaseViewCount(id); // 조회수 증가
 
             model.addAttribute("board", boardDTO);
+            model.addAttribute("fileCon", boardDTO.getFileCon());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readCommentAll());
             return "readBoard";
         } else {
@@ -104,13 +100,11 @@ public class BoardController {
     }
     @GetMapping("/{id}/update-view")
     public String updateView(
-            //TODO 아이디와 Model 받아오기 / Long id, Model model
             @PathVariable("id") Long id,
             Model model) {
-        //TODO Model에 student 데이터 부여 studentService.readStudent(id)
         BoardDTO dto = boardService.readBoard(id);
         model.addAttribute("board", dto);
-        return "update";
+        return "boardUpdate";
     }
     @PostMapping("/{id}/update-view")
     public String update(
@@ -151,7 +145,7 @@ public class BoardController {
                 //.username(username)
                 .build();
 
-        Comment createdComment = commentService.createComment(commentDTO);
+        commentService.createComment(commentDTO);
 
         return "redirect:/board/" + boardId;
     }
@@ -186,18 +180,5 @@ public class BoardController {
         boardService.unlikeBoard(boardId);
         return "redirect:/board/{id}";
     }
-    //조회수 기능
-//    @GetMapping("/{id}")
-//    public String viewBoard(@PathVariable("id") Long id, Model model) {
-//        BoardDTO boardDTO = boardService.readBoard(id);
-//        if (boardDTO == null) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found with id: " + id);
-//        }
-//
-//        boardDTO.increaseViewCount(); // 조회수 증가
-//
-//        model.addAttribute("board", boardDTO);
-//        return "read";
-//    }
 
 }

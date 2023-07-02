@@ -1,8 +1,10 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
+import likelion15.mutsa.dto.FileConDTO;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.File;
+import likelion15.mutsa.entity.FileCon;
 import likelion15.mutsa.entity.Likes;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -50,7 +52,7 @@ public class BoardService {
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
             BoardDTO boardDTO = BoardDTO.fromEntity(board);
-            boardDTO.increaseViewCount(); // 조회수 증가
+
             return boardDTO;
         }
         return null;
@@ -72,7 +74,6 @@ public class BoardService {
                 .content(content)
                 .build();
         // 파일 정보 저장
-        // 파일 정보 저장
         if (file != null && !file.isEmpty()) {
             String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
             UUID uuid = UUID.randomUUID();
@@ -90,12 +91,21 @@ public class BoardService {
             // 파일 정보를 Board 엔티티에 저장
             board.setFile(fileEntity);
 
-//            // FileConDTO 객체 생성 및 board_id 설정
-//            FileConDTO fileConDTO = new FileConDTO();
-//            fileConDTO.setBoardId(board.getId()); // 생성된 board의 id 설정
-//
+            // FileCon 엔티티 생성
+            FileCon fileCon = new FileCon();
+            fileCon.setBoard(board);
+           // board.addFileCon(fileCon);
+
 //            // FileCon 엔티티 저장
-//            fileService.saveFileCon(fileConDTO);
+//            Board savedBoard = boardRepository.save(board); // board 저장 후 반환된 객체 사용
+
+            // FileConDTO 객체 생성 및 board_id 설정
+            FileConDTO fileConDTO = new FileConDTO();
+            fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
+
+//            // board 엔티티에 fileCon 추가
+//            fileCon.setBoard(savedBoard);
+//            savedBoard.addFileCon(fileCon);
         }
 
         return boardRepository.save(board);
