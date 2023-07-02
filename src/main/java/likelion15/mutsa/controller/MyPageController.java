@@ -1,7 +1,6 @@
 package likelion15.mutsa.controller;
 
 
-import jakarta.annotation.PostConstruct;
 import likelion15.mutsa.dto.PasswordDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.MyActivityService;
@@ -25,10 +24,10 @@ public class MyPageController {
     public String readAllBoards(
             Model model,
             @RequestParam(value = "page", defaultValue = "0") int pageNum,
-            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+            @RequestParam(value = "limit", defaultValue = "10") int pageLimit
     ) {
-        User writer = myProfileService.readOne(1L);
-        model.addAttribute("myContents", myActivityService.readMyBoardsPaged(pageNum, pageLimit, writer.getId()));
+        model.addAttribute("myContents", myActivityService.readMyBoardsPaged(pageNum, pageLimit, 1L));
+        model.addAttribute("tabValue", "boards");
         return "my-activities";
     }
 
@@ -36,20 +35,21 @@ public class MyPageController {
     public String readAllComments(
             Model model,
             @RequestParam(value = "page", defaultValue = "0") int pageNum,
-            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+            @RequestParam(value = "limit", defaultValue = "10") int pageLimit
     ) {
         User writer = myProfileService.readOne(1L);
         model.addAttribute("myContents", myActivityService.readMyCommentsPaged(pageNum, pageLimit, writer.getName()));
+        model.addAttribute("tabValue", "comments");
         return "my-activities";
     }
     @GetMapping("/likes-boards")
     public String readAllLikesBoards(
             Model model,
             @RequestParam(value = "page", defaultValue = "0") int pageNum,
-            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+            @RequestParam(value = "limit", defaultValue = "10") int pageLimit
     ) {
-        User writer = myProfileService.readOne(1L);
-        model.addAttribute("myContents", myActivityService.readMyLikesBoardsPaged(pageNum, pageLimit, writer.getId()));
+        model.addAttribute("myContents", myActivityService.readMyLikesBoardsPaged(pageNum, pageLimit, 1L));
+        model.addAttribute("tabValue", "likes-boards");
         return "my-activities";
     }
 
@@ -57,22 +57,28 @@ public class MyPageController {
     public String readAllLikesComments(
             Model model,
             @RequestParam(value = "page", defaultValue = "0") int pageNum,
-            @RequestParam(value = "limit", defaultValue = "3") int pageLimit
+            @RequestParam(value = "limit", defaultValue = "10") int pageLimit
     ) {
-        User writer = myProfileService.readOne(1L);
-        model.addAttribute("myContents", myActivityService.readMyLikesCommentsPaged(pageNum, pageLimit, writer.getName()));
+        model.addAttribute("myContents", myActivityService.readMyLikesCommentsPaged(pageNum, pageLimit, 1L));
+        model.addAttribute("tabValue", "likes-comments");
         return "my-activities";
     }
-
 
     @GetMapping("/profile")
     public String profile(
             Model model
     ) {
         User writer = myProfileService.readOne(1L);
-        model.addAttribute(writer);
+        model.addAttribute("user", writer);
         return "my-profile";
     }
+
+    @PostMapping("/profile/{id}/realname")
+    public String updateRealName(@PathVariable("id") Long id, @RequestParam("realName") String realName) {
+        myProfileService.updateRealName(id, realName);
+        return "redirect:/my-page/profile";
+    }
+
     @PostMapping("/profile/{id}/name")
     public String updateName(@PathVariable("id") Long id, @RequestParam("name") String name) {
         myProfileService.updateName(id, name);
@@ -99,7 +105,4 @@ public class MyPageController {
         myProfileService.updatePhoneNumber(id, phoneNumber);
         return "redirect:/my-page/profile";
     }
-
-
-
 }
