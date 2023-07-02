@@ -66,6 +66,8 @@ public class User extends BaseEntity {
     )
     private List<UserBoardTag> userBoardTags = new ArrayList<>();
 
+
+
 //    public User(Long id,String name,String email,String password,String phoneNumber){
 //        this.id = id;
 //        this.name = name;
@@ -92,4 +94,31 @@ public class User extends BaseEntity {
                 ", userBoardTags=" + userBoardTags +
                 '}';
     }
+
+    // User 정보 변경 메서드
+    public User updateRealName(String userRealName) {
+        this.realName = userRealName;
+        return this;
+    }
+
+    public User updateName(String userName) {
+        this.name = userName;
+        return this;
+    }
+
+    public User updateEmail(String userEmail) {
+        this.email = userEmail;
+        return this;
+    }
+
+    public User updatePhoneNumber(String PhoneNumber) {
+        this.phoneNumber = PhoneNumber;
+        return this;
+    }
+
+    public User updatePassword(String userPassword) {
+        this.password = userPassword;
+        return this;
+    }
+
 }
