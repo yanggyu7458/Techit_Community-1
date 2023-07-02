@@ -1,34 +1,25 @@
 package likelion15.mutsa.dataInit;
 
 import jakarta.annotation.PostConstruct;
-import likelion15.mutsa.entity.Likes;
 import likelion15.mutsa.entity.User;
-import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
-import likelion15.mutsa.entity.enums.YesOrNo;
-import likelion15.mutsa.repository.BoardRepository;
-import likelion15.mutsa.repository.LikesRepository;
 import likelion15.mutsa.repository.UserRepository;
 import likelion15.mutsa.service.MyActivityService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class TableInitializer {
     private final MyActivityService myActivityService;
     private final UserRepository userRepository;
-    private final LikesRepository likesRepository;
-    private final BoardRepository boardRepository;
-
-    private int userCount = 10;
 
     @PostConstruct
     @Transactional
     public void entityInitializer() {
-        for (int i = 0; i < userCount; i++) {
+        for (int i = 0; i < 20; i++) {
 
             userRepository.save(
                     User.builder()
@@ -42,11 +33,21 @@ public class TableInitializer {
                     .build()
             );
         }
-
-        for (int i = 0; i < 20; i++) {
-            myActivityService.writeArticle(1L, titles[i], contents[i]);
-            myActivityService.writeComment(1L, 1L, titles[i] );
+        for (int i = 1; i < 40; i++) {
+            myActivityService.writeBoard(Long.valueOf(i % 2L + 1L), titles[i], contents[i]);
         }
+        for (int i = 1; i < 40; i++) {
+            myActivityService.writeComment(Long.valueOf(i % 3L + 1L), Long.valueOf(i % 2L + 1L), titles[i] );
+        }
+        for (int i = 1; i < 40; i++) {
+            for (int j = 1; j < 21; j++) {
+                myActivityService.likeBoard(j * 1L, i * 1L);
+                myActivityService.likeComment(j * 1L, i * 1L);
+            }
+        }
+        myActivityService.likeBoard(1L, 1L);
+        myActivityService.likeComment(1L, 1L);
+
     }
 
 

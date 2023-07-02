@@ -44,4 +44,10 @@ public class Likes extends BaseEntity {
     )
     @JoinColumn(name = "comment_id", foreignKey = @ForeignKey(name = "FK_LIKES_COMMENT"))
     private Comment comment;
+
+    // 좋아요 -> 좋아요 취소, 노 좋아요 -> 좋아요
+    public Likes updateLikesYesOrNo(YesOrNo isLike) {
+        this.isLike = isLike;
+        return this;
+    }
 }
