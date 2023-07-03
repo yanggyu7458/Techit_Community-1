@@ -8,8 +8,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
+    @Override
+    Optional<Board> findById(Long id);
+    @Query("SELECT b FROM Board b WHERE b.content.title like  %:title%" )
+    Page<Board> searchByTitleLike(@Param("title") String keyword, Pageable pageable);
+
+    @Query("SELECT b FROM Board b WHERE b.content.title LIKE %:keyword% OR b.content.content LIKE %:keyword%")
+    Page<Board> searchByTitleOrContentLike(@Param("keyword") String keyword, Pageable pageable);
 
     //userId로 작성한 게시물 전체 조회
     Page<Board> findAllByUser_IdAndContent_IsDeleted(Long userId, DeletedStatus isDeleted, Pageable pageable);

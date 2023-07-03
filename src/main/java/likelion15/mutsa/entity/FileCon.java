@@ -5,13 +5,27 @@ import likelion15.mutsa.entity.base.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @SuperBuilder
 public class FileCon extends BaseEntity {
+//    public FileCon(Board board) {
+//        this.board = board;
+//        if (board != null) {
+//            board.getFileCon().add(this);
+//        }
+//    }
+    public FileCon(File file) {
+        this.file = file;
+        if (file != null) {
+            file.getFileCon().add(this);
+        }
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_con_id")
@@ -40,4 +54,11 @@ public class FileCon extends BaseEntity {
     )
     @JoinColumn(name = "notice_id", foreignKey = @ForeignKey(name = "FK_FILE_CON_NOTICE"))
     private Notice notice;
+
+    public void setFile(File file) {
+        this.file = file;
+        if (file != null) {
+            file.getFileCon().add(this);
+        }
+    }
 }

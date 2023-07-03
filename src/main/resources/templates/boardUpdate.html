@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update</title>
+</head>
+<body>
+<h1>Update Student</h1>
+<form th:action="@{/{id}/update-view (id=${board.id})}" method="post">
+  <label for="title-input">Title:
+    <input type="text" id = "title-input" name = "title" th:value="${board.title}">
+  </label>
+  <br>
+  <label for="content-input">Content:
+    <input type="text" id = "content-input" name = "content" th:value="${board.content}">
+  </label>
+  <br>
+  <!--제출 버튼-->
+  <input type="submit">
+  <a href="/board">Back</a>
+</form>
+
+<a th:href="@{/{id} (id=${board.id})}"></a>
+</body>
+</html>

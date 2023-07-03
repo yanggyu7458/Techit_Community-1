@@ -12,9 +12,9 @@ import lombok.experimental.SuperBuilder;
 @Embeddable
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SuperBuilder
 public class Content {
 
     @Column(nullable = false)
