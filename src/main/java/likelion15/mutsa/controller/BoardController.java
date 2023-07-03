@@ -168,15 +168,15 @@ public class BoardController {
 
     //좋아요 기능
     @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
-    public String likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
+    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
         boardService.likeBoard(boardId);
-        return "redirect:/board/" + boardId;  // 경로 변수명을 boardId로 변경
+        return ResponseEntity.ok("좋아요가 반영되었습니다.");
     }
 
     @PostMapping("/board/{id}/unlike")
-    public String unlikeBoard(@PathVariable("id") Long boardId) {
+    public ResponseEntity<String> unlikeBoard(@PathVariable("id") Long boardId) {
         boardService.unlikeBoard(boardId);
-        return "redirect:/board/{id}";
+        return ResponseEntity.ok("좋아요가 취소되었습니다.");
     }
 
 }

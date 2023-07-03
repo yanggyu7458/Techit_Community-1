@@ -1,54 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+<head th:replace="~{fragments/header :: header}"/>
+
 <body>
-
-<h1>[[${board.id}]]. [[${board.title}]]</h1>
-<p>내용: [[${board.content}]]</p>
-
-<!-- 조회수 표시 -->
-<p>조회수: [[${board.viewCount}]]</p>
-<!-- 좋아요 수 표시 -->
-<p>좋아요 수: [[${board.likesCount}]]</p>
-<div>
-    <!-- 좋아요 버튼 -->
-    <form th:action="@{/board/{id}/like(id=${board.id})}" method="post" style="display: inline;">
-        <input type="submit" value="좋아요">
-    </form>
-    <!-- 좋아요 취소 버튼 -->
-    <form th:action="@{/board/{id}/unlike(id=${board.id})}" method="post" style="display: inline;">
-        <input type="submit" value="좋아요 취소">
-    </form>
-</div>
-<br/>
-<!--comment section-->
-<div>
-    <form th:action="@{/board/{id} (id=${board.id})}" method="post" style="display: inline;">
-        <input type="text" id="content" name="comment" class="form-control" placeholder="댓글을 입력해주세요.." aria-label="댓글을 입력해주세요.." aria-describedby="basic-addon2">
-        <button class="btn btn-primary">등록</button>
-    </form>
-</div>
-
-
-<p>댓글 목록</p>
-
-<!--<div th:each="comment: ${board.comments}">-->
-<div th:each="comment: ${commentList}">
-    <!--<p>번호: [[${comment.id}]]</p>-->
-    <p>내용: [[${comment.comment}]]</p>
-</div>
-
-<a href="/board">뒤로가기</a>
-<a th:href="@{/{id}/update-view(id=${board.id})}">게시글 수정하기</a>
-<a th:href="@{/{id}/delete-view(id=${board.id})}">게시글 삭제하기</a>
-
-<a href="/board">Back</a>
-<a th:href="@{/{id}/update-view(id=${board.id})}">Edit</a>
-
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>[[${notice.id}]]. [[${notice.title}]]</h1>
 <p>[[${notice.content}]]</p>
 
@@ -57,6 +18,8 @@
 <a th:href="@{/notice/{id}/update-view (id=${notice.id})}">Update</a>
 <!-- /{id}/delete-view -->
 <a th:href="@{/notice/{id}/delete-view (id=${notice.id})}">Delete</a>
+
+
 
 </body>
 </html>
