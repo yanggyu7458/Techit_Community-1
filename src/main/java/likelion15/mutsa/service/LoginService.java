@@ -1,10 +1,6 @@
 package likelion15.mutsa.service;
 
-import likelion15.mutsa.dto.SessionDto;
-import likelion15.mutsa.entity.Profile;
 import likelion15.mutsa.entity.User;
-import likelion15.mutsa.entity.enums.UserAuth;
-import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.repository.UserRepos;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

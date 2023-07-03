@@ -4,7 +4,6 @@ package likelion15.mutsa.service;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.entity.Likes;
-import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
@@ -30,11 +29,10 @@ public class MyActivityService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
-    @Transactional
-    public Long writeArticle(Long userId, String title, String content) {
-        // 게시글 등록
-        Optional<User> optionalUser = userRepository.findById(userId);
 
+    // board 등록
+    @Transactional
+    public Long writeBoard(Long userId, String title, String content) {
         Board board = Board.builder()
                 .content(
                         Content.builder()
@@ -44,100 +42,110 @@ public class MyActivityService {
                                 .isDeleted(DeletedStatus.NONE)
                                 .build()
                 )
-                .user(optionalUser.get())
+                .user(userRepository.findById(userId).get())
                 .build();
-
         boardRepository.save(board);
         return board.getId();
     }
 
+    // comment 등록
     @Transactional
     public Long writeComment(Long userId, Long boardId, String content) {
-        // 게시글 등록
-        Optional<User> optionalUser = userRepository.findById(userId);
-        optionalUser.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
-
         Comment comment = Comment.builder()
                 .comment(content)
                 .board(boardRepository.findById(boardId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST)))
-                .username(optionalUser.get().getName())
+                .username(userRepository.findById(userId).get().getName())
                 .isDeleted(DeletedStatus.NONE)
                 .build();
-
-        commentRepository.save(comment);
-        return comment.getId();
+        return commentRepository.save(comment).getId();
     }
+
+    // board 좋아요
     @Transactional
-    public Long likeArticle(Long userId, Long boardId) {
-        // 게시글 등록
-        Optional<User> optionalUser = userRepository.findById(userId);
-        optionalUser.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    public Long likeBoard(Long userId, Long boardId) {
+        Optional<Likes> optionalLikes
+                = likesRepository.findByUser_IdAndBoard_Id(userId, boardId);
 
-        Likes likes = Likes.builder()
-                .user(optionalUser.get())
-                .board(boardRepository.findById(boardId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST)))
-                .isLike(YesOrNo.YES)
-                .isDeleted(DeletedStatus.NONE)
-                .build();
+        System.out.println("변경전" + likesRepository.countLikesByBoard_Id(boardId));
 
-        likesRepository.save(likes);
-        return likes.getId();
+        if (optionalLikes.isPresent()) {
+            Likes like = optionalLikes.get();
+
+            if (like.getIsLike() == YesOrNo.YES) like.updateLikesYesOrNo(YesOrNo.NO);
+            else like.updateLikesYesOrNo(YesOrNo.YES);
+            return likesRepository.save(like).getId();
+
+        } else {
+            Likes like = Likes.builder()
+                    .user(userRepository.findById(userId).get())
+                    .board(boardRepository.findById(boardId).get())
+                    .isLike(YesOrNo.YES)
+                    .isDeleted(DeletedStatus.NONE)
+                    .build();
+            return likesRepository.save(like).getId();
+        }
+
+
     }
+
+    // comment 좋아요
     @Transactional
     public Long likeComment(Long userId, Long commentId) {
-        // 게시글 등록
-        Optional<User> optionalUser = userRepository.findById(userId);
-        optionalUser.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        Optional<Likes> optionalLikes
+                = likesRepository.findByUser_IdAndComment_Id(userId, commentId);
 
-        Likes likes = Likes.builder()
-                .user(optionalUser.get())
-                .comment(commentRepository.findById(commentId)
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST)))
-                .isLike(YesOrNo.YES)
-                .isDeleted(DeletedStatus.NONE)
-                .build();
+        if (optionalLikes.isPresent()) {
+            Likes like = optionalLikes.get();
 
-        likesRepository.save(likes);
-        return likes.getId();
+            if (like.getIsLike().equals(YesOrNo.YES)) like.updateLikesYesOrNo(YesOrNo.NO);
+            else like.updateLikesYesOrNo(YesOrNo.YES);
+            return likesRepository.save(like).getId();
+
+        } else {
+            Likes like = Likes.builder()
+                    .user(userRepository.findById(userId).get())
+                    .comment(commentRepository.findById(commentId).get())
+                    .isLike(YesOrNo.YES)
+                    .isDeleted(DeletedStatus.NONE)
+                    .build();
+            return likesRepository.save(like).getId();
+        }
     }
 
-
+    // board 삭제
     @Transactional
-    public void deleteBoard(Long boardId) {
-        Optional<Board> optionalBoard = this.boardRepository.findById(boardId);
-
-        if (optionalBoard.isPresent()) {
-            this.boardRepository.deleteById(boardId);
-        } else System.out.println("could not find");
+    public Long deleteBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).get();
+        boardRepository.updateIsDeletedById(boardId);
+        return boardRepository.findById(boardId).get().getId();
     }
+
+    // comment 삭제
     @Transactional
-    public void deleteComment(Long commentId) {
-        Optional<Comment> optionalComment = this.commentRepository.findById(commentId);
-        optionalComment.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
-
-        commentRepository.deleteById(commentId);
-
+    public Long deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).get();
+        commentRepository.updateIsDeletedById(commentId);
+        return commentRepository.findById(commentId).get().getId();
     }
 
-    // 한 유저가 쓴 모든 글 조회
+    // 내가 쓴 모든 board 조회
     public Page<Board> readMyBoardsPaged(int pageNum, int pageLimit, Long userId) {
         Pageable pageable = PageRequest.of(
                 pageNum, pageLimit, Sort.by("id").descending()
         );
-        return boardRepository.findAllByUser_Id(userId, pageable);
+        return boardRepository.findAllByUser_IdAndContent_IsDeleted(userId, pageable);
     }
 
-    // 한 유저가 쓴 모든 댓글 조회
+    // 내가 쓴 모든 comment 조회
     public Page<Comment> readMyCommentsPaged(int pageNum, int pageLimit, String username) {
         Pageable pageable = PageRequest.of(
                 pageNum, pageLimit, Sort.by("id").descending()
         );
-        return commentRepository.findAllByUsername(username, pageable);
+        return commentRepository.findAllByUsernameAndIsDeleted(username, pageable);
     }
 
-    // 한 유저가 좋아요 한 모든 글 조회
+    // 내가 좋아요 한 모든 글 조회
     public Page<Board> readMyLikesBoardsPaged(int pageNum, int pageLimit, Long userId ) {
         Pageable pageable = PageRequest.of(
                 pageNum, pageLimit, Sort.by("id").descending()
@@ -145,13 +153,12 @@ public class MyActivityService {
         return boardRepository.findAllByUserIdWithLikes(userId, pageable);
     }
 
-    // 한 유저가 좋아요 한 모든 댓글 조회
-    public Page<Comment> readMyLikesCommentsPaged(int pageNum, int pageLimit, String username ) {
+    // 내가 좋아요 한 모든 댓글 조회
+    public Page<Comment> readMyLikesCommentsPaged(int pageNum, int pageLimit,Long userId) {
         Pageable pageable = PageRequest.of(
                 pageNum, pageLimit, Sort.by("id").descending()
         );
-        return commentRepository.findAllByUsernameWithLikes(username, pageable);
+        return commentRepository.findAllByUsernameWithLikes(userId, pageable);
     }
-
 
 }

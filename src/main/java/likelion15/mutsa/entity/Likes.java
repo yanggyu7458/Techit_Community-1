@@ -5,12 +5,12 @@ import likelion15.mutsa.entity.base.BaseEntity;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.YesOrNo;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class Likes extends BaseEntity {
@@ -44,4 +44,10 @@ public class Likes extends BaseEntity {
     )
     @JoinColumn(name = "comment_id", foreignKey = @ForeignKey(name = "FK_LIKES_COMMENT"))
     private Comment comment;
+
+    // 좋아요 -> 좋아요 취소, 노 좋아요 -> 좋아요
+    public Likes updateLikesYesOrNo(YesOrNo isLike) {
+        this.isLike = isLike;
+        return this;
+    }
 }

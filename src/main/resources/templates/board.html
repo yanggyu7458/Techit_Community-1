@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrinkto-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- Custom styles for this template -->
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.js}"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+    <title>Techit Community</title>
+
+    <style>
+        /* 게시글 목록 스타일 */
+        .board-list {
+            margin-bottom: 20px;
+        }
+        .board-list p {
+            margin: 0;
+        }
+        .board-list hr {
+            margin: 10px 0;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+        .top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .top div {
+            margin-right: 10px;
+            border-bottom: 1px solid #999;
+        }
+
+        /* 각 요소에 원하는 스타일을 적용할 수 있습니다 */
+        .top .num {
+            width: 10%;
+            text-align: center;
+        }
+
+        .top .title {
+            width: 60%;
+            text-align: center;
+        }
+
+        .top .writer {
+            width: 10%;
+            text-align: center;
+        }
+
+        .top .date {
+            width: 10%;
+            text-align: center;
+        }
+
+        .top .count {
+            width: 10%;
+            text-align: center;
+        }
+        .body {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .body div {
+            margin-right: 10px;
+            border-bottom: 1px solid #999;
+        }
+
+        /* 각 요소에 원하는 스타일을 적용할 수 있습니다 */
+        .body .num {
+            width: 10%;
+            text-align: center;
+        }
+
+        .body .title {
+            width: 60%;
+            text-align: center;
+        }
+
+        .body .writer {
+            width: 10%;
+            text-align: center;
+        }
+
+        .body .date {
+            width: 10%;
+            text-align: center;
+        }
+
+        .body .count {
+            width: 10%;
+            text-align: center;
+        }
+
+        /* 페이징 스타일 */
+        .pagination {
+            display: inline;
+            margin-bottom: 20px;
+        }
+        .pagination .page-item {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .pagination .page-item a {
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #f2f2f2;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .pagination .page-item.disabled a {
+            cursor: not-allowed;
+        }
+        .pagination .page-item.active a {
+            background-color: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        /* 글 작성 버튼 스타일 */
+        .create-button {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .create-button a {
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* 검색 부분 스타일 */
+        .search-form {
+            margin-top: 20px;
+        }
+        .search-form input,
+        .search-form select,
+        .search-form button {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>게시글 목록</h1>
+<div class="top">
+    <div class="num">번호</div>
+    <div class="title">제목</div>
+    <div class="writer">작성자</div>
+    <div class="date">작성일</div>
+    <div class="count">조회수</div>
+</div>
+<!-- 등록된 게시글이 없을 때 -->
+<div th:if="${boardList.isEmpty()}">
+    <p>등록된 게시글이 없습니다.</p>
+</div>
+<!-- 등록된 게시글이 있을 때 -->
+<div class="body" th:unless="${boardList.isEmpty()}"
+     th:each="board, stat: ${boardList}">
+    <div class="num">[[${board.id}]]</div>
+    <div class="title"><a th:href="@{/board/{id}(id=${board.id})}">[[${board.title}]]</a></div>
+    <div class="writer">user.name</div>
+    <div class="date">[[${#temporals.format(board.createAt, 'yyyy-MM-dd HH:mm')}]]</div>
+    <div class="count">조회수</div>
+    <hr>
+    <!-- 페이지당 5개의 게시글만 표시 -->
+    <div th:if="${stat.index % 5 == 4}">
+        <hr>
+    </div>
+</div>
+<a href="/board/create-view" class="create-button">글 작성</a>
+<br>
+<!-- 페이징 -->
+<div class="pagination">
+    <span class="page-item" th:classappend="${currentPage == 1} ? disabled"><a class="page-link" th:href="@{/board?page=1}">처음</a></span>
+    <span class="page-item" th:classappend="${currentPage == 1} ? disabled"><a class="page-link" th:href="@{/board(page=${currentPage - 1})}">이전</a></span>
+    <span class="page-item" th:classappend="${i == currentPage} ? active" th:each="i: ${#numbers.sequence(1, totalPages)}" th:if="${i >= 1 and i <= totalPages}">
+        <a class="page-link" th:href="@{/board(page=${i})}">[[${i}]]</a>
+    </span>
+    <span class="page-item" th:classappend="${currentPage == totalPages} ? disabled"><a class="page-link" th:href="@{/board(page=${currentPage + 1})}">다음</a></span>
+    <span class="page-item" th:classappend="${currentPage == totalPages} ? disabled"><a class="page-link" th:href="@{/board(page=${totalPages})}">마지막</a></span>
+</div>
+<!--게시글 검색-->
+<form class="search-form" th:action="@{/board/list}" method="get">
+    <input type="text" name="keyword" placeholder="검색어 입력">
+    <select name="searchOption">
+        <option value="title">제목으로 검색</option>
+        <option value="titleAndContent">제목 + 내용으로 검색</option>
+    </select>
+    <button type="submit">검색</button>
+</form>
+</body>
+</html>

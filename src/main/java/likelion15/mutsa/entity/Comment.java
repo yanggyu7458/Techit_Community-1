@@ -2,10 +2,9 @@ package likelion15.mutsa.entity;
 
 import jakarta.persistence.*;
 import likelion15.mutsa.entity.base.BaseEntity;
-import likelion15.mutsa.entity.base.BaseTimeEntity;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class Comment extends BaseEntity {
@@ -22,6 +21,9 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
+//    @Id
+//    @Column(name = "comment_id")
+//    private Long id; // comment_id 수동으로 설정
 
     private Long pid;
 
@@ -30,15 +32,18 @@ public class Comment extends BaseEntity {
     )
     private String comment;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String username;
 
     @Enumerated(EnumType.STRING)
     private DeletedStatus isDeleted;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
-    )
+    //    @ManyToOne(fetch = FetchType.LAZY,
+//            cascade = CascadeType.ALL
+//    )
+//    @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_COMMENT_BOARD"))
+//    private Board board;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_COMMENT_BOARD"))
     private Board board;
 

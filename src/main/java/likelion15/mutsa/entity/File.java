@@ -36,4 +36,8 @@ public class File extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "file")
     private List<FileCon> fileCon = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
 }

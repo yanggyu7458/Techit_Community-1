@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum DeletedStatus {
-    NONE, DELETE
+    NONE, NOT_DELETED, DELETE
 }
