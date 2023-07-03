@@ -78,8 +78,7 @@ public class LoginController {
     }
     @GetMapping("/home")
     public String home(Model model,
-                       @SessionAttribute(name="sessionDto",required = false) SessionDto sessionDto,
-                       HttpServletRequest httpServletRequest){
+                       @SessionAttribute(name="sessionDto",required = false) SessionDto sessionDto){
 
         if ((sessionDto != null)) {
             model.addAttribute("name", sessionDto.getName());

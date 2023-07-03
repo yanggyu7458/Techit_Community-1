@@ -55,7 +55,7 @@ public class JoinController {
 
         User user = joinService.joinUser(joinDto);
 
-        System.out.println("user = " + user);
+       log.info(user.toString());
 
         re.addAttribute("realName", joinDto.getRealName());
         return "redirect:/complete-join";
