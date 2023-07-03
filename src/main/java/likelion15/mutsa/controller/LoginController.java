@@ -3,6 +3,7 @@ package likelion15.mutsa.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import likelion15.mutsa.dto.JoinDto;
+import likelion15.mutsa.dto.SessionDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.JoinService;
 import likelion15.mutsa.service.LoginService;
@@ -46,8 +47,12 @@ public class LoginController {
             httpServletRequest.getSession().invalidate();
             HttpSession session = httpServletRequest.getSession(true);
 
-            // 세션에 userId를 넣어줌
-            session.setAttribute("userId", userId);
+            // sessionDto
+            User user = loginService.getLoginUser(userId);
+            SessionDto sessionDto = loginService.createSessionDto(user);
+
+            // 세션에 sessionDto를 넣어줌
+            session.setAttribute("sessionDto", sessionDto);
             session.setMaxInactiveInterval(1800); // 1800=30분
             return "redirect:/home";
         } else { // 로그인 실패
@@ -73,19 +78,11 @@ public class LoginController {
     }
     @GetMapping("/home")
     public String home(Model model,
-                       @SessionAttribute(name="userId",required = false) Long userId,
+                       @SessionAttribute(name="sessionDto",required = false) SessionDto sessionDto,
                        HttpServletRequest httpServletRequest){
 
-        if(userId == null)
-            System.out.println("로그인 하지 않음");
-        else{
-            User loginUser = loginService.getLoginUser(userId);
-            // 84-86줄 추가하긴 하였는데 확신X
-            if(loginUser == null){
-                httpServletRequest.getSession().invalidate();
-            }
-            System.out.println("로그인 유저의 Id:"+userId);
-            model.addAttribute("name", loginUser.getName());
+        if ((sessionDto != null)) {
+            model.addAttribute("name", sessionDto.getName());
         }
 
         return "home";
