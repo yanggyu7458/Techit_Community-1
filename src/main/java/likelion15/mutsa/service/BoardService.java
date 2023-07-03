@@ -2,10 +2,7 @@ package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.FileConDTO;
-import likelion15.mutsa.entity.Board;
-import likelion15.mutsa.entity.File;
-import likelion15.mutsa.entity.FileCon;
-import likelion15.mutsa.entity.Likes;
+import likelion15.mutsa.entity.*;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
@@ -23,15 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import likelion15.mutsa.repository.LikesRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
+    private final UserRepos userRepos;
     private final CommentRepository commentRepository;
     private final BoardPageRepository boardPageRepository;
     private final BoardsRepository boardsRepository;
@@ -42,15 +36,6 @@ public class BoardService {
     private static final int PAGE_SIZE = 5;
     private final LikesRepository likesRepository;
 
-
-    public List<BoardDTO> readBoardAll() {
-        List<BoardDTO> boardList = new ArrayList<>();
-        for (Board board :
-                boardRepository.findAll()) {
-            boardList.add(BoardDTO.fromEntity(board));
-        }
-        return boardList;
-    }
     public BoardDTO readBoard(Long id) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
@@ -67,7 +52,8 @@ public class BoardService {
         return boardPage.map(BoardDTO::fromEntity);
     }
 
-    public Board createBoard(BoardDTO boardDTO, MultipartFile file) throws Exception {
+    public Board createBoard(BoardDTO boardDTO, MultipartFile file, User loginUser) throws Exception {
+
         Content content = Content.builder()
                 .title(boardDTO.getTitle())
                 .content(boardDTO.getContent())
@@ -75,6 +61,8 @@ public class BoardService {
                 .status(VisibleStatus.VISIBLE)
                 .build();
         Board board = Board.builder()
+                .user(loginUser)  // Set the user for the board
+                .createdBy(loginUser.getName())
                 .content(content)
                 .build();
         // 파일 정보 저장
@@ -100,23 +88,18 @@ public class BoardService {
             fileCon.setBoard(board);
             // board.addFileCon(fileCon);
 
-//            // FileCon 엔티티 저장
-//            Board savedBoard = boardRepository.save(board); // board 저장 후 반환된 객체 사용
 
             // FileConDTO 객체 생성 및 board_id 설정
             FileConDTO fileConDTO = new FileConDTO();
             fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
 
-//            // board 엔티티에 fileCon 추가
-//            fileCon.setBoard(savedBoard);
-//            savedBoard.addFileCon(fileCon);
         }
 
         return boardRepository.save(board);
     }
 
 
-    public Board updateBoard(Long id, BoardDTO boardDTO) {
+    public Board updateBoard(Long id, BoardDTO boardDTO, User loginUser) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
@@ -126,7 +109,6 @@ public class BoardService {
             return boardRepository.save(board);
         } throw new IllegalArgumentException("Board not found with id: " + id);
     }
-
     public void deleteBoard(Long id) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent())
@@ -141,6 +123,7 @@ public class BoardService {
             boardRepository.save(board);
         }
     }
+
 
     //좋아요 기능
     public void likeBoard(Long boardId) {

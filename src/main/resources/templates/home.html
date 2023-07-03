@@ -18,7 +18,9 @@
 <div th:unless="${name}">
     <button><a href="/login">Log in</a></button>
 </div>
-
+<div>
+    <a href="/board">게시판으로 이동</a>
+</div>
 
 <!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
 <div th:replace="~{fragments/footer :: footer}" />

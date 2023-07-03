@@ -2,10 +2,13 @@ package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
-import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.dto.UserDto;
+import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.CommentService;
 import likelion15.mutsa.service.JoinService;
+import likelion15.mutsa.service.LoginService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,26 +19,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@RequiredArgsConstructor
 @Controller
 public class BoardController {
     private final BoardService boardService;
     private final CommentService commentService;
     private final JoinService joinService;
-
-    public BoardController(BoardService boardService, CommentService commentService, JoinService joinService) {
-        this.boardService = boardService;
-        this.commentService = commentService;
-        this.joinService = joinService;
-    }
-
+    private final LoginService loginService;
 
     @GetMapping("/board/create-view") //게시글 생성 페이지
     public String createView() {
@@ -43,8 +38,9 @@ public class BoardController {
     }
 
     @PostMapping("/board/create")
-    public String create(BoardDTO boardDTO, MultipartFile file) throws Exception {
-        Board board = boardService.createBoard(boardDTO, file);
+    public String create(BoardDTO boardDTO, MultipartFile file, @SessionAttribute(name="userId",required = false) Long userId) throws Exception {
+        User loginUser = loginService.getLoginUser(userId);
+        boardService.createBoard(boardDTO, file, loginUser);
         return "redirect:/board";
     }
 
@@ -71,7 +67,7 @@ public class BoardController {
             boardService.increaseViewCount(id); // 조회수 증가
 
             model.addAttribute("board", boardDTO);
-            model.addAttribute("fileCon", boardDTO.getFileCon());  // fileCon 변수를 모델에 추가
+            model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readCommentAll());
             return "readBoard";
         } else {
@@ -110,10 +106,12 @@ public class BoardController {
     public String update(
             @PathVariable("id")
             Long id,
-            BoardDTO boardDTO
+            BoardDTO boardDTO,
+            @SessionAttribute(name="userId",required = false) Long userId
     ) {
+        User loginUser = loginService.getLoginUser(userId);
         //service 활용하기
-        boardService.updateBoard(id, boardDTO);
+        boardService.updateBoard(id, boardDTO, loginUser);
         //상세보기 페이지로 PRG
         return String.format("redirect:/board/%s", id);
     }
@@ -128,7 +126,7 @@ public class BoardController {
         return "boardDelete";
     }
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("id") Long id) {
+    public String delete(@PathVariable("id") Long id, UserDto userDto) {
         boardService.deleteBoard(id);
         return "redirect:/board";
 

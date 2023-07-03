@@ -15,7 +15,8 @@ import java.util.List;
 public class BoardDTO {
     private Long id;
     private String title;
-    private User user; // 업데이트: User 대신 UserDTO
+    private Long userId;
+    private String userName;
     private String content;
     private DeletedStatus isDeleted;
     private VisibleStatus status;
@@ -43,13 +44,11 @@ public class BoardDTO {
         boardDTO.setStatus(content.getStatus());
         // User 정보를 UserDTO로 변환하여 설정
         User user = entity.getUser();
-        boardDTO.setUser(user);
+        boardDTO.setUserId(user.getId()); // User 엔티티의 id 값을 설정
+        boardDTO.setUserName(user.getName()); // User 엔티티의 name 값을 설정
 
         return boardDTO;
     }
-//    public void increaseViewCount() {
-//        this.viewCount++;
-//    }
 
 }
 
