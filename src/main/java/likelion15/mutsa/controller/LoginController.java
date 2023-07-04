@@ -29,7 +29,7 @@ public class LoginController {
     private final JoinService joinService;
 
     // 세션리스트 확인용
-    private static Hashtable sessionList = new Hashtable();
+    private final static Hashtable sessionList = new Hashtable();
 
     // 로그인 페이지
     @GetMapping("/login")
