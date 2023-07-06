@@ -5,14 +5,14 @@ import likelion15.mutsa.entity.Profile;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
-import likelion15.mutsa.repository.UserRepos;
+import likelion15.mutsa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class JoinService {
-    private final UserRepos repository;
+    private final UserRepository repository;
 
     public void createUser(){ // for test
         User user = User.builder()

@@ -25,7 +25,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final UserRepos userRepos;
     private final CommentRepository commentRepository;
     private final BoardPageRepository boardPageRepository;
     private final BoardsRepository boardsRepository;

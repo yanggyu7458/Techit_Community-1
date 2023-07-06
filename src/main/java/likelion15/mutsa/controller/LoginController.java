@@ -95,7 +95,6 @@ public class LoginController {
         if ((sessionDto != null)) {
             model.addAttribute("name", sessionDto.getName());
         }
-
         return "home";
     }
     // 세션 리스트 확인용
