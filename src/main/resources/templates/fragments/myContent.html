@@ -11,8 +11,8 @@
     <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100)+ '...'}" class="card-text"></p>
   </div>
   <div class="col-2 me-2 align-self-center">
-    <a th:href="@{'/board/' + ${id} + '/update-view'}" class="btn btn-primary float-end">수정</a>
-    <a th:href="@{'/board/' + ${id} + '/delete-view'}" class="btn btn-primary float-end">삭제</a>
+    <a th:href="@{'/' + ${id} + '/update-view'}" class="btn btn-primary float-end">수정</a>
+    <a th:href="@{'/' + ${id} + '/delete-view'}" class="btn btn-primary float-end">삭제</a>
   </div>
 </div>
 
