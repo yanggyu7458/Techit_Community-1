@@ -94,7 +94,7 @@ public class BoardController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/board/{id}/update-view")
+    @GetMapping("/{id}/update-view")
     public String updateView(
             @PathVariable("id") Long id,
             Model model) {
@@ -102,7 +102,7 @@ public class BoardController {
         model.addAttribute("board", dto);
         return "boardUpdate";
     }
-    @PostMapping("/board/{id}/update-view")
+    @PostMapping("/{id}/update-view")
     public String update(
             @PathVariable("id")
             Long id,
@@ -116,7 +116,7 @@ public class BoardController {
         return String.format("redirect:/board/%s", id);
     }
     //delete 메소드 만들기
-    @GetMapping("/board/{id}/delete-view")
+    @GetMapping("/{id}/delete-view")
     public String deleteView(
             @PathVariable("id")
             Long id,
@@ -125,7 +125,7 @@ public class BoardController {
         model.addAttribute("board", dto);
         return "boardDelete";
     }
-    @PostMapping("/board/{id}/delete")
+    @PostMapping("/{id}/delete")
     public String delete(@PathVariable("id") Long id, UserDto userDto) {
         boardService.deleteBoard(id);
         return "redirect:/board";
