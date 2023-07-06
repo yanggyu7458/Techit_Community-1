@@ -1,33 +1,45 @@
 <!DOCTYPE html>
 
 <div th:fragment="boards" class="row justify-content-between"
-     th:with="title=${content.content.title}, maincontent=${content.content.content}">
-  <div class="col-9 pt-1 ms-2">
-    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}" class="card-title">[[]]</h5>
+     th:with="title=${content.content.title}, maincontent=${content.content.content}, id=${content.id}">
+  <div class="col-9 pt-1 ms-2" >
+    <h5 class="card-title">
+      <a class="text-dark" style="text-decoration: none"
+         th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}"
+         th:href="@{'/board/' + ${id}}"></a>
+    </h5>
     <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100)+ '...'}" class="card-text"></p>
   </div>
   <div class="col-2 me-2 align-self-center">
-    <a href="#" class="btn btn-primary float-end">수정</a>
-    <a href="#" class="btn btn-primary float-end">삭제</a>
+    <a th:href="@{'/board/' + ${id} + '/update-view'}" class="btn btn-primary float-end">수정</a>
+    <a th:href="@{'/board/' + ${id} + '/delete-view'}" class="btn btn-primary float-end">삭제</a>
   </div>
 </div>
 
 <div th:fragment="comments" class="row justify-content-between"
-     th:with="title=${content.board.content.title}, maincontent=${content.comment}">
+     th:with="title=${content.board.content.title}, maincontent=${content.comment}, id=${content.board.id}">
   <div class="col-9 pt-1 ms-2">
-    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}" class="card-title">[[]]</h5>
+    <h5 class="card-title">
+      <a class="text-dark" style="text-decoration: none"
+         th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}"
+         th:href="@{'/board/' + ${id}}"></a>
+    </h5>
     <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100)+ '...'}" class="card-text"></p>
   </div>
   <div class="col-2 me-2 align-self-center">
-    <a href="#" class="btn btn-primary float-end">수정</a>
-    <a href="#" class="btn btn-primary float-end">삭제</a>
+    <a th:href="@{'/comment/' + ${id} + '/update-view'}" class="btn btn-primary float-end">수정</a>
+    <a th:href="@{'/comment/' + ${id} + '/delete-view'}" class="btn btn-primary float-end">삭제</a>
   </div>
 </div>
 
 <div th:fragment="likes-boards" class="row justify-content-between"
-     th:with="title=${content.content.title}, maincontent=${content.content.content}">
+     th:with="title=${content.content.title}, maincontent=${content.content.content}, id=${content.id}">
   <div class="col-9 pt-1 ms-2">
-    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30) + '...'}" class="card-title">[[]]</h5>
+    <h5 class="card-title">
+      <a class="text-dark" style="text-decoration: none"
+         th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30) + '...'}"
+         th:href="@{'/board/' + ${id}}"></a>
+    </h5>
     <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100) + '...'}" class="card-text"></p>
   </div>
   <div class="col-2 me-2 align-self-center">
@@ -36,9 +48,13 @@
 </div>
 
 <div th:fragment="likes-comments" class="row justify-content-between"
-     th:with="title=${content.board.content.title}, maincontent=${content.comment}">
+     th:with="title=${content.board.content.title}, maincontent=${content.comment}, id=${content.board.id}">
   <div class="col-9 pt-1 ms-2">
-    <h5 th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}" class="card-title"></h5>
+    <h5 class="card-title">
+      <a class="text-dark" style="text-decoration: none"
+         th:text="${title.length() < 30 ? title : #strings.substring(title, 0, 30)+ '...'}"
+         th:href="@{'/board/' + ${id}}"></a>
+    </h5>
     <p th:text="${maincontent.length() < 100 ? maincontent : #strings.substring(maincontent, 0, 100) + '...'}" class="card-text"></p>
   </div>
   <div class="col-2 me-2 align-self-center">
