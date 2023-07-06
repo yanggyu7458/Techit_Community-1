@@ -19,8 +19,16 @@ public class MyProfileService {
         return userRepository.save(user);
     }
 
-    public User readOne(Long userId) {
+    public User readById(Long userId) {
+        if (userRepository.findById(userId).isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return userRepository.findById(userId).get();
+    }
+
+    public User readByName(String userName) {
+        if (userRepository.findByName(userName).isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return userRepository.findByName(userName).get();
     }
 
     @Transactional

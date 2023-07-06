@@ -13,6 +13,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     //userId로 작성한 게시물 전체 조회
     Page<Comment> findAllByUsernameAndIsDeleted(String username, DeletedStatus isDeleted, Pageable pageable);
 
+    // username으로 작성된 comment 전체 조회
     default Page<Comment> findAllByUsernameAndIsDeleted(String username, Pageable pageable) {
         return findAllByUsernameAndIsDeleted(username, DeletedStatus.NONE, pageable);
     }
