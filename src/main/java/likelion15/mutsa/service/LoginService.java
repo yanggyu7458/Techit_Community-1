@@ -20,7 +20,10 @@ public class LoginService {
 
     // 로그인 검사
     public Long login(String email, String password) {
-        User user = repository.findByEmail(email);
+        // 우선 null값으로 설정하고 에러에 대한 것은 spring security적용 후
+        // 그것으로 처리하면 될듯
+        User user = repository.findByEmail(email).orElse(null);
+
         if (user== null){ // 아이디가 존재하지 않는 경우
             return null;
         }
