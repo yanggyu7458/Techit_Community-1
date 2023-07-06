@@ -44,3 +44,7 @@ out/
 .vscode/
 
 application.yml
+
+file/
+
+build.gradle
