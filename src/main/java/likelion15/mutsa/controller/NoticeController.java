@@ -2,6 +2,7 @@ package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.NoticeDto;
 import likelion15.mutsa.entity.Notice;
+import likelion15.mutsa.service.FileService;
 import likelion15.mutsa.service.NoticeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,11 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final FileService fileService;
 
     public NoticeController(
-            NoticeService noticeService
-    ){
+            NoticeService noticeService,
+            FileService fileService){
         this.noticeService = noticeService;
+        this.fileService = fileService;
     }
 
     @GetMapping("/notice")
@@ -37,8 +40,11 @@ public class NoticeController {
     }
 
     @PostMapping("/notice/add")
-    public String addNotice(NoticeDto noticeDto, @RequestParam("files") MultipartFile file) {
-        Notice notice = noticeService.createNotice(noticeDto, file);
+    public String addNotice(
+            NoticeDto noticeDto,
+            @RequestParam("files") MultipartFile file) {
+        Notice notice =
+                noticeService.createNotice(noticeDto, file);
 
         return "redirect:/notice";
     }
@@ -52,6 +58,11 @@ public class NoticeController {
         model.addAttribute(
                 "notice",
                 noticeService.readNotice(id)
+
+        );
+        model.addAttribute(
+                "file",
+                fileService.readFile(id)
 
         );
 
