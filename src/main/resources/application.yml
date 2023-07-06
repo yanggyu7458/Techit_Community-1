@@ -26,8 +26,13 @@ spring:
     show-sql: true
     generate-ddl: true
     hibernate:
-Expand All
-	@@ -35,7 +33,13 @@ spring:
+	naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+      ddl-auto: create
+    open-in-view: true
+    properties:
+      hibernate:
+spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
