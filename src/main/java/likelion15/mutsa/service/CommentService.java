@@ -44,14 +44,14 @@ public class CommentService {
     public List<CommentDTO> readCommentAll() {
         return commentList;
     }
-//    public CommentDTO readComment(Long id) {
-//        for (CommentDTO commentDTO: commentList) {
-//            if(commentDTO.getId().equals(id)) {
-//                return commentDTO;
-//            }
-//        }
-//        return null;
-//    }
+    public CommentDTO readComment(Long id) {
+        for (CommentDTO commentDTO: commentList) {
+            if(commentDTO.getId().equals(id)) {
+                return commentDTO;
+            }
+        }
+        return null;
+    }
     public CommentDTO updateComment(Long id, String comment) {
         int target = -1;
         for (int i = 0; i < commentList.size(); i++) {

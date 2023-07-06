@@ -4,10 +4,7 @@ import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.dto.UserDto;
 import likelion15.mutsa.entity.User;
-import likelion15.mutsa.service.BoardService;
-import likelion15.mutsa.service.CommentService;
-import likelion15.mutsa.service.JoinService;
-import likelion15.mutsa.service.LoginService;
+import likelion15.mutsa.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +28,7 @@ public class BoardController {
     private final CommentService commentService;
     private final JoinService joinService;
     private final LoginService loginService;
+    private final MyActivityService myActivityService;
 
     @GetMapping("/board/create-view") //게시글 생성 페이지
     public String createView() {
@@ -68,7 +66,7 @@ public class BoardController {
 
             model.addAttribute("board", boardDTO);
             model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
-            model.addAttribute("commentList", commentService.readCommentAll());
+            model.addAttribute("commentList", commentService.readComment(id));
             return "readBoard";
         } else {
             // 게시글이 존재하지 않을 경우 예외 처리

@@ -16,6 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     default Page<Comment> findAllByUsernameAndIsDeleted(String username, Pageable pageable) {
         return findAllByUsernameAndIsDeleted(username, DeletedStatus.NONE, pageable);
     }
+    //findByBoardId
 
     // userId로 좋아요한 게시물 전체 조회
     @Query("SELECT c " +
