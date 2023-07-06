@@ -43,21 +43,4 @@ public class LoginService {
         }
     }
 
-    public SessionDto createSessionDto(User user) {
-
-        UUID uuid = UUID.randomUUID();
-
-        SessionDto sessionDto = SessionDto.builder()
-                .uuid(uuid.toString())
-                .name(user.getName())
-                .realName(user.getRealName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .phoneNumber(user.getPhoneNumber())
-                .auth(UserAuth.USER)
-                .status(UserStatus.U)
-                .build();
-        // 프로필은 제외했음.
-        return sessionDto;
-    }
 }

@@ -53,7 +53,7 @@ public class LoginController {
 
             // sessionDto
             User user = loginService.getLoginUser(userId);
-            SessionDto sessionDto = loginService.createSessionDto(user);
+            SessionDto sessionDto = new SessionDto(user);
 
             // 세션에 sessionDto를 넣어줌
             session.setAttribute("uuid", sessionDto);
