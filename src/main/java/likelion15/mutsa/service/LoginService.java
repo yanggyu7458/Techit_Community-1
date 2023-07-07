@@ -1,12 +1,16 @@
 package likelion15.mutsa.service;
 
+import likelion15.mutsa.dto.SessionDto;
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.entity.enums.UserAuth;
+import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.repository.UserRepos;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +21,6 @@ public class LoginService {
     // 로그인 검사
     public Long login(String email, String password) {
         User user = repository.findByEmail(email);
-
         if (user== null){ // 아이디가 존재하지 않는 경우
             return null;
         }
@@ -35,5 +38,23 @@ public class LoginService {
         }else{
             return null;
         }
+    }
+
+    public SessionDto createSessionDto(User user) {
+
+        UUID uuid = UUID.randomUUID();
+
+        SessionDto sessionDto = SessionDto.builder()
+                .uuid(uuid.toString())
+                .name(user.getName())
+                .realName(user.getRealName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .phoneNumber(user.getPhoneNumber())
+                .auth(UserAuth.USER)
+                .status(UserStatus.U)
+                .build();
+        // 프로필은 제외했음.
+        return sessionDto;
     }
 }

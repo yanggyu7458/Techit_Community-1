@@ -25,6 +25,7 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     default int countLikesByBoard_Id(Long boardId){
         return countLikesByBoard_Id(boardId, YesOrNo.YES);
     }
+
     // 한 댓글의 좋아요 갯수
     @Query("select count(l) from Likes l where l.comment.id = ?1 and l.isLike = ?2")
     public int countLikesByComment_Id(Long commentId, YesOrNo isLike);

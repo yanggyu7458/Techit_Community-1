@@ -154,7 +154,7 @@ public class MyActivityService {
     }
 
     // 내가 좋아요 한 모든 댓글 조회
-    public Page<Comment> readMyLikesCommentsPaged(int pageNum, int pageLimit,Long userId) {
+    public Page<Comment> readMyLikesCommentsPaged(int pageNum, int pageLimit, Long userId) {
         Pageable pageable = PageRequest.of(
                 pageNum, pageLimit, Sort.by("id").descending()
         );

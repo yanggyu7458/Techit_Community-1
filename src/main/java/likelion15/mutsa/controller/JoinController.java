@@ -43,7 +43,7 @@ public class JoinController {
 
     @PostMapping("/join")
     public String completeJoin(JoinDto joinDto,
-                               RedirectAttributes re, Model model) {
+                               RedirectAttributes re) {
 
         if (joinService.IsExistEmail(joinDto.getEmail())) {
             re.addFlashAttribute("error","이미 가입된 이메일입니다.");
@@ -55,7 +55,7 @@ public class JoinController {
 
         User user = joinService.joinUser(joinDto);
 
-        System.out.println("user = " + user);
+       log.info(user.toString());
 
         re.addAttribute("realName", joinDto.getRealName());
         return "redirect:/complete-join";
