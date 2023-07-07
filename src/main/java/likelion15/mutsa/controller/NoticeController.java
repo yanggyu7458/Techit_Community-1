@@ -1,9 +1,14 @@
 package likelion15.mutsa.controller;
 
+import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
 import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.service.FileService;
 import likelion15.mutsa.service.NoticeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +31,15 @@ public class NoticeController {
     }
 
     @GetMapping("/notice")
-    public String getNotice(Model model) {
-        model.addAttribute(
-                "noticeList",
-                noticeService.readNoticeAll()
-        );
+    public String getNotice(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
+        Page<NoticeDto> noticePage = noticeService.readNoticeAllPaged(page);
+
+        model.addAttribute("noticeList", noticePage.getContent());
+        model.addAttribute("currentPage", noticePage.getNumber() + 1);
+        model.addAttribute("totalPages", noticePage.getTotalPages());
         return "notice";
     }
 

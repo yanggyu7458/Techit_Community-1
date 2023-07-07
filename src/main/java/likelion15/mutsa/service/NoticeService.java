@@ -2,7 +2,9 @@ package likelion15.mutsa.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
+import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.File;
 import likelion15.mutsa.entity.FileCon;
 import likelion15.mutsa.entity.Notice;
@@ -15,6 +17,10 @@ import likelion15.mutsa.repository.NoticeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,13 +117,10 @@ public class NoticeService {
     }
 
 
-    public List<NoticeDto> readNoticeAll() {
-        List<NoticeDto> noticeList = new ArrayList<>();
-        for (Notice notice :
-                noticeRepository.findAll()) {
-            noticeList.add(NoticeDto.fromEntity(notice));
-        }
-        return noticeList;
+    public Page<NoticeDto> readNoticeAllPaged(int page) {
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending());
+        Page<Notice> noticePage = noticeRepository.findAll(pageable);
+        return noticePage.map(NoticeDto::fromEntity);
     }
 
 
