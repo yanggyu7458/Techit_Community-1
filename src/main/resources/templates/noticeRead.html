@@ -11,7 +11,9 @@
 <!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>[[${notice.id}]]. [[${notice.title}]]</h1>
-첨부파일: <a th:href="@{/notice/{id}/download/{fileId} (id=${notice.id}, fileId=${file.id})}">[[${file.name}]]</a>
+<div th:if="${file}">
+    첨부파일: <a th:href="@{/notice/{id}/download/{fileId} (id=${notice.id}, fileId=${file.id})}">[[${file.name}]]</a>
+</div>
 <p>[[${notice.content}]]</p>
 
 <a href="/notice">Back</a>

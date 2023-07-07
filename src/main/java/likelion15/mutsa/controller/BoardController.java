@@ -4,10 +4,7 @@ import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.dto.UserDto;
 import likelion15.mutsa.entity.User;
-import likelion15.mutsa.service.BoardService;
-import likelion15.mutsa.service.CommentService;
-import likelion15.mutsa.service.JoinService;
-import likelion15.mutsa.service.LoginService;
+import likelion15.mutsa.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +28,7 @@ public class BoardController {
     private final CommentService commentService;
     private final JoinService joinService;
     private final LoginService loginService;
+    private final FileService fileService;
 
     @GetMapping("/board/create-view") //게시글 생성 페이지
     public String createView() {
@@ -67,8 +65,9 @@ public class BoardController {
             boardService.increaseViewCount(id); // 조회수 증가
 
             model.addAttribute("board", boardDTO);
-            model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
+//            model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readCommentAll());
+            model.addAttribute("file", fileService.readFile(id));
             return "readBoard";
         } else {
             // 게시글이 존재하지 않을 경우 예외 처리
@@ -76,24 +75,24 @@ public class BoardController {
             return "redirect:/board";
         }
     }
-    @GetMapping("/board/{id}/download")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
-        BoardDTO boardDTO = boardService.readBoard(id);
-        if (boardDTO != null && boardDTO.getFile() != null) {
-            MultipartFile multipartFile = boardDTO.getFile();
-            byte[] fileContent = multipartFile.getBytes();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", multipartFile.getOriginalFilename());
-
-            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-        } else {
-            // 파일이 존재하지 않을 경우 예외 처리
-            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @GetMapping("/board/{id}/download")
+//    public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
+//        BoardDTO boardDTO = boardService.readBoard(id);
+//        if (boardDTO != null && boardDTO.getFile() != null) {
+//            MultipartFile multipartFile = boardDTO.getFile();
+//            byte[] fileContent = multipartFile.getBytes();
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//            headers.setContentDispositionFormData("attachment", multipartFile.getOriginalFilename());
+//
+//            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+//        } else {
+//            // 파일이 존재하지 않을 경우 예외 처리
+//            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
     @GetMapping("/{id}/update-view")
     public String updateView(
             @PathVariable("id") Long id,
@@ -134,7 +133,8 @@ public class BoardController {
     @PostMapping("/board/{id}")
     public String commentWrite(@PathVariable("id") Long boardId,
                                //@RequestParam("id") Long id,
-                               @RequestParam("comment") String comment
+                               @RequestParam("comment") String comment,
+                               Model model
                                ) {
         CommentDTO commentDTO = CommentDTO.builder()
                 .boardId(boardId)
@@ -142,6 +142,11 @@ public class BoardController {
                 .comment(comment)
                 //.username(username)
                 .build();
+        model.addAttribute(
+                "file",
+                fileService.readFile(boardId)
+
+        );
 
         commentService.createComment(commentDTO);
 

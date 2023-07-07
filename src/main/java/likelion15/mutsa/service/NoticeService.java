@@ -33,6 +33,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,73 +48,31 @@ public class NoticeService {
 
     private final FileConRepository fileConRepository;
 
+    private final FileService fileService;
+
 
     public Notice createNotice(NoticeDto noticeDto, MultipartFile file) {
-        Content content = Content.builder()
-                .title(noticeDto.getTitle())
+        Content content = Content.builder() // content 엔티티 생성
+                .title(noticeDto.getTitle()) // controller에서 전달 받은 데이터
                 .content(noticeDto.getContent())
                 .isDeleted(DeletedStatus.NONE)
                 .status(VisibleStatus.VISIBLE)
                 .build();
-        Notice notice = Notice.builder()
-                .content(content)
+        Notice notice = Notice.builder() // notice 엔티티 생성
+                .content(content) // 위에 있는 content 엔티티
                 .build();
-        if (!file.isEmpty()) {
-            String fileName = file.getOriginalFilename(); //파일명을 얻어낼 수 있는 메서드!
-            long size = file.getSize(); //파일 사이즈
+        if (!file.isEmpty()) { // 첨부 파일이 존재한다면
+            File fileEntity = fileService.createFile(file); // 파일 업로드
 
-            System.out.println("파일명 : "  + fileName);
-            System.out.println("용량크기(byte) : " + size);
-            //서버에 저장할 파일이름 fileextension으로 .jsp이런식의  확장자 명을 구함
-//            String fileExtension = fileName.substring(fileName.lastIndexOf("."),fileName.length());
-            String uploadFolder = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\file";
-
-            /*
-		  파일 업로드시 파일명이 동일한 파일이 이미 존재할 수도 있고 사용자가
-		  업로드 하는 파일명이 언어 이외의 언어로 되어있을 수 있습니다.
-		  타인어를 지원하지 않는 환경에서는 정산 동작이 되지 않습니다.(리눅스가 대표적인 예시)
-		  고유한 랜던 문자를 통해 db와 서버에 저장할 파일명을 새롭게 만들어 준다.
-		 */
-
-//            UUID uuid = UUID.randomUUID();
-//            System.out.println(uuid.toString());
-//            String[] uuids = uuid.toString().split("-");
-//
-//            String uniqueName = uuids[0];
-//            System.out.println("생성된 고유문자열" + uniqueName);
-//            System.out.println("확장자명" + fileExtension);
-
-             java.io.File saveFile = new java.io.File(uploadFolder+"\\"+fileName);
-
-//            File saveFile = new File(uploadFolder+"\\"+uniqueName + fileExtension);  // 적용 후
-//            String fileUrl = String.format(System.getProperty("user.dir") + "\\src\\main\\resources\\static\\file\\%s", uniqueName+fileExtension);
-            String fileUrl = uploadFolder+"\\"+fileName;
-            try {
-                file.transferTo(saveFile); // 실제 파일 저장메서드(filewriter 작업을 손쉽게 한방에 처리해준다.)
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            File fileEntity = File.builder()
-                    .path(fileUrl)
-                    .name(fileName)
-                    .isDeleted(DeletedStatus.NONE)
-                    .size(size)
-                    .build();
-            fileRepository.save(fileEntity);
-
-
-
-            FileCon fileCon = FileCon.builder()
+            FileCon fileCon = FileCon.builder() //fileCon 엔티티 생성 fileid랑 공지 id 등록함으로써 연관 지음
                     .file(fileEntity)
                     .notice(notice)
                     .build();
-            fileConRepository.save(fileCon);
+            fileConRepository.save(fileCon); // 엔티티 저장
 
-        }else{}
+        }
 
-        return noticeRepository.save(notice);
+        return noticeRepository.save(notice); // 엔티티 저장
     }
 
 

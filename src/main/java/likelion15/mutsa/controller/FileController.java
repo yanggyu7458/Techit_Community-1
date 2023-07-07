@@ -28,11 +28,30 @@ public class FileController {
             HttpServletResponse response
     )throws IOException {
 
-        model.addAttribute(
-                "file",
-                fileService.readFile(fileId));
+//        model.addAttribute(
+//                "file",
+//                fileService.readFile(fileId));
 
-        fileService.downFile(fileService.readFile(fileId), response);
+        fileService.downFile(fileService.readFile(id), response);
+
+
+        return null;
+    }
+
+    @RequestMapping("/board/{id}/download/{fileId}")
+    public String download2(
+            @PathVariable("id") Long id,
+            @PathVariable("fileId") Long fileId,
+            Model model,
+            HttpServletResponse response
+    )throws IOException {
+
+//        model.addAttribute(
+//                "file",
+//                fileService.readFile(fileId));
+
+//        System.out.println(fileService.readFile(fileId));
+        fileService.downFile(fileService.readFile(id), response);
 
 
         return null;

@@ -30,6 +30,7 @@ public class NoticeController {
         this.fileService = fileService;
     }
 
+    //공지 페이지
     @GetMapping("/notice")
     public String getNotice(
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -40,17 +41,22 @@ public class NoticeController {
         model.addAttribute("noticeList", noticePage.getContent());
         model.addAttribute("currentPage", noticePage.getNumber() + 1);
         model.addAttribute("totalPages", noticePage.getTotalPages());
+        //notice.html 불러옴
         return "notice";
     }
 
+    //공지추가페이지로 이동
     @GetMapping("/notice/add-view")
     public String addNoticeView() {
         return "noticeAdd";
     }
+    //noticeAdd.html페이지 전송
 
     @PostMapping("/notice/add")
     public String addNotice(
+            // noticeAdd.html파일에서 입력한 제목, 내용 정보를 가져옴
             NoticeDto noticeDto,
+            // noticeAdd.html파일에서 가져온 파일 정보
             @RequestParam("files") MultipartFile file) {
         Notice notice =
                 noticeService.createNotice(noticeDto, file);
