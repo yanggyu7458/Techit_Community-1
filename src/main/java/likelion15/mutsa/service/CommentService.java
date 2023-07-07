@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
+import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.repository.BoardRepository;
 import likelion15.mutsa.repository.CommentRepository;
@@ -23,7 +24,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final List<CommentDTO> commentList = new ArrayList<>();
     @Transactional
-    public Comment createComment(CommentDTO commentDTO) {
+    public Comment createComment(CommentDTO commentDTO, User loginUser) {
         Board board = boardRepository.findById(commentDTO.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + commentDTO.getBoardId()));
 
@@ -31,6 +32,7 @@ public class CommentService {
                 .id(commentDTO.getId())
                 .comment(commentDTO.getComment())
                 .username(commentDTO.getUsername())
+                .createdBy(loginUser.getRealName())
                 .isDeleted(DeletedStatus.NOT_DELETED)
                 .board(board)
                 .build();
@@ -41,32 +43,23 @@ public class CommentService {
 
         return commentRepository.save(comment);
     }
-    public List<CommentDTO> readCommentAll() {
-        return commentList;
-    }
-    public CommentDTO readComment(Long id) {
-        for (CommentDTO commentDTO: commentList) {
-            if(commentDTO.getId().equals(id)) {
-                return commentDTO;
-            }
+    public List<CommentDTO> readAllComments(Long boardId) {
+        List<Comment> comments = commentRepository.findByBoardId(boardId);
+        List<CommentDTO> commentDTOs = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            CommentDTO commentDTO = CommentDTO.fromEntity(comment);
+            commentDTOs.add(commentDTO);
         }
-        return null;
+
+        return commentDTOs;
     }
-    public CommentDTO updateComment(Long id, String comment) {
-        int target = -1;
-        for (int i = 0; i < commentList.size(); i++) {
-            //id가 동일한 studentDTO를 찾았으면
-            if(commentList.get(i).getId().equals(id)) {
-                //인덱스 기록
-                target = i;
-                //반복 종료
-                break;
-            }
-        }
-        if(target != -1) {
-            commentList.get(target).setComment(comment);
-            return commentList.get(target);
-        } else return null;
+
+    @Transactional
+    public Long deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).get();
+        commentRepository.updateIsDeletedById(commentId);
+        return commentRepository.findById(commentId).get().getId();
     }
 
 

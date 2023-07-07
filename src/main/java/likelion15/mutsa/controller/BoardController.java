@@ -2,7 +2,7 @@ package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
-import likelion15.mutsa.dto.UserDto;
+import likelion15.mutsa.dto.SessionDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.*;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class BoardController {
     private final JoinService joinService;
     private final LoginService loginService;
     private final MyActivityService myActivityService;
+    private final MyProfileService myProfileService;
 
     @GetMapping("/board/create-view") //게시글 생성 페이지
     public String createView() {
@@ -36,9 +37,9 @@ public class BoardController {
     }
 
     @PostMapping("/board/create")
-    public String create(BoardDTO boardDTO, MultipartFile file, @SessionAttribute(name="userId",required = false) Long userId) throws Exception {
-        User loginUser = loginService.getLoginUser(userId);
-        boardService.createBoard(boardDTO, file, loginUser);
+    public String create(BoardDTO boardDTO, MultipartFile file, @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) throws Exception {
+        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        boardService.createBoard(boardDTO, file, loginedUser);
         return "redirect:/board";
     }
 
@@ -66,7 +67,7 @@ public class BoardController {
 
             model.addAttribute("board", boardDTO);
             model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
-            model.addAttribute("commentList", commentService.readComment(id));
+            model.addAttribute("commentList", commentService.readAllComments(id));
             return "readBoard";
         } else {
             // 게시글이 존재하지 않을 경우 예외 처리
@@ -105,9 +106,9 @@ public class BoardController {
             @PathVariable("id")
             Long id,
             BoardDTO boardDTO,
-            @SessionAttribute(name="userId",required = false) Long userId
+            @SessionAttribute(name="uuid",required = false) SessionDto sessionDto
     ) {
-        User loginUser = loginService.getLoginUser(userId);
+        User loginUser = myProfileService.readByName(sessionDto.getName());
         //service 활용하기
         boardService.updateBoard(id, boardDTO, loginUser);
         //상세보기 페이지로 PRG
@@ -123,25 +124,29 @@ public class BoardController {
         model.addAttribute("board", dto);
         return "boardDelete";
     }
+
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("id") Long id, UserDto userDto) {
-        boardService.deleteBoard(id);
+    public String delete(@PathVariable("id") Long boardId, @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {
+        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        boardService.deleteBoard(boardId, loginedUser);
         return "redirect:/board";
 
     }
     @PostMapping("/board/{id}")
     public String commentWrite(@PathVariable("id") Long boardId,
                                //@RequestParam("id") Long id,
-                               @RequestParam("comment") String comment
+                               @RequestParam("comment") String comment,
+                               @SessionAttribute(name="uuid",required = false) SessionDto sessionDto
                                ) {
+        User loginedUser = myProfileService.readByName(sessionDto.getName());
         CommentDTO commentDTO = CommentDTO.builder()
                 .boardId(boardId)
                 //.id(id)
                 .comment(comment)
-                //.username(username)
+                .username(loginedUser.getName())
                 .build();
 
-        commentService.createComment(commentDTO);
+        commentService.createComment(commentDTO, loginedUser);
 
         return "redirect:/board/" + boardId;
     }
@@ -165,16 +170,23 @@ public class BoardController {
 
 
     //좋아요 기능
+//    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
+//    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
+//        boardService.likeBoard(boardId);
+//        return ResponseEntity.ok("좋아요가 반영되었습니다.");
+//    }
+//
+//    @PostMapping("/board/{id}/unlike")
+//    public ResponseEntity<String> unlikeBoard(@PathVariable("id") Long boardId) {
+//        boardService.unlikeBoard(boardId);
+//        return ResponseEntity.ok("좋아요가 취소되었습니다.");
+//    }
     @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
-    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
-        boardService.likeBoard(boardId);
+    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId,
+                                            @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {  // 매개변수명을 boardId로 변경
+        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        myActivityService.likeBoard(loginedUser.getId(), boardId);
         return ResponseEntity.ok("좋아요가 반영되었습니다.");
-    }
-
-    @PostMapping("/board/{id}/unlike")
-    public ResponseEntity<String> unlikeBoard(@PathVariable("id") Long boardId) {
-        boardService.unlikeBoard(boardId);
-        return ResponseEntity.ok("좋아요가 취소되었습니다.");
     }
 
 }

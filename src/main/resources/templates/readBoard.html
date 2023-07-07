@@ -18,9 +18,7 @@
         <input type="submit" value="좋아요">
     </form>
     <!-- 좋아요 취소 버튼 -->
-    <form th:action="@{/board/{id}/unlike(id=${board.id})}" method="post" style="display: inline;">
-        <input type="submit" value="좋아요 취소">
-    </form>
+
 </div>
 <br/>
 <!--comment section-->
@@ -44,9 +42,9 @@
 <p>댓글 목록</p>
 
 <!--<div th:each="comment: ${board.comments}">-->
-<div th:each="comment: ${commentList}">
-    <!--<p>번호: [[${comment.id}]]</p>-->
-    <p>내용: [[${comment.comment}]]</p>
+<div th:each="commentDTO: ${commentList}">
+    <p>작성자: [[${commentDTO.username}]]</p>
+    <p>내용: [[${commentDTO.comment}]]</p>
 </div>
 
 <a href="/board">뒤로가기</a>

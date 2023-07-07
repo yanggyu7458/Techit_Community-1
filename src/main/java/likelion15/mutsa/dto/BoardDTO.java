@@ -25,6 +25,8 @@ public class BoardDTO {
     private LocalDateTime createAt; // 작성일
     private MultipartFile file; // 파일을 저장할 필드 추가
     private List<FileConDTO> fileCon;
+    private String createdBy;
+    private String modifiedBy;
 
 
     //Board 엔티티 -> BoardDTO
@@ -46,6 +48,7 @@ public class BoardDTO {
         User user = entity.getUser();
         boardDTO.setUserId(user.getId()); // User 엔티티의 id 값을 설정
         boardDTO.setUserName(user.getName()); // User 엔티티의 name 값을 설정
+        boardDTO.setCreatedBy(user.getRealName());
 
         return boardDTO;
     }

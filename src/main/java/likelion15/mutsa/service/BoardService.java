@@ -7,7 +7,10 @@ import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.YesOrNo;
-import likelion15.mutsa.repository.*;
+import likelion15.mutsa.repository.BoardRepository;
+import likelion15.mutsa.repository.CommentRepository;
+import likelion15.mutsa.repository.LikesRepository;
+import likelion15.mutsa.repository.UserRepos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
@@ -86,7 +89,6 @@ public class BoardService {
             fileCon.setBoard(board);
             // board.addFileCon(fileCon);
 
-
             // FileConDTO 객체 생성 및 board_id 설정
             FileConDTO fileConDTO = new FileConDTO();
             fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
@@ -96,21 +98,28 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-
     public Board updateBoard(Long id, BoardDTO boardDTO, User loginUser) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
-            Content content = board.getContent();
-            content.setTitle(boardDTO.getTitle());
-            content.setContent(boardDTO.getContent());
-            return boardRepository.save(board);
+            if(board.getUser().getName().equals(loginUser.getName())) {
+                Content content = board.getContent();
+                content.setTitle(boardDTO.getTitle());
+                content.setContent(boardDTO.getContent());
+                board.setContent(content);
+                return boardRepository.save(board);
+            } else throw new IllegalArgumentException("수정 권한이 없습니다.");
         } throw new IllegalArgumentException("Board not found with id: " + id);
     }
-    public void deleteBoard(Long id) {
-        Optional<Board> optionalBoard = boardRepository.findById(id);
-        if (optionalBoard.isPresent())
-            boardRepository.deleteById(id);
+    public void deleteBoard(Long boardId, User loginUser) {
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if (optionalBoard.isPresent()){
+            Board board = optionalBoard.get();
+            if(board.getUser().getName().equals(loginUser.getName())) {
+                boardRepository.deleteById(boardId);
+            } else throw new IllegalArgumentException("삭제 권한이 없습니다.");
+
+        }
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
     public void increaseViewCount(Long id) {
@@ -121,7 +130,6 @@ public class BoardService {
             boardRepository.save(board);
         }
     }
-
 
     //좋아요 기능
     public void likeBoard(Long boardId) {
