@@ -1,6 +1,7 @@
 package likelion15.mutsa.dto;
 
 import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -9,6 +10,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -25,6 +27,7 @@ public class BoardDTO {
     private LocalDateTime createAt; // 작성일
     private MultipartFile file; // 파일을 저장할 필드 추가
     private List<FileConDTO> fileCon;
+    private List<CommentDTO> comments;
     private String createdBy;
     private String modifiedBy;
 
@@ -49,6 +52,16 @@ public class BoardDTO {
         boardDTO.setUserId(user.getId()); // User 엔티티의 id 값을 설정
         boardDTO.setUserName(user.getName()); // User 엔티티의 name 값을 설정
         boardDTO.setCreatedBy(user.getRealName());
+        //Comment에서 필요한 정보 추출
+        List<Comment> commentList = entity.getComments();
+        if (commentList != null) {
+            List<CommentDTO> commentDTOList = new ArrayList<>();
+            for (Comment comment : commentList) {
+                CommentDTO commentDTO = CommentDTO.fromEntity(comment);
+                commentDTOList.add(commentDTO);
+            }
+            boardDTO.setComments(commentDTOList);
+        }
 
         return boardDTO;
     }

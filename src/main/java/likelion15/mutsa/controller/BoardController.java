@@ -57,10 +57,12 @@ public class BoardController {
         return "board";
     }
 
-    @GetMapping("/board/{id}") //{id} <- 변수
+    @GetMapping("/board/{id}")
     public String read(
             @PathVariable("id") Long id,
-            Model model) {
+            Model model,
+            @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
+    ) {
         BoardDTO boardDTO = boardService.readBoard(id);
         if (boardDTO != null) {
             boardService.increaseViewCount(id); // 조회수 증가
@@ -68,6 +70,8 @@ public class BoardController {
             model.addAttribute("board", boardDTO);
             model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readAllComments(id));
+            model.addAttribute("sessionDto", sessionDto); // sessionDto를 모델에 추가
+
             return "readBoard";
         } else {
             // 게시글이 존재하지 않을 경우 예외 처리
@@ -75,6 +79,7 @@ public class BoardController {
             return "redirect:/board";
         }
     }
+
     @GetMapping("/board/{id}/download")
     public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
         BoardDTO boardDTO = boardService.readBoard(id);
@@ -150,6 +155,64 @@ public class BoardController {
 
         return "redirect:/board/" + boardId;
     }
+//    @PostMapping("/board/{boardId}/comment/{commentId}/update")
+//    public String updateComment(
+//            @PathVariable("boardId") Long boardId,
+//            @PathVariable("commentId") Long commentId,
+//            @RequestParam("comment") String comment,
+//            @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
+//    ) {
+//        User loginedUser = myProfileService.readByName(sessionDto.getName());
+//        BoardDTO boardDTO = boardService.readBoard(boardId);
+//
+//        if (boardDTO != null && boardDTO.getComments() != null) {
+//            Optional<CommentDTO> optionalCommentDTO = boardDTO.getComments().stream()
+//                    .filter(c -> c.getId().equals(commentId))
+//                    .findFirst();
+//
+//            if (optionalCommentDTO.isPresent()) {
+//                CommentDTO commentDTO = optionalCommentDTO.get();
+//
+//                if (commentDTO.getUsername().equals(sessionDto.getName())) {
+//                    commentDTO.setComment(comment);
+//                    commentService.updateComment(commentId, commentDTO, loginedUser);
+//                }
+//            }
+//        }
+//
+//        return "redirect:/board/" + boardId;
+//    }
+    @PostMapping("/board/{boardId}/comment/{commentId}/update")
+    public String updateComment(
+            @PathVariable("boardId") Long boardId,
+            @PathVariable("commentId") Long commentId,
+            @RequestParam("comment") String comment,
+            @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
+    ) {
+        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        BoardDTO boardDTO = boardService.readBoard(boardId);
+
+        if (boardDTO != null && boardDTO.getComments() != null) {
+            for (CommentDTO commentDTO : boardDTO.getComments()) {
+                if (commentDTO.getId().equals(commentId)) {
+                    if (commentDTO.getUsername().equals(sessionDto.getName())) {
+                        commentDTO.setComment(comment);
+                        commentDTO.setEditButton(true); // 해당 댓글의 작성자일 경우 editButton 값을 true로 설정
+                        commentService.updateComment(commentId, commentDTO, loginedUser);
+                    } else {
+                        commentDTO.setEditButton(false); // 해당 댓글의 작성자가 아닐 경우 editButton 값을 false로 설정
+                    }
+                    break;
+                }
+            }
+        }
+
+        return "redirect:/board/" + boardId;
+    }
+
+
+
+
     @GetMapping("/board/list")
     public String searchBoards(
             @RequestParam("keyword") String keyword,

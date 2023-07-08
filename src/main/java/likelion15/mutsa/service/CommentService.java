@@ -10,10 +10,13 @@ import likelion15.mutsa.repository.BoardRepository;
 import likelion15.mutsa.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,6 +56,18 @@ public class CommentService {
         }
 
         return commentDTOs;
+    }
+    public CommentDTO updateComment(Long commentId, CommentDTO dto, User loginUser) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        Comment comment;
+        if(optionalComment.isPresent()) {
+            comment = optionalComment.get();
+            if(!loginUser.getName().equals(comment.getUsername())) {
+                return null;
+            }
+            comment.setComment(dto.getComment());
+            return CommentDTO.fromEntity(commentRepository.save(comment));
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @Transactional
