@@ -70,12 +70,15 @@ public class CommentService {
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-    @Transactional
-    public Long deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).get();
-        commentRepository.updateIsDeletedById(commentId);
-        return commentRepository.findById(commentId).get().getId();
+    public void deleteComment(Long commentId, User loginUser) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        if(optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+            if (comment.getUsername().equals(loginUser.getName())) {
+                commentRepository.deleteById(commentId);
+            } else throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-
 
 }

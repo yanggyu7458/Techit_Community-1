@@ -54,6 +54,14 @@
             </form>
         </div>
     </div>
+    <!--삭제하기 버튼-->
+    <div th:if="${commentDTO.username == sessionDto.name}">
+        <form th:action="@{/board/{boardId}/comment/{commentId}/delete(boardId=${id}, commentId=${commentDTO.id})}" method="post">
+            <button type="submit">삭제하기</button>
+        </form>
+    </div>
+
+
 </div>
 
 <script>
@@ -61,7 +69,9 @@
         const editBox = document.getElementById(boxId);
         editBox.style.display = (editBox.style.display === 'none') ? '' : 'none';
     }
+
 </script>
+
 
 
 <a href="/board">뒤로가기</a>

@@ -155,33 +155,6 @@ public class BoardController {
 
         return "redirect:/board/" + boardId;
     }
-//    @PostMapping("/board/{boardId}/comment/{commentId}/update")
-//    public String updateComment(
-//            @PathVariable("boardId") Long boardId,
-//            @PathVariable("commentId") Long commentId,
-//            @RequestParam("comment") String comment,
-//            @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
-//    ) {
-//        User loginedUser = myProfileService.readByName(sessionDto.getName());
-//        BoardDTO boardDTO = boardService.readBoard(boardId);
-//
-//        if (boardDTO != null && boardDTO.getComments() != null) {
-//            Optional<CommentDTO> optionalCommentDTO = boardDTO.getComments().stream()
-//                    .filter(c -> c.getId().equals(commentId))
-//                    .findFirst();
-//
-//            if (optionalCommentDTO.isPresent()) {
-//                CommentDTO commentDTO = optionalCommentDTO.get();
-//
-//                if (commentDTO.getUsername().equals(sessionDto.getName())) {
-//                    commentDTO.setComment(comment);
-//                    commentService.updateComment(commentId, commentDTO, loginedUser);
-//                }
-//            }
-//        }
-//
-//        return "redirect:/board/" + boardId;
-//    }
     @PostMapping("/board/{boardId}/comment/{commentId}/update")
     public String updateComment(
             @PathVariable("boardId") Long boardId,
@@ -210,7 +183,14 @@ public class BoardController {
         return "redirect:/board/" + boardId;
     }
 
-
+    @PostMapping("/board/{boardId}/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable("boardId") Long boardId,
+                                @PathVariable("commentId") Long commentId,
+                                @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {
+        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        commentService.deleteComment(commentId, loginedUser);
+        return "redirect:/board/" + boardId;
+    }
 
 
     @GetMapping("/board/list")
