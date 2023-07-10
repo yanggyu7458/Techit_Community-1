@@ -170,9 +170,9 @@
      th:each="board, stat: ${boardList}">
     <div class="num">[[${board.id}]]</div>
     <div class="title"><a th:href="@{/board/{id}(id=${board.id})}">[[${board.title}]]</a></div>
-    <div class="writer">user.name</div>
+    <div class="writer">[[${board.createdBy}]]</div>
     <div class="date">[[${#temporals.format(board.createAt, 'yyyy-MM-dd HH:mm')}]]</div>
-    <div class="count">조회수</div>
+    <div class="count">[[${board.viewCount}]]</div>
     <hr>
     <!-- 페이지당 5개의 게시글만 표시 -->
     <div th:if="${stat.index % 5 == 4}">
