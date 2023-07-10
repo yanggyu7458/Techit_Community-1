@@ -30,6 +30,7 @@ public class BoardController {
     private final LoginService loginService;
     private final MyActivityService myActivityService;
     private final MyProfileService myProfileService;
+    private final FileService fileService;
 
     @GetMapping("/board/create-view") //게시글 생성 페이지
     public String createView() {
@@ -72,6 +73,9 @@ public class BoardController {
             model.addAttribute("commentList", commentService.readAllComments(id));
             model.addAttribute("sessionDto", sessionDto); // sessionDto를 모델에 추가
 
+//            model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
+            model.addAttribute("commentList", commentService.readCommentAll());
+            model.addAttribute("file", fileService.readFile(id));
             return "readBoard";
         } else {
             // 게시글이 존재하지 않을 경우 예외 처리
@@ -79,25 +83,24 @@ public class BoardController {
             return "redirect:/board";
         }
     }
-
-    @GetMapping("/board/{id}/download")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
-        BoardDTO boardDTO = boardService.readBoard(id);
-        if (boardDTO != null && boardDTO.getFile() != null) {
-            MultipartFile multipartFile = boardDTO.getFile();
-            byte[] fileContent = multipartFile.getBytes();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", multipartFile.getOriginalFilename());
-
-            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-        } else {
-            // 파일이 존재하지 않을 경우 예외 처리
-            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @GetMapping("/board/{id}/download")
+//    public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
+//        BoardDTO boardDTO = boardService.readBoard(id);
+//        if (boardDTO != null && boardDTO.getFile() != null) {
+//            MultipartFile multipartFile = boardDTO.getFile();
+//            byte[] fileContent = multipartFile.getBytes();
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//            headers.setContentDispositionFormData("attachment", multipartFile.getOriginalFilename());
+//
+//            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+//        } else {
+//            // 파일이 존재하지 않을 경우 예외 처리
+//            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
     @GetMapping("/{id}/update-view")
     public String updateView(
             @PathVariable("id") Long id,
@@ -141,7 +144,8 @@ public class BoardController {
     public String commentWrite(@PathVariable("id") Long boardId,
                                //@RequestParam("id") Long id,
                                @RequestParam("comment") String comment,
-                               @SessionAttribute(name="uuid",required = false) SessionDto sessionDto
+                               @SessionAttribute(name="uuid",required = false) SessionDto sessionDto,
+                               Model model
                                ) {
         User loginedUser = myProfileService.readByName(sessionDto.getName());
         CommentDTO commentDTO = CommentDTO.builder()
@@ -150,6 +154,11 @@ public class BoardController {
                 .comment(comment)
                 .username(loginedUser.getName())
                 .build();
+        model.addAttribute(
+                "file",
+                fileService.readFile(boardId)
+
+        );
 
         commentService.createComment(commentDTO, loginedUser);
 

@@ -27,4 +27,6 @@ public class Notice extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "notice")
     private List<FileCon> fileCons = new ArrayList<>();
+
+
 }

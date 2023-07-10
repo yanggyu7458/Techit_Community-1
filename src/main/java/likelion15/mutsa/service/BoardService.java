@@ -32,6 +32,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final JoinService joinService;
     private final FileService fileService;
+    private final FileConRepository fileConRepository;
 
     private final List<BoardDTO> boardList = new ArrayList<>();
     private static final int PAGE_SIZE = 5;
@@ -66,34 +67,48 @@ public class BoardService {
                 .createdBy(loginUser.getName())
                 .content(content)
                 .build();
-        // 파일 정보 저장
-        if (file != null && !file.isEmpty()) {
-            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-            UUID uuid = UUID.randomUUID();
-            String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
 
-            File fileEntity = File.builder()
-                    .path(projectPath)
-                    .name(fileName)
-                    .size(file.getSize())
-                    .isDeleted(DeletedStatus.NOT_DELETED)
+        if (!file.isEmpty()) { // 첨부 파일이 존재한다면
+            File fileEntity = fileService.createFile(file); // 파일 업로드
+
+            FileCon fileCon = FileCon.builder() //fileCon 엔티티 생성 fileid랑 공지 id 등록함으로써 연관 지음
+                    .file(fileEntity)
+                    .board(board)
                     .build();
-
-            file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
-
-            // 파일 정보를 Board 엔티티에 저장
-            board.setFile(fileEntity);
-
-            // FileCon 엔티티 생성
-            FileCon fileCon = new FileCon();
-            fileCon.setBoard(board);
-            // board.addFileCon(fileCon);
-
-            // FileConDTO 객체 생성 및 board_id 설정
-            FileConDTO fileConDTO = new FileConDTO();
-            fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
+            fileConRepository.save(fileCon); // 엔티티 저장
 
         }
+        // 파일 정보 저장
+//        if (file != null && !file.isEmpty()) {
+//            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+//            UUID uuid = UUID.randomUUID();
+//            String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+//
+//            File fileEntity = File.builder()
+//                    .path(projectPath)
+//                    .name(fileName)
+//                    .size(file.getSize())
+//                    .isDeleted(DeletedStatus.NOT_DELETED)
+//                    .build();
+//
+//            file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
+//
+//            // 파일 정보를 Board 엔티티에 저장
+//            board.setFile(fileEntity);
+//
+//            // FileCon 엔티티 생성
+//            FileCon fileCon = FileCon.builder()
+//                    .file(fileEntity)
+//                    .board(board)
+//                    .build();
+//            fileConRepository.save(fileCon);
+//
+//
+//            // FileConDTO 객체 생성 및 board_id 설정
+//            FileConDTO fileConDTO = new FileConDTO();
+//            fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
+//
+//        }
 
         return boardRepository.save(board);
     }
