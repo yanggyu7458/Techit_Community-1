@@ -1,8 +1,14 @@
 package likelion15.mutsa.controller;
 
+import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
 import likelion15.mutsa.entity.Notice;
+import likelion15.mutsa.service.FileService;
 import likelion15.mutsa.service.NoticeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,30 +21,45 @@ import org.springframework.web.multipart.MultipartFile;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final FileService fileService;
 
     public NoticeController(
-            NoticeService noticeService
-    ){
+            NoticeService noticeService,
+            FileService fileService){
         this.noticeService = noticeService;
+        this.fileService = fileService;
     }
 
+    //공지 페이지
     @GetMapping("/notice")
-    public String getNotice(Model model) {
-        model.addAttribute(
-                "noticeList",
-                noticeService.readNoticeAll()
-        );
+    public String getNotice(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
+        Page<NoticeDto> noticePage = noticeService.readNoticeAllPaged(page);
+
+        model.addAttribute("noticeList", noticePage.getContent());
+        model.addAttribute("currentPage", noticePage.getNumber() + 1);
+        model.addAttribute("totalPages", noticePage.getTotalPages());
+        //notice.html 불러옴
         return "notice";
     }
 
+    //공지추가페이지로 이동
     @GetMapping("/notice/add-view")
     public String addNoticeView() {
         return "noticeAdd";
     }
+    //noticeAdd.html페이지 전송
 
     @PostMapping("/notice/add")
-    public String addNotice(NoticeDto noticeDto, @RequestParam("files") MultipartFile file) {
-        Notice notice = noticeService.createNotice(noticeDto, file);
+    public String addNotice(
+            // noticeAdd.html파일에서 입력한 제목, 내용 정보를 가져옴
+            NoticeDto noticeDto,
+            // noticeAdd.html파일에서 가져온 파일 정보
+            @RequestParam("files") MultipartFile file) {
+        Notice notice =
+                noticeService.createNotice(noticeDto, file);
 
         return "redirect:/notice";
     }
@@ -52,6 +73,11 @@ public class NoticeController {
         model.addAttribute(
                 "notice",
                 noticeService.readNotice(id)
+
+        );
+        model.addAttribute(
+                "file",
+                fileService.readFile(id)
 
         );
 

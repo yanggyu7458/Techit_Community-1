@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+<head th:replace="~{fragments/header :: header}"/>
 <head>
     <meta charset="UTF-8">
     <title>Search</title>
 </head>
 <body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <form action="/posts/search" method="GET" class="form-inline p-2 bd-highlight" role="search">
       <input type="text" name="keyword" class="form-control" id="search" placeholder="검색">
       <button class="btn btn-success bi bi-search"></button>
 </form>
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>
