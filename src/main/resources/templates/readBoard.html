@@ -37,7 +37,7 @@
 <div>
     <!-- 첨부 파일 다운로드 링크 -->
     <div th:if="${file}">
-        첨부파일: <a th:href="@{/board/{id}/download/{fileId} (id=${board.id}, fileId=${file.id})}">[[${file.name}]]</a>
+        첨부파일: <a th:href="@{/board/{id}/download (id=${board.id})}">[[${file.name}]]</a>
     </div>
 </div>
 

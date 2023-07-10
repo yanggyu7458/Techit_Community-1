@@ -12,7 +12,7 @@
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>[[${notice.id}]]. [[${notice.title}]]</h1>
 <div th:if="${file}">
-    첨부파일: <a th:href="@{/notice/{id}/download/{fileId} (id=${notice.id}, fileId=${file.id})}">[[${file.name}]]</a>
+    첨부파일: <a th:href="@{/notice/{id}/download (id=${notice.id})}">[[${file.name}]]</a>
 </div>
 <p>[[${notice.content}]]</p>
 
