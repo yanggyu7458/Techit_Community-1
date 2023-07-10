@@ -1,28 +1,22 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
-import likelion15.mutsa.dto.FileConDTO;
 import likelion15.mutsa.entity.*;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.YesOrNo;
-import likelion15.mutsa.repository.BoardRepository;
-import likelion15.mutsa.repository.CommentRepository;
-import likelion15.mutsa.repository.LikesRepository;
-import likelion15.mutsa.repository.UserRepos;
+import likelion15.mutsa.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

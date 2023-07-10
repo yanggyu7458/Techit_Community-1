@@ -10,16 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RequiredArgsConstructor
 @Controller
@@ -72,9 +67,6 @@ public class BoardController {
             model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readAllComments(id));
             model.addAttribute("sessionDto", sessionDto); // sessionDto를 모델에 추가
-
-//            model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
-            model.addAttribute("commentList", commentService.readCommentAll());
             model.addAttribute("file", fileService.readFile(id));
             return "readBoard";
         } else {
