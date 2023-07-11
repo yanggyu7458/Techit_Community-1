@@ -7,8 +7,6 @@ import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.repository.UserRepository;
 import likelion15.mutsa.service.MyActivityService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

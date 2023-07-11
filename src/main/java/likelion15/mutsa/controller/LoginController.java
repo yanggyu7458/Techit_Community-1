@@ -1,11 +1,7 @@
 package likelion15.mutsa.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import likelion15.mutsa.config.security.CustomUserDetails;
 import likelion15.mutsa.dto.JoinDto;
-import likelion15.mutsa.dto.SessionDto;
-import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.JoinService;
 import likelion15.mutsa.service.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping
@@ -30,8 +21,6 @@ public class LoginController {
     private final LoginService loginService;
     private final JoinService joinService;
 
-    // 세션리스트 확인용
-    private final static Hashtable sessionList = new Hashtable();
 
     // 로그인 페이지
     @GetMapping("/login")

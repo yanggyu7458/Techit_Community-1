@@ -5,19 +5,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    //    @Bean
+//    @Bean
 //    protected SecurityFilterChain config(HttpSecurity http) throws Exception {
 //        http.csrf(csrf -> csrf.disable());
 //        http.authorizeHttpRequests(authorize -> authorize
@@ -36,13 +32,12 @@ public class SecurityConfig {
                         .anyRequest() //다른 모든 요청은
                         .authenticated() //인증이 되야 들어갈 수 있다.
                 )
-                // 인증된페이지, 아닌 페이지는 구분이 되어 나옴(성공)
-                // 문제: 로그인이 되지 않음
+
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .defaultSuccessUrl("/home") // 로그인 성공시
                         .failureUrl("/login?fail") // 로그인 실패시
-                        .permitAll() // 로그인 관련된 URL의 인증 요구사항을 해제
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

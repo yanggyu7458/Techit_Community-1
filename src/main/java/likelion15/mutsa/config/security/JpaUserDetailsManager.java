@@ -41,10 +41,9 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             log.info("이미 유저 정보 존재함",user.getUsername());
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        log.info("manager에서 유저 정보 저장 시도 ");
         try {
             this.userRepository.save(((CustomUserDetails) user).newEntity());
-            log.info("저장 완료 ");
+            log.info("db에 유저 엔티티 저장 완료 ");
         } catch (ClassCastException e) {
             log.error("failed to cast to {}",CustomUserDetails.class);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);

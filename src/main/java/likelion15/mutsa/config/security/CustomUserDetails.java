@@ -9,9 +9,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,21 +26,6 @@ public class CustomUserDetails implements UserDetails {
     private String name;
     private String phoneNumber;
     private String password;
-//    private UserAuth auth;
-//    private Profile profile;
-//    private UserStatus status;
-//    public UserAuth getAuth() {
-//        return auth;
-//    }
-//
-//    public Profile getProfile() {
-//        return profile;
-//    }
-//
-//    public UserStatus getStatus() {
-//        return status;
-//    }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -60,7 +43,7 @@ public class CustomUserDetails implements UserDetails {
     }
     @Override
     public String getUsername() {
-        // username으로 아이디가 되는것같아서 일단 email로 설정
+        // username으로 아이디가 되서 일단 email로 설정
         return email;
     }
 

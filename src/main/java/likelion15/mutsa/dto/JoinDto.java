@@ -1,10 +1,8 @@
 package likelion15.mutsa.dto;
 
-import likelion15.mutsa.entity.Profile;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
