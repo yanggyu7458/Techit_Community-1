@@ -1,9 +1,13 @@
 package likelion15.mutsa.config.security;
 
+import likelion15.mutsa.entity.Profile;
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.entity.enums.UserAuth;
+import likelion15.mutsa.entity.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
+@Slf4j
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +28,22 @@ public class CustomUserDetails implements UserDetails {
     private String name;
     private String phoneNumber;
     private String password;
+//    private UserAuth auth;
+//    private Profile profile;
+//    private UserStatus status;
+//    public UserAuth getAuth() {
+//        return auth;
+//    }
+//
+//    public Profile getProfile() {
+//        return profile;
+//    }
+//
+//    public UserStatus getStatus() {
+//        return status;
+//    }
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        Collection<GrantedAuthority> authorities = new ArrayList<>();
@@ -76,9 +96,14 @@ public class CustomUserDetails implements UserDetails {
         return phoneNumber;
     }
 
-    public static CustomUserDetails fromEntity(User entity) {
-        CustomUserDetails details = CustomUserDetails.builder()
+    public String getEmail() {
+        return email;
+    }
 
+    public static CustomUserDetails fromEntity(User entity) {
+        log.info(entity.getEmail());
+
+        CustomUserDetails details = CustomUserDetails.builder()
                 .email(entity.getEmail())
                 .realName(entity.getRealName())
                 .name(entity.getName())
@@ -94,8 +119,13 @@ public class CustomUserDetails implements UserDetails {
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .password(password)
+                .auth(UserAuth.USER)
+                .profile(Profile.builder().build())
+                .status(UserStatus.U)
                 .build();
+
         return entity;
 
     }
 }
+

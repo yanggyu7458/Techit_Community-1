@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
-                        .requestMatchers("/join-view").anonymous()
+                        .requestMatchers("complete-join").permitAll()
+                        .requestMatchers("/join-view","/join").anonymous()
                         .anyRequest() //다른 모든 요청은
                         .authenticated() //인증이 되야 들어갈 수 있다.
                 )

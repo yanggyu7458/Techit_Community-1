@@ -41,7 +41,7 @@ public class JoinService {
         User user = User.builder()
                 .name(joinDto.getName())
                 .realName(joinDto.getRealName())
-                .email(joinDto.getEmail())
+                .email(joinDto.getUsername())
                 .password(passwordEncoder.encode(joinDto.getPassword()))
                 .phoneNumber(joinDto.getPhoneNumber())
                 .auth(UserAuth.USER)

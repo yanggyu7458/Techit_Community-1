@@ -3,10 +3,12 @@ package likelion15.mutsa.config.security;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 @Slf4j
@@ -34,6 +36,19 @@ public class JpaUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails user) {
+
+        if(this.userExists(user.getUsername())){
+            log.info("이미 유저 정보 존재함",user.getUsername());
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+        log.info("manager에서 유저 정보 저장 시도 ");
+        try {
+            this.userRepository.save(((CustomUserDetails) user).newEntity());
+            log.info("저장 완료 ");
+        } catch (ClassCastException e) {
+            log.error("failed to cast to {}",CustomUserDetails.class);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     }
 

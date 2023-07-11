@@ -46,14 +46,15 @@ public class LoginController {
     ) {
 
         // 추후 수정해야함
-        Long userId = loginService.login(joinDto.getEmail(), joinDto.getPassword());
-        System.out.println(joinDto.getEmail() + " /" + joinDto.getPassword());
+        //joinDto의 username 은 email임
+        Long userId = loginService.login(joinDto.getUsername(), joinDto.getPassword());
+        System.out.println(joinDto.getUsername() + " /" + joinDto.getPassword());
 
         if (userId != null) { // 로그인 성공
 
             return "redirect:/home";
         } else { // 로그인 실패
-            if(!joinService.IsExistEmail(joinDto.getEmail())){
+            if(!joinService.IsExistEmail(joinDto.getUsername())){
                 re.addFlashAttribute("loginError","존재하지 않는 이메일입니다.");
             }else{
                 re.addFlashAttribute("loginError","비밀번호가 일치하지 않습니다.");

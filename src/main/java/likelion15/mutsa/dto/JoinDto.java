@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JoinDto {
     private String name;
-    private String email;
+    private String username; // email
     private String realName;
     private String phoneNumber;
     private String password;

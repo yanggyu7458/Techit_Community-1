@@ -1,10 +1,16 @@
 package likelion15.mutsa.controller;
 
+import likelion15.mutsa.config.security.CustomUserDetails;
+import likelion15.mutsa.config.security.JpaUserDetailsManager;
 import likelion15.mutsa.dto.JoinDto;
+import likelion15.mutsa.entity.Profile;
 import likelion15.mutsa.entity.User;
+import likelion15.mutsa.entity.enums.UserAuth;
+import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.service.JoinService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -23,7 +29,7 @@ public class JoinController {
 
     private final JoinService joinService;
     private final PasswordEncoder passwordEncoder;
-    private final UserDetailsService detailsService;
+    private final JpaUserDetailsManager manager;
 
     // 초기화 - db에 임의의 유저 저장(로그인,회원가입 테스트를 위해)
     @GetMapping("/create")
@@ -50,20 +56,31 @@ public class JoinController {
     public String completeJoin(JoinDto joinDto,
                                RedirectAttributes re) {
 
-//        detailsService.createUser();
+        log.info(joinDto.getRealName());
+        log.info(joinDto.getName());
+        UserDetails details = CustomUserDetails.builder()
+                    .email(joinDto.getUsername())
+                    .name(joinDto.getName())
+                    .realName(joinDto.getRealName())
+                    .phoneNumber(joinDto.getPhoneNumber())
+                    .password(passwordEncoder.encode(joinDto.getPassword()))
+                    .build();
+        log.info("유저 정보 details에 저장 완료 ");
+        log.info("email={}",joinDto.getUsername());
+        manager.createUser(details);
 
-        if (joinService.IsExistEmail(joinDto.getEmail())) {
-            re.addFlashAttribute("error","이미 가입된 이메일입니다.");
-            return "redirect:/join-view";
-        } else if (joinService.checkUsernameDuplicate(joinDto.getName())) {
-            re.addFlashAttribute("error","이미 존재하는 닉네임입니다.");
-            return "redirect:/join-view";
-        }
-
-        User user = joinService.joinUser(joinDto);
-
-       log.info(user.toString());
-
+//        if (joinService.IsExistEmail(joinDto.getEmail())) {
+//            re.addFlashAttribute("error","이미 가입된 이메일입니다.");
+//            return "redirect:/join-view";
+//        } else if (joinService.checkUsernameDuplicate(joinDto.getName())) {
+//            re.addFlashAttribute("error","이미 존재하는 닉네임입니다.");
+//            return "redirect:/join-view";
+//        }
+//
+//        User user = joinService.joinUser(joinDto);
+//
+//       log.info(user.toString());
+//
         re.addAttribute("realName", joinDto.getRealName());
         return "redirect:/complete-join";
     }
