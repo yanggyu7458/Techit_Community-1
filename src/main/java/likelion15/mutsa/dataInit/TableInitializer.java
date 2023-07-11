@@ -7,6 +7,9 @@ import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.repository.UserRepository;
 import likelion15.mutsa.service.MyActivityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TableInitializer {
     private final MyActivityService myActivityService;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; // 비밀번호 암호화를 위해 추가
 
     @PostConstruct
     @Transactional
@@ -26,7 +30,7 @@ public class TableInitializer {
                     .email(emails[i])
                     .realName(realNames[i])
                     .name(names[i])
-                    .password("1234")
+                    .password(passwordEncoder.encode("1234"))
                     .phoneNumber("010-4949-5895")
                     .auth(UserAuth.USER)
                     .status(UserStatus.U)
