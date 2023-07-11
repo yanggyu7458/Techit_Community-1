@@ -31,7 +31,7 @@ public class Board extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE}
     )
     @JoinColumn(name = "user_id",
             foreignKey = @ForeignKey(name = "FK_BOARD_USER")

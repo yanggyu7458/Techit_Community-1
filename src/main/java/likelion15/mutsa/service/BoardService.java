@@ -1,7 +1,6 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
-import likelion15.mutsa.dto.FileConDTO;
 import likelion15.mutsa.entity.*;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -12,14 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -110,21 +107,28 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-
     public Board updateBoard(Long id, BoardDTO boardDTO, User loginUser) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
-            Content content = board.getContent();
-            content.setTitle(boardDTO.getTitle());
-            content.setContent(boardDTO.getContent());
-            return boardRepository.save(board);
+            if(board.getUser().getName().equals(loginUser.getName())) {
+                Content content = board.getContent();
+                content.setTitle(boardDTO.getTitle());
+                content.setContent(boardDTO.getContent());
+                board.setContent(content);
+                return boardRepository.save(board);
+            } else throw new IllegalArgumentException("수정 권한이 없습니다.");
         } throw new IllegalArgumentException("Board not found with id: " + id);
     }
-    public void deleteBoard(Long id) {
-        Optional<Board> optionalBoard = boardRepository.findById(id);
-        if (optionalBoard.isPresent())
-            boardRepository.deleteById(id);
+    public void deleteBoard(Long boardId, User loginUser) {
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if (optionalBoard.isPresent()){
+            Board board = optionalBoard.get();
+            if(board.getUser().getName().equals(loginUser.getName())) {
+                boardRepository.deleteById(boardId);
+            } else throw new IllegalArgumentException("삭제 권한이 없습니다.");
+
+        }
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
     public void increaseViewCount(Long id) {
@@ -135,7 +139,6 @@ public class BoardService {
             boardRepository.save(board);
         }
     }
-
 
     //좋아요 기능
     public void likeBoard(Long boardId) {

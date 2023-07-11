@@ -4,15 +4,19 @@ import jakarta.transaction.Transactional;
 import likelion15.mutsa.dto.CommentDTO;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
+import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.repository.BoardRepository;
 import likelion15.mutsa.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +27,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final List<CommentDTO> commentList = new ArrayList<>();
     @Transactional
-    public Comment createComment(CommentDTO commentDTO) {
+    public Comment createComment(CommentDTO commentDTO, User loginUser) {
         Board board = boardRepository.findById(commentDTO.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + commentDTO.getBoardId()));
 
@@ -31,6 +35,7 @@ public class CommentService {
                 .id(commentDTO.getId())
                 .comment(commentDTO.getComment())
                 .username(commentDTO.getUsername())
+                .createdBy(loginUser.getRealName())
                 .isDeleted(DeletedStatus.NOT_DELETED)
                 .board(board)
                 .build();
@@ -41,33 +46,39 @@ public class CommentService {
 
         return commentRepository.save(comment);
     }
-    public List<CommentDTO> readCommentAll() {
-        return commentList;
-    }
-//    public CommentDTO readComment(Long id) {
-//        for (CommentDTO commentDTO: commentList) {
-//            if(commentDTO.getId().equals(id)) {
-//                return commentDTO;
-//            }
-//        }
-//        return null;
-//    }
-    public CommentDTO updateComment(Long id, String comment) {
-        int target = -1;
-        for (int i = 0; i < commentList.size(); i++) {
-            //id가 동일한 studentDTO를 찾았으면
-            if(commentList.get(i).getId().equals(id)) {
-                //인덱스 기록
-                target = i;
-                //반복 종료
-                break;
-            }
+    public List<CommentDTO> readAllComments(Long boardId) {
+        List<Comment> comments = commentRepository.findByBoardId(boardId);
+        List<CommentDTO> commentDTOs = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            CommentDTO commentDTO = CommentDTO.fromEntity(comment);
+            commentDTOs.add(commentDTO);
         }
-        if(target != -1) {
-            commentList.get(target).setComment(comment);
-            return commentList.get(target);
-        } else return null;
+
+        return commentDTOs;
+    }
+    public CommentDTO updateComment(Long commentId, CommentDTO dto, User loginUser) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        Comment comment;
+        if(optionalComment.isPresent()) {
+            comment = optionalComment.get();
+            if(!loginUser.getName().equals(comment.getUsername())) {
+                return null;
+            }
+            comment.setComment(dto.getComment());
+            return CommentDTO.fromEntity(commentRepository.save(comment));
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
+    public void deleteComment(Long commentId, User loginUser) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        if(optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+            if (comment.getUsername().equals(loginUser.getName())) {
+                commentRepository.deleteById(commentId);
+            } else throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
 
 }
