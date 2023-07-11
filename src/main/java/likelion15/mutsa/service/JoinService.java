@@ -7,19 +7,24 @@ import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
 import likelion15.mutsa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JoinService {
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
+
 
     public void createUser(){ // for test
         User user = User.builder()
                 .realName("김다미")
                 .name("미미")
                 .email("mimi@gmail.com")
-                .password("1234")
+                .password(passwordEncoder.encode("1234"))
                 .phoneNumber("01012341234")
                 .auth(UserAuth.USER)
                 .profile(Profile.builder().build())
@@ -31,11 +36,13 @@ public class JoinService {
     // 회원가입 - 유저 객체 추가
     public User joinUser(JoinDto joinDto) {
 
+        log.info(joinDto.toString());
+
         User user = User.builder()
                 .name(joinDto.getName())
                 .realName(joinDto.getRealName())
-                .email(joinDto.getEmail())
-                .password(joinDto.getPassword())
+                .email(joinDto.getUsername())
+                .password(passwordEncoder.encode(joinDto.getPassword()))
                 .phoneNumber(joinDto.getPhoneNumber())
                 .auth(UserAuth.USER)
                 .profile(Profile.builder().build())
@@ -43,6 +50,7 @@ public class JoinService {
                 .build();
 
         repository.save(user);
+        log.info("{}님 유저정보 저장 완료", joinDto.getRealName());
         return user;
     }
 
