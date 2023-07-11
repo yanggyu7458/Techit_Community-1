@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
-                        .requestMatchers("/join-view").permitAll()
+                        .requestMatchers("/join-view").anonymous()
                         .anyRequest() //다른 모든 요청은
                         .authenticated() //인증이 되야 들어갈 수 있다.
                 )
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/home")
+                        .logoutSuccessUrl("/login")
 
                 );
         return http.build();

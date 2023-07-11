@@ -4,18 +4,18 @@ import likelion15.mutsa.entity.User;
 import likelion15.mutsa.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-@Service
 @Slf4j
-public class UserDetailService implements UserDetailsService {
+@Service
+public class JpaUserDetailsManager implements UserDetailsManager {
+
     private final UserRepository userRepository;
 
-    public UserDetailService(UserRepository userRepository) {
+    public JpaUserDetailsManager(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
     @Override
@@ -31,4 +31,30 @@ public class UserDetailService implements UserDetailsService {
 
         return CustomUserDetails.fromEntity(user);
     }
+
+    @Override
+    public void createUser(UserDetails user) {
+
+    }
+
+    @Override
+    public void updateUser(UserDetails user) {
+
+    }
+
+    @Override
+    public void deleteUser(String username) {
+
+    }
+
+    @Override
+    public void changePassword(String oldPassword, String newPassword) {
+
+    }
+
+    @Override
+    public boolean userExists(String username) {
+        return false;
+    }
+
 }
