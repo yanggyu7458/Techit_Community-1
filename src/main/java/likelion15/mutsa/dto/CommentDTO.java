@@ -14,6 +14,8 @@ public class CommentDTO {
     private String username;
     private DeletedStatus isDeleted;
     private Long boardId;
+    private boolean editButton;
+
 
     public static CommentDTO fromEntity(Comment entity) {
         return CommentDTO.builder()

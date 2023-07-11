@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+<head th:replace="~{fragments/header :: header}"/>
 <head th:fragment="header">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrinkto-fit=no">
@@ -149,6 +151,8 @@
     </style>
 </head>
 <body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>게시글 목록</h1>
 <div class="top">
     <div class="num">번호</div>
@@ -166,9 +170,9 @@
      th:each="board, stat: ${boardList}">
     <div class="num">[[${board.id}]]</div>
     <div class="title"><a th:href="@{/board/{id}(id=${board.id})}">[[${board.title}]]</a></div>
-    <div class="writer">user.name</div>
+    <div class="writer">[[${board.createdBy}]]</div>
     <div class="date">[[${#temporals.format(board.createAt, 'yyyy-MM-dd HH:mm')}]]</div>
-    <div class="count">조회수</div>
+    <div class="count">[[${board.viewCount}]]</div>
     <hr>
     <!-- 페이지당 5개의 게시글만 표시 -->
     <div th:if="${stat.index % 5 == 4}">
@@ -196,5 +200,7 @@
     </select>
     <button type="submit">검색</button>
 </form>
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>

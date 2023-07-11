@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<!-- 이 코드를 적으면 fragments에 header파일이 불러와 집니다.(css, js파일 불러오기) -->
+<head th:replace="~{fragments/header :: header}"/>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>[[${board.id}]]. [[${board.title}]]</h1>
 <p>내용: [[${board.content}]]</p>
 <!-- 조회수 표시 -->
@@ -18,9 +21,7 @@
         <input type="submit" value="좋아요">
     </form>
     <!-- 좋아요 취소 버튼 -->
-    <form th:action="@{/board/{id}/unlike(id=${board.id})}" method="post" style="display: inline;">
-        <input type="submit" value="좋아요 취소">
-    </form>
+
 </div>
 <br/>
 <!--comment section-->
@@ -33,9 +34,8 @@
 <br>
 <div>
     <!-- 첨부 파일 다운로드 링크 -->
-    <p>첨부 파일:</p>
-    <div th:if="${board.file}">
-        <p>첨부 파일: <a th:href="@{|/board/${board.id}/download|}" th:text="${board.file.name}" download="${board.file.name}">${board.file.name}</a></p>
+    <div th:if="${file}">
+        첨부파일: <a th:href="@{/board/{id}/download (id=${board.id})}">[[${file.name}]]</a>
     </div>
 </div>
 
@@ -43,15 +43,43 @@
 <br>
 <p>댓글 목록</p>
 
-<!--<div th:each="comment: ${board.comments}">-->
-<div th:each="comment: ${commentList}">
-    <!--<p>번호: [[${comment.id}]]</p>-->
-    <p>내용: [[${comment.comment}]]</p>
+<div th:each="commentDTO: ${commentList}">
+    <p>작성자: [[${commentDTO.username}]]</p>
+    <p>내용: [[${commentDTO.comment}]]</p>
+    <!-- 수정하기 버튼 -->
+    <div th:if="${commentDTO.username == sessionDto.name}">
+        <button type="button" th:text="${commentDTO.editButton ? '수정 취소' : '수정하기'}" onclick="toggleEditBox('editBox-${commentDTO.id}')"></button>
+        <div id="editBox-${commentDTO.id}" th:style="${commentDTO.editButton ? '' : 'display: none;'}">
+            <form th:action="@{/board/{boardId}/comment/{commentId}/update(boardId=${id}, commentId=${commentDTO.id})}" method="post">
+                <input type="text" name="comment" th:value="${commentDTO.comment}" />
+                <button type="submit">저장</button>
+            </form>
+        </div>
+    </div>
+    <!--삭제하기 버튼-->
+    <div th:if="${commentDTO.username == sessionDto.name}">
+        <form th:action="@{/board/{boardId}/comment/{commentId}/delete(boardId=${id}, commentId=${commentDTO.id})}" method="post">
+            <button type="submit">삭제하기</button>
+        </form>
+    </div>
+    <hr>
 </div>
+
+<script>
+    function toggleEditBox(boxId) {
+        const editBox = document.getElementById(boxId);
+        editBox.style.display = (editBox.style.display === 'none') ? '' : 'none';
+    }
+
+</script>
+
+
 
 <a href="/board">뒤로가기</a>
 <a th:href="@{/{id}/update-view(id=${board.id})}">게시글 수정하기</a>
 <a th:href="@{/{id}/delete-view(id=${board.id})}">게시글 삭제하기</a>
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>
 

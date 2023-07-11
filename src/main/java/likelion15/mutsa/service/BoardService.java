@@ -1,7 +1,6 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
-import likelion15.mutsa.dto.FileConDTO;
 import likelion15.mutsa.entity.*;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -12,24 +11,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final BoardPageRepository boardPageRepository;
-    private final BoardsRepository boardsRepository;
     private final JoinService joinService;
     private final FileService fileService;
+    private final FileConRepository fileConRepository;
 
     private final List<BoardDTO> boardList = new ArrayList<>();
     private static final int PAGE_SIZE = 5;
@@ -64,54 +60,74 @@ public class BoardService {
                 .createdBy(loginUser.getName())
                 .content(content)
                 .build();
-        // 파일 정보 저장
-        if (file != null && !file.isEmpty()) {
-            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-            UUID uuid = UUID.randomUUID();
-            String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
 
-            File fileEntity = File.builder()
-                    .path(projectPath)
-                    .name(fileName)
-                    .size(file.getSize())
-                    .isDeleted(DeletedStatus.NOT_DELETED)
+        if (!file.isEmpty()) { // 첨부 파일이 존재한다면
+            File fileEntity = fileService.createFile(file); // 파일 업로드
+
+            FileCon fileCon = FileCon.builder() //fileCon 엔티티 생성 fileid랑 공지 id 등록함으로써 연관 지음
+                    .file(fileEntity)
+                    .board(board)
                     .build();
-
-            file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
-
-            // 파일 정보를 Board 엔티티에 저장
-            board.setFile(fileEntity);
-
-            // FileCon 엔티티 생성
-            FileCon fileCon = new FileCon();
-            fileCon.setBoard(board);
-            // board.addFileCon(fileCon);
-
-
-            // FileConDTO 객체 생성 및 board_id 설정
-            FileConDTO fileConDTO = new FileConDTO();
-            fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
+            fileConRepository.save(fileCon); // 엔티티 저장
 
         }
+        // 파일 정보 저장
+//        if (file != null && !file.isEmpty()) {
+//            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+//            UUID uuid = UUID.randomUUID();
+//            String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+//
+//            File fileEntity = File.builder()
+//                    .path(projectPath)
+//                    .name(fileName)
+//                    .size(file.getSize())
+//                    .isDeleted(DeletedStatus.NOT_DELETED)
+//                    .build();
+//
+//            file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
+//
+//            // 파일 정보를 Board 엔티티에 저장
+//            board.setFile(fileEntity);
+//
+//            // FileCon 엔티티 생성
+//            FileCon fileCon = FileCon.builder()
+//                    .file(fileEntity)
+//                    .board(board)
+//                    .build();
+//            fileConRepository.save(fileCon);
+//
+//
+//            // FileConDTO 객체 생성 및 board_id 설정
+//            FileConDTO fileConDTO = new FileConDTO();
+//            fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
+//
+//        }
 
         return boardRepository.save(board);
     }
-
 
     public Board updateBoard(Long id, BoardDTO boardDTO, User loginUser) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
-            Content content = board.getContent();
-            content.setTitle(boardDTO.getTitle());
-            content.setContent(boardDTO.getContent());
-            return boardRepository.save(board);
+            if(board.getUser().getName().equals(loginUser.getName())) {
+                Content content = board.getContent();
+                content.setTitle(boardDTO.getTitle());
+                content.setContent(boardDTO.getContent());
+                board.setContent(content);
+                return boardRepository.save(board);
+            } else throw new IllegalArgumentException("수정 권한이 없습니다.");
         } throw new IllegalArgumentException("Board not found with id: " + id);
     }
-    public void deleteBoard(Long id) {
-        Optional<Board> optionalBoard = boardRepository.findById(id);
-        if (optionalBoard.isPresent())
-            boardRepository.deleteById(id);
+    public void deleteBoard(Long boardId, User loginUser) {
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if (optionalBoard.isPresent()){
+            Board board = optionalBoard.get();
+            if(board.getUser().getName().equals(loginUser.getName())) {
+                boardRepository.deleteById(boardId);
+            } else throw new IllegalArgumentException("삭제 권한이 없습니다.");
+
+        }
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
     public void increaseViewCount(Long id) {
@@ -122,7 +138,6 @@ public class BoardService {
             boardRepository.save(board);
         }
     }
-
 
     //좋아요 기능
     public void likeBoard(Long boardId) {
@@ -188,95 +203,6 @@ public class BoardService {
         Page<Board> boardPage = boardRepository.findAll(example, pageable);
         return boardPage.map(BoardDTO::fromEntity);
     }
-    /////////////////////////////////////////////////////////////////
-    // 한 유저가 쓴 모든 글 조회
-//    public List<Board> findOnesBoards(Long userId) {return boardsRepository.findByUserId(userId);}
-//    public Page<Board> readBoardPaged(int pageNum, int pageLimit, User user) {
-//        // PagingAndSortingRepository 메소드에 전달하는 용도
-//        // 조회하고 싶은 페이지의 정보를 담는 객체
-//        Pageable pageable = PageRequest.of(
-//                pageNum, pageLimit, Sort.by("id").descending()
-//        );
-//        Page<Board> boardPages
-//                = boardPageRepository.findAllByUser(user, pageable);
-//        // map: 전달받은 함수를 각 원소에 인자로 전달한 결과를 다시모아서 Stream으로
-//        // Page.map: 전달받은 함수를 각 원소에 인자로 전달한 결과를 다시 모아서 Page로
-//
-//        return boardPages;
-//    }
-//    public List<Board> findOnesLikesBoards(Long userId) {return boardsRepository.findAllByLikesAndUserId(
-//            userRepository.findOne(userId)
-//    );}
-//
-//    // 한 유저가 쓴 모든 댓글 조회
-//    public List<Comment> findOnesComments(String userName) {return commentRepository.findByUserName(userName);};
-//    public List<Comment> findOnesLikesComments(String userName) {return commentRepository.findAllByLikesAndUserName(userName);};
-//
-//    @Transactional
-//    public Long writeArticle(Long userId, String title, String content) {
-//        // 게시글 등록
-//        User user = userRepository.findOne(userId);
-//
-//        Content content1 = Content.builder()
-//                .title(title)
-//                .content(content)
-//                .status(VisibleStatus.VISIBLE)
-//                .isDeleted(DeletedStatus.NONE)
-//                .build();
-//
-//        Board board = Board.builder()
-//                .content(content1)
-//                .user(userRepository.findOne(userId))
-//                .build();
-//
-//        boardRepository.save(board);
-//        return board.getId();
-//    }
-//    @Transactional
-//    public Long writeComment(Long userId, Long boardId, String content) {
-//        // 게시글 등록
-//        User user = userRepository.findOne(userId);
-//
-//        Comment comment = Comment.builder()
-//                .comment(content)
-//                .board(boardsRepository.findOne(boardId))
-//                .username(userRepository.findOne(userId).getName())
-//                .isDeleted(DeletedStatus.NONE)
-//                .build();
-//
-//        commentRepository.save(comment);
-//        return comment.getId();
-//    }
-//    @Transactional
-//    public Long likeArticle(Long userId, Long boardId) {
-//        // 게시글 등록
-//        User user = userRepository.findOne(userId);
-//
-//        Likes likes = Likes.builder()
-//                .user(user)
-//                .board(boardsRepository.findOne(boardId))
-//                .isLike(YesOrNo.YES)
-//                .isDeleted(DeletedStatus.NONE)
-//                .build();
-//
-//        likesRepository.save(likes);
-//        return likes.getId();
-//    }
-//    @Transactional
-//    public Long likeComment(Long userId, Long commentId) {
-//        // 게시글 등록
-//        User user = userRepository.findOne(userId);
-//
-//        Likes likes = Likes.builder()
-//                .user(user)
-//                .comment(commentRepository.findOne(commentId))
-//                .isLike(YesOrNo.YES)
-//                .isDeleted(DeletedStatus.NONE)
-//                .build();
-//
-//        likesRepository.save(likes);
-//        return likes.getId();
-//    }
 
     // comment 좋아요 갯수 반환
     public int getCntCommentLikes(Long commentId) {

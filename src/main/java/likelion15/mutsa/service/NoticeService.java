@@ -1,21 +1,35 @@
 package likelion15.mutsa.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
+import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.File;
+import likelion15.mutsa.entity.FileCon;
 import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.DeletedStatus;
+import likelion15.mutsa.repository.FileConRepository;
+import likelion15.mutsa.repository.FileRepository;
 import likelion15.mutsa.repository.NoticeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,67 +44,42 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
 
+    private final FileRepository fileRepository;
 
-    private Long nextIdN = 1L;
-    private Long nextIdC = 1L;
+    private final FileConRepository fileConRepository;
+
+    private final FileService fileService;
+
 
     public Notice createNotice(NoticeDto noticeDto, MultipartFile file) {
-        Content content = Content.builder()
-                .title(noticeDto.getTitle())
+        Content content = Content.builder() // content 엔티티 생성
+                .title(noticeDto.getTitle()) // controller에서 전달 받은 데이터
                 .content(noticeDto.getContent())
                 .isDeleted(DeletedStatus.NONE)
                 .status(VisibleStatus.VISIBLE)
                 .build();
-        Notice notice = Notice.builder()
-                .content(content)
+        Notice notice = Notice.builder() // notice 엔티티 생성
+                .content(content) // 위에 있는 content 엔티티
                 .build();
-        if (!file.isEmpty()) {
-            String fileRealName = file.getOriginalFilename(); //파일명을 얻어낼 수 있는 메서드!
-            long size = file.getSize(); //파일 사이즈
+        if (!file.isEmpty()) { // 첨부 파일이 존재한다면
+            File fileEntity = fileService.createFile(file); // 파일 업로드
 
-            System.out.println("파일명 : "  + fileRealName);
-            System.out.println("용량크기(byte) : " + size);
-            //서버에 저장할 파일이름 fileextension으로 .jsp이런식의  확장자 명을 구함
-            String fileExtension = fileRealName.substring(fileRealName.lastIndexOf("."),fileRealName.length());
-            String uploadFolder = "C:\\techit\\Techit_Community\\src\\main\\java\\likelion15\\mutsa\\file";
+            FileCon fileCon = FileCon.builder() //fileCon 엔티티 생성 fileid랑 공지 id 등록함으로써 연관 지음
+                    .file(fileEntity)
+                    .notice(notice)
+                    .build();
+            fileConRepository.save(fileCon); // 엔티티 저장
 
-            /*
-		  파일 업로드시 파일명이 동일한 파일이 이미 존재할 수도 있고 사용자가
-		  업로드 하는 파일명이 언어 이외의 언어로 되어있을 수 있습니다.
-		  타인어를 지원하지 않는 환경에서는 정산 동작이 되지 않습니다.(리눅스가 대표적인 예시)
-		  고유한 랜던 문자를 통해 db와 서버에 저장할 파일명을 새롭게 만들어 준다.
-		 */
-
-            UUID uuid = UUID.randomUUID();
-            System.out.println(uuid.toString());
-            String[] uuids = uuid.toString().split("-");
-
-            String uniqueName = uuids[0];
-            System.out.println("생성된 고유문자열" + uniqueName);
-            System.out.println("확장자명" + fileExtension);
-
-            // File saveFile = new File(uploadFolder+"\\"+fileRealName); uuid 적용 전
-
-            File saveFile = new File(uploadFolder+"\\"+uniqueName + fileExtension);  // 적용 후
-            try {
-                file.transferTo(saveFile); // 실제 파일 저장메서드(filewriter 작업을 손쉽게 한방에 처리해준다.)
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        return noticeRepository.save(notice);
+
+        return noticeRepository.save(notice); // 엔티티 저장
     }
 
 
-    public List<NoticeDto> readNoticeAll() {
-        List<NoticeDto> noticeList = new ArrayList<>();
-        for (Notice notice :
-                noticeRepository.findAll()) {
-            noticeList.add(NoticeDto.fromEntity(notice));
-        }
-        return noticeList;
+    public Page<NoticeDto> readNoticeAllPaged(int page) {
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending());
+        Page<Notice> noticePage = noticeRepository.findAll(pageable);
+        return noticePage.map(NoticeDto::fromEntity);
     }
 
 
@@ -105,6 +94,7 @@ public class NoticeService {
 
         return null;
     }
+
 
 
     public Notice updateNotice(Long id, NoticeDto noticeDto) {
