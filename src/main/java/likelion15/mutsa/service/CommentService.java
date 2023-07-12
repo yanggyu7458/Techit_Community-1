@@ -48,14 +48,14 @@ public class CommentService {
     }
     public List<CommentDTO> readAllComments(Long boardId) {
         List<Comment> comments = commentRepository.findByBoardId(boardId);
-        List<CommentDTO> commentDTOs = new ArrayList<>();
+        List<CommentDTO> commentList = new ArrayList<>();
 
         for (Comment comment : comments) {
             CommentDTO commentDTO = CommentDTO.fromEntity(comment);
-            commentDTOs.add(commentDTO);
+            commentList.add(commentDTO);
         }
 
-        return commentDTOs;
+        return commentList;
     }
     public CommentDTO updateComment(Long commentId, CommentDTO dto, User loginUser) {
         Optional<Comment> optionalComment = commentRepository.findById(commentId);

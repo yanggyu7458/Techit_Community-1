@@ -62,12 +62,14 @@ public class BoardController {
         BoardDTO boardDTO = boardService.readBoard(id);
         if (boardDTO != null) {
             boardService.increaseViewCount(id); // 조회수 증가
+            int boardLikeCount = boardService.getCntBoardLikes(id);
 
             model.addAttribute("board", boardDTO);
             model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readAllComments(id));
             model.addAttribute("sessionDto", sessionDto); // sessionDto를 모델에 추가
             model.addAttribute("file", fileService.readFile(id));
+            model.addAttribute("boardLikeCount", boardLikeCount);
             return "readBoard";
         } else {
             // 게시글이 존재하지 않을 경우 예외 처리
@@ -75,24 +77,6 @@ public class BoardController {
             return "redirect:/board";
         }
     }
-//    @GetMapping("/board/{id}/download")
-//    public ResponseEntity<byte[]> downloadFile(@PathVariable("id") Long id) throws IOException {
-//        BoardDTO boardDTO = boardService.readBoard(id);
-//        if (boardDTO != null && boardDTO.getFile() != null) {
-//            MultipartFile multipartFile = boardDTO.getFile();
-//            byte[] fileContent = multipartFile.getBytes();
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//            headers.setContentDispositionFormData("attachment", multipartFile.getOriginalFilename());
-//
-//            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-//        } else {
-//            // 파일이 존재하지 않을 경우 예외 처리
-//            // 예를 들어, 오류 페이지로 리다이렉트 또는 오류 메시지를 표시할 수 있습니다.
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
     @GetMapping("/{id}/update-view")
     public String updateView(
             @PathVariable("id") Long id,
@@ -138,7 +122,7 @@ public class BoardController {
                                @RequestParam("comment") String comment,
                                @SessionAttribute(name="uuid",required = false) SessionDto sessionDto,
                                Model model
-                               ) {
+    ) {
         User loginedUser = myProfileService.readByName(sessionDto.getName());
         CommentDTO commentDTO = CommentDTO.builder()
                 .boardId(boardId)
@@ -172,7 +156,7 @@ public class BoardController {
                     if (commentDTO.getUsername().equals(sessionDto.getName())) {
                         commentDTO.setComment(comment);
                         commentDTO.setEditButton(true); // 해당 댓글의 작성자일 경우 editButton 값을 true로 설정
-                        commentService.updateComment(commentId, commentDTO, loginedUser);
+                        commentService.updateComment(commentDTO.getId(), commentDTO, loginedUser);
                     } else {
                         commentDTO.setEditButton(false); // 해당 댓글의 작성자가 아닐 경우 editButton 값을 false로 설정
                     }
@@ -214,23 +198,18 @@ public class BoardController {
 
 
     //좋아요 기능
-//    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
-//    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
-//        boardService.likeBoard(boardId);
-//        return ResponseEntity.ok("좋아요가 반영되었습니다.");
-//    }
-//
-//    @PostMapping("/board/{id}/unlike")
-//    public ResponseEntity<String> unlikeBoard(@PathVariable("id") Long boardId) {
-//        boardService.unlikeBoard(boardId);
-//        return ResponseEntity.ok("좋아요가 취소되었습니다.");
-//    }
-    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
+    @PostMapping("/board/{id}/like")
     public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId,
-                                            @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {  // 매개변수명을 boardId로 변경
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
-        myActivityService.likeBoard(loginedUser.getId(), boardId);
-        return ResponseEntity.ok("좋아요가 반영되었습니다.");
+                                                  @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto) {
+        User loggedInUser = myProfileService.readByName(sessionDto.getName());
+        Long likeId = myActivityService.likeBoard(loggedInUser.getId(), boardId);
+
+        if (likeId == -1) {
+            return ResponseEntity.ok("좋아요가 취소되었습니다.");
+        } else {
+            return ResponseEntity.ok("좋아요가 반영되었습니다.");
+        }
     }
+
 
 }

@@ -38,11 +38,7 @@ public class Comment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DeletedStatus isDeleted;
 
-    //    @ManyToOne(fetch = FetchType.LAZY,
-//            cascade = CascadeType.ALL
-//    )
-//    @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_COMMENT_BOARD"))
-//    private Board board;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_COMMENT_BOARD"))
     private Board board;

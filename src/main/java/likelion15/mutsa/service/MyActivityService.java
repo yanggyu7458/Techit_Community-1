@@ -4,11 +4,15 @@ package likelion15.mutsa.service;
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
 import likelion15.mutsa.entity.Likes;
+import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.YesOrNo;
-import likelion15.mutsa.repository.*;
+import likelion15.mutsa.repository.BoardRepository;
+import likelion15.mutsa.repository.CommentRepository;
+import likelion15.mutsa.repository.LikesRepository;
+import likelion15.mutsa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -64,30 +69,35 @@ public class MyActivityService {
     // board 좋아요
     @Transactional
     public Long likeBoard(Long userId, Long boardId) {
-        Optional<Likes> optionalLikes
-                = likesRepository.findByUser_IdAndBoard_Id(userId, boardId);
-
-        System.out.println("변경전" + likesRepository.countLikesByBoard_Id(boardId));
+        Optional<Likes> optionalLikes = likesRepository.findByUser_IdAndBoard_Id(userId, boardId);
+        System.out.println("변경 전 좋아요 수: " + likesRepository.countLikesByBoard_Id(boardId));
 
         if (optionalLikes.isPresent()) {
             Likes like = optionalLikes.get();
-
-            if (like.getIsLike() == YesOrNo.YES) like.updateLikesYesOrNo(YesOrNo.NO);
-            else like.updateLikesYesOrNo(YesOrNo.YES);
-            return likesRepository.save(like).getId();
-
+            if (like.getIsLike() == YesOrNo.YES) {
+                like.updateLikesYesOrNo(YesOrNo.NO);
+                //likesRepository.delete(like);
+                return -1L; // 좋아요 취소 시 -1을 반환하여 구분
+            } else {
+                like.updateLikesYesOrNo(YesOrNo.YES);
+                likesRepository.save(like);
+                return like.getId();
+            }
         } else {
-            Likes like = Likes.builder()
-                    .user(userRepository.findById(userId).get())
-                    .board(boardRepository.findById(boardId).get())
+            User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+            Board board = boardRepository.findById(boardId).orElseThrow(() -> new NoSuchElementException("Board not found"));
+
+            Likes newLike = Likes.builder()
+                    .user(user)
+                    .board(board)
                     .isLike(YesOrNo.YES)
                     .isDeleted(DeletedStatus.NONE)
                     .build();
-            return likesRepository.save(like).getId();
+            Likes savedLike = likesRepository.save(newLike);
+            return savedLike.getId();
         }
-
-
     }
+
 
     // comment 좋아요
     @Transactional

@@ -14,13 +14,12 @@
 <!-- 조회수 표시 -->
 <p>조회수: [[${board.viewCount}]]</p>
 <!-- 좋아요 수 표시 -->
-<p>좋아요 수: [[${board.likesCount}]]</p>
+<p>좋아요 수: [[${boardLikeCount}]]</p>
 <div>
     <!-- 좋아요 버튼 -->
-    <form th:action="@{/board/{id}/like(id=${board.id})}" method="post" style="display: inline;">
-        <input type="submit" value="좋아요">
+    <form th:action="@{/board/{id}/like (id=${board.id})}" method="post" style="display: inline;">
+        <button class="btn btn-primary">좋아요</button>
     </form>
-    <!-- 좋아요 취소 버튼 -->
 
 </div>
 <br/>
@@ -48,14 +47,18 @@
     <p>내용: [[${commentDTO.comment}]]</p>
     <!-- 수정하기 버튼 -->
     <div th:if="${commentDTO.username == sessionDto.name}">
-        <button type="button" th:text="${commentDTO.editButton ? '수정 취소' : '수정하기'}" onclick="toggleEditBox('editBox-${commentDTO.id}')"></button>
-        <div id="editBox-${commentDTO.id}" th:style="${commentDTO.editButton ? '' : 'display: none;'}">
-            <form th:action="@{/board/{boardId}/comment/{commentId}/update(boardId=${id}, commentId=${commentDTO.id})}" method="post">
-                <input type="text" name="comment" th:value="${commentDTO.comment}" />
-                <button type="submit">저장</button>
-            </form>
-        </div>
+        <form th:action="@{/board/{boardId}/comment/{commentId}/update(boardId=${id}, commentId=${commentDTO.id})}" method="post">
+            <button type="button" th:text="${commentDTO.editButton ? '수정 취소' : '수정하기'}" th:onclick="'toggleEditBox(\'editBox-' + ${commentDTO.id} + '\');'"></button>
+            <div th:id="'editBox-' + ${commentDTO.id}" th:style="${commentDTO.editButton ? '' : 'display: none;'}">
+                    <input type="hidden" name="commentId" th:value="${commentDTO.id}" />
+                    <input type="text" name="comment" th:value="${commentDTO.comment}" />
+                    <button type="submit">저장</button>
+            </div>
+        </form>
     </div>
+
+
+
     <!--삭제하기 버튼-->
     <div th:if="${commentDTO.username == sessionDto.name}">
         <form th:action="@{/board/{boardId}/comment/{commentId}/delete(boardId=${id}, commentId=${commentDTO.id})}" method="post">
