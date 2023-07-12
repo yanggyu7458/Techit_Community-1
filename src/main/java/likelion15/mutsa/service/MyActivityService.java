@@ -69,24 +69,22 @@ public class MyActivityService {
 
         System.out.println("변경전" + likesRepository.countLikesByBoard_Id(boardId));
 
+        Likes like;
         if (optionalLikes.isPresent()) {
-            Likes like = optionalLikes.get();
+            like = optionalLikes.get();
 
             if (like.getIsLike() == YesOrNo.YES) like.updateLikesYesOrNo(YesOrNo.NO);
             else like.updateLikesYesOrNo(YesOrNo.YES);
-            return likesRepository.save(like).getId();
 
         } else {
-            Likes like = Likes.builder()
+            like = Likes.builder()
                     .user(userRepository.findById(userId).get())
                     .board(boardRepository.findById(boardId).get())
                     .isLike(YesOrNo.YES)
                     .isDeleted(DeletedStatus.NONE)
                     .build();
-            return likesRepository.save(like).getId();
         }
-
-
+        return likesRepository.save(like).getId();
     }
 
     // comment 좋아요
@@ -95,22 +93,22 @@ public class MyActivityService {
         Optional<Likes> optionalLikes
                 = likesRepository.findByUser_IdAndComment_Id(userId, commentId);
 
+        Likes like;
         if (optionalLikes.isPresent()) {
-            Likes like = optionalLikes.get();
+            like = optionalLikes.get();
 
             if (like.getIsLike().equals(YesOrNo.YES)) like.updateLikesYesOrNo(YesOrNo.NO);
             else like.updateLikesYesOrNo(YesOrNo.YES);
-            return likesRepository.save(like).getId();
 
         } else {
-            Likes like = Likes.builder()
+            like = Likes.builder()
                     .user(userRepository.findById(userId).get())
                     .comment(commentRepository.findById(commentId).get())
                     .isLike(YesOrNo.YES)
                     .isDeleted(DeletedStatus.NONE)
                     .build();
-            return likesRepository.save(like).getId();
         }
+        return likesRepository.save(like).getId();
     }
 
     // board 삭제
