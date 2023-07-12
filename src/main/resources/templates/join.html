@@ -5,60 +5,131 @@
     <head th:replace="~{fragments/header :: header}"/>
     <meta charset="UTF-8">
     <title>Join</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e6e6e6;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666666;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+        }
+
+        #passwordMismatch {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        /* 추가 스타일 */
+        .link-container a {
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .link-container a:hover {
+            text-align: center;
+            text-decoration: underline;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .button-container input[type="submit"] {
+            width: 100%;
+            background-color: #EAEAEA;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 1px;
+            cursor: pointer;
+            color: #353535;
+            border: none;
+        }
+
+        .button-container input[type="submit"]:hover {
+            background-color: #EAEAEA;
+        }
+    </style>
 </head>
 <body>
 <!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
-  <h1>회원가입</h1>
-  <form th:action="@{/join}" method="post" onsubmit="return validateForm()">
-      <label for="realName">성명:</label>
-      <input type="text" id="realName" name="realName" required autofocus><br>
+<div class="container">
+    <h2>Sign Up</h2>
+    <form th:action="@{/join}" method="post" onsubmit="return validateForm()">
+        <label for="realName">성명 *</label>
+        <input type="text" id="realName" name="realName" required autofocus>
+        <label for="name">닉네임 *</label>
+        <input type="text" id="name" name="name" required autofocus>
 
-      <label for="name">닉네임:</label>
-      <input type="text" id="name" name="name" required autofocus><br>
+        <label for="email">이메일 주소(ID) *</label>
+        <input type="email" id="email" name="username" required placeholder="user@example.com">
 
-      <label for="email">이메일 주소(ID):</label>
-<!--      security에서 ID가 되는 것은 username으로 지칭해야함  -->
-      <input type="email" id="email" name="username" required><br>
+        <label for="password">비밀번호 *</label>
+        <input type="password" id="password" name="password" minlength="4" required>
 
-      <label for="password">비밀번호:</label>
-      <input type="password" id="password" name="password" minlength="4" required><br>
+        <label for="passwordCheck">비밀번호 확인 *</label>
+        <input type="password" id="passwordCheck" name="passwordCheck" required>
 
-      <label for="passwordCheck">비밀번호확인:</label>
-      <input type="password" id="passwordCheck" name="passwordCheck" required><br>
+        <!-- 비밀번호와 비밀번호 확인이 일치하지 않는 경우 메시지 표시 -->
+        <p id="passwordMismatch" style="display: none;">비밀번호가 일치하지 않습니다.</p>
 
-      <!-- 비밀번호와 비밀번호확인이 일치하지 않는 경우 메시지 표시 -->
-      <p id="passwordMismatch" style="color: red; display: none;">
-          비밀번호가 일치하지 않습니다.
-      </p>
+        <label for="phoneNumber">휴대폰 번호 *</label>
+        <input type="number" id="phoneNumber" name="phoneNumber" required placeholder="01012341234">
 
-      <label for="phoneNumber">휴대폰 번호:</label>
-      <input type="number" id="phoneNumber" name="phoneNumber" required><br>
-      <button th:onclick="'window.location.href = \'/login\''">로그인 하러가기</button>
-      <input type="submit" value="가입하기">
+        <div class="button-container">
+            <input type="submit" value="가입하기">
+        </div>
+        <p></p>
+        <div class="link-container">
+            <a href="/login">로그인 하기</a>
+        </div>
 
-      <!-- 중복된 이메일인 경우 에러 메시지 표시 -->
-      <div style="color: red;">
-          [[${error}]]
-      </div>
-  </form>
-      <!-- 비밀번호 != 비밀번호 확인 인 경우 에러 메시지 표시(제출 눌렀을 때 동작) -->
-  <script>
-      function validateForm() {
-          const password = document.getElementById('password').value;
-          const passwordCheck = document.getElementById('passwordCheck').value;
-          const passwordMismatchMessage = document.getElementById('passwordMismatch');
-
-          if (password !== passwordCheck) {
-              passwordMismatchMessage.style.display = 'block';
-              return false; // Prevent form submission
-          } else {
-              passwordMismatchMessage.style.display = 'none';
-              return true; // Allow form submission
-          }
-      }
-  </script>
-  <!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
-  <div th:replace="~{fragments/footer :: footer}" />
+        <!-- 중복된 이메일인 경우 에러 메시지 표시 -->
+        <div class="error-message">
+            [[${error}]]
+        </div>
+    </form>
+</div>
+<!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
+<div th:replace="~{fragments/footer :: footer}" />
 </body>
 </html>
+
+
+
