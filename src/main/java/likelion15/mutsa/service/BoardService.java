@@ -22,7 +22,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final UserRepos userRepos;
     private final CommentRepository commentRepository;
     private final JoinService joinService;
     private final FileService fileService;

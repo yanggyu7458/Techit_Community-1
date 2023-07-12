@@ -4,7 +4,7 @@ import likelion15.mutsa.dto.SessionDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.enums.UserAuth;
 import likelion15.mutsa.entity.enums.UserStatus;
-import likelion15.mutsa.repository.UserRepos;
+import likelion15.mutsa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginService {
-    private final UserRepos repository;
+    private final UserRepository repository;
 
     // 로그인 검사
     public Long login(String email, String password) {
-        User user = repository.findByEmail(email);
+        // 우선 null값으로 설정하고 에러에 대한 것은 spring security적용 후
+        // 그것으로 처리하면 될듯
+        User user = repository.findByEmail(email).orElse(null);
+
         if (user== null){ // 아이디가 존재하지 않는 경우
             return null;
         }
@@ -40,21 +43,4 @@ public class LoginService {
         }
     }
 
-    public SessionDto createSessionDto(User user) {
-
-        UUID uuid = UUID.randomUUID();
-
-        SessionDto sessionDto = SessionDto.builder()
-                .uuid(uuid.toString())
-                .name(user.getName())
-                .realName(user.getRealName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .phoneNumber(user.getPhoneNumber())
-                .auth(UserAuth.USER)
-                .status(UserStatus.U)
-                .build();
-        // 프로필은 제외했음.
-        return sessionDto;
-    }
 }
