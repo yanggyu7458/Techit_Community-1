@@ -34,7 +34,7 @@ public class BoardController {
 
     @PostMapping("/board/create")
     public String create(BoardDTO boardDTO, MultipartFile file, @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) throws Exception {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        User loginedUser = myProfileService.readUser(sessionDto.getName());
         boardService.createBoard(boardDTO, file, loginedUser);
         return "redirect:/board";
     }
@@ -108,7 +108,7 @@ public class BoardController {
             BoardDTO boardDTO,
             @SessionAttribute(name="uuid",required = false) SessionDto sessionDto
     ) {
-        User loginUser = myProfileService.readByName(sessionDto.getName());
+        User loginUser = myProfileService.readUser(sessionDto.getName());
         //service 활용하기
         boardService.updateBoard(id, boardDTO, loginUser);
         //상세보기 페이지로 PRG
@@ -127,7 +127,7 @@ public class BoardController {
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable("id") Long boardId, @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        User loginedUser = myProfileService.readUser(sessionDto.getName());
         boardService.deleteBoard(boardId, loginedUser);
         return "redirect:/board";
 
@@ -139,7 +139,7 @@ public class BoardController {
                                @SessionAttribute(name="uuid",required = false) SessionDto sessionDto,
                                Model model
                                ) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        User loginedUser = myProfileService.readUser(sessionDto.getName());
         CommentDTO commentDTO = CommentDTO.builder()
                 .boardId(boardId)
                 //.id(id)
@@ -163,7 +163,7 @@ public class BoardController {
             @RequestParam("comment") String comment,
             @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
     ) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        User loginedUser = myProfileService.readUser(sessionDto.getName());
         BoardDTO boardDTO = boardService.readBoard(boardId);
 
         if (boardDTO != null && boardDTO.getComments() != null) {
@@ -188,7 +188,7 @@ public class BoardController {
     public String deleteComment(@PathVariable("boardId") Long boardId,
                                 @PathVariable("commentId") Long commentId,
                                 @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        User loginedUser = myProfileService.readUser(sessionDto.getName());
         commentService.deleteComment(commentId, loginedUser);
         return "redirect:/board/" + boardId;
     }
@@ -228,7 +228,7 @@ public class BoardController {
     @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
     public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId,
                                             @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {  // 매개변수명을 boardId로 변경
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        User loginedUser = myProfileService.readUser(sessionDto.getName());
         myActivityService.likeBoard(loginedUser.getId(), boardId);
         return ResponseEntity.ok("좋아요가 반영되었습니다.");
     }

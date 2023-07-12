@@ -32,4 +32,10 @@ public class Profile extends BaseEntity {
             mappedBy = "profile"
     )
     private List<FileCon> fileCon = new ArrayList<>();
+
+    public Profile updateProfileContent(String content) {
+        this.content = content;
+        return this;
+    }
+
 }

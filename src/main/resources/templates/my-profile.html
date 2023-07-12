@@ -16,19 +16,21 @@
         <div class="col-9 pt-1 ms-2">
 
           <h3 class="card-title">프로필 이미지 변경</h3>
-          <form enctype="multipart/form-data" action="@{/filecons/${user.id}" method="post">
+          <form enctype="multipart/form-data" th:action="@{/my-page/profile/{id}/image (id=${user.id})}" method="post">
             <label for="image">프로필 이미지</label>
             <br>
-            <input type="file" class="form-control" id="image" name="fileCon" placeholder="프로필 이미지를 등록해주세요">
-            <input type="submit" class="btn btn-primary" value="변경하기">
+            <img th:src="@{/files/{filename} (filename=${profile.imgPath == null ? 'defaultimg.PNG' : profile.imgPath})}" class="img-circle" width="100px" height="100px">
             <br>
+            <input type="file" class="form-control" id="image" name="file" th:placeholder="${profile.imgPath == null ? '프로필 이미지를 등록해주세요' : profile.imgPath}">
+            <input type="submit" class="btn btn-primary" value="변경하기">
+            <br><br>
           </form>
 
           <h3 class="card-title">프로필 문구 변경</h3>
-          <form action="@{/my-page/profile/${id}/content " th:method="post">
+          <form th:action="@{/my-page/profile/{id}/content (id=${user.id})}" th:method="post">
             <label for="bio">자기 소개</label>
             <br>
-            <input type="text" class="form-control" id="bio" name="content" placeholder="자기소개를 입력해주세요">
+            <input type="text" class="form-control" id="bio" name="bio" th:placeholder="${profile.content == null ? '자기소개를 입력해주세요' : profile.content}">
             <input type="submit" class="btn btn-primary" value="변경하기">
             <br>
           </form>
