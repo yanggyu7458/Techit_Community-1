@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
+                        .requestMatchers("/", "/css/**","/js/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
                         .requestMatchers("complete-join").permitAll()
                         .requestMatchers("/join-view","/join").anonymous()
                         .anyRequest() //다른 모든 요청은

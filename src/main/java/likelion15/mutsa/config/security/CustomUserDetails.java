@@ -27,6 +27,33 @@ public class CustomUserDetails implements UserDetails {
     private String phoneNumber;
     private String password;
 
+
+    public static CustomUserDetails fromEntity(User entity) {
+        log.info(entity.getEmail());
+
+        CustomUserDetails details = CustomUserDetails.builder()
+                .email(entity.getEmail())
+                .realName(entity.getRealName())
+                .name(entity.getName())
+                .phoneNumber(entity.getPhoneNumber())
+                .password(entity.getPassword())
+                .build();
+        return details;
+    }
+    public User newEntity(){
+        User entity = User.builder()
+                .email(email)
+                .realName(realName)
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .password(password)
+                .auth(UserAuth.USER)
+                .profile(Profile.builder().build())
+                .status(UserStatus.U)
+                .build();
+
+        return entity;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        Collection<GrantedAuthority> authorities = new ArrayList<>();
@@ -83,32 +110,6 @@ public class CustomUserDetails implements UserDetails {
         return email;
     }
 
-    public static CustomUserDetails fromEntity(User entity) {
-        log.info(entity.getEmail());
 
-        CustomUserDetails details = CustomUserDetails.builder()
-                .email(entity.getEmail())
-                .realName(entity.getRealName())
-                .name(entity.getName())
-                .phoneNumber(entity.getPhoneNumber())
-                .password(entity.getPassword())
-                .build();
-        return details;
-    }
-    public User newEntity(){
-        User entity = User.builder()
-                .email(email)
-                .realName(realName)
-                .name(name)
-                .phoneNumber(phoneNumber)
-                .password(password)
-                .auth(UserAuth.USER)
-                .profile(Profile.builder().build())
-                .status(UserStatus.U)
-                .build();
-
-        return entity;
-
-    }
 }
 
