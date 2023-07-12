@@ -1,8 +1,8 @@
 package likelion15.mutsa.controller;
 
+import likelion15.mutsa.config.security.CustomUserDetails;
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
-import likelion15.mutsa.dto.SessionDto;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.*;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,12 @@ public class BoardController {
     }
 
     @PostMapping("/board/create")
-    public String create(BoardDTO boardDTO, MultipartFile file, @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) throws Exception {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+    public String create(
+            BoardDTO boardDTO, MultipartFile file,
+                         Authentication authentication
+    ) throws Exception {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginedUser = myProfileService.readUser(userDetails.getName());
         boardService.createBoard(boardDTO, file, loginedUser);
         return "redirect:/board";
     }
@@ -57,17 +62,18 @@ public class BoardController {
     public String read(
             @PathVariable("id") Long id,
             Model model,
-            @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
+            Authentication authentication
     ) {
         BoardDTO boardDTO = boardService.readBoard(id);
         if (boardDTO != null) {
             boardService.increaseViewCount(id); // 조회수 증가
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             int boardLikeCount = boardService.getCntBoardLikes(id);
 
             model.addAttribute("board", boardDTO);
             model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
             model.addAttribute("commentList", commentService.readAllComments(id));
-            model.addAttribute("sessionDto", sessionDto); // sessionDto를 모델에 추가
+            model.addAttribute("sessionDto", userDetails); // sessionDto를 모델에 추가
             model.addAttribute("file", fileService.readFile(id));
             model.addAttribute("boardLikeCount", boardLikeCount);
             return "readBoard";
@@ -90,9 +96,10 @@ public class BoardController {
             @PathVariable("id")
             Long id,
             BoardDTO boardDTO,
-            @SessionAttribute(name="uuid",required = false) SessionDto sessionDto
+            Authentication authentication
     ) {
-        User loginUser = myProfileService.readByName(sessionDto.getName());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginUser = myProfileService.readUser(userDetails.getName());
         //service 활용하기
         boardService.updateBoard(id, boardDTO, loginUser);
         //상세보기 페이지로 PRG
@@ -110,8 +117,12 @@ public class BoardController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("id") Long boardId, @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+    public String delete(
+            @PathVariable("id") Long boardId,
+            Authentication authentication
+    ) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginedUser = myProfileService.readUser(userDetails.getName());
         boardService.deleteBoard(boardId, loginedUser);
         return "redirect:/board";
 
@@ -120,10 +131,11 @@ public class BoardController {
     public String commentWrite(@PathVariable("id") Long boardId,
                                //@RequestParam("id") Long id,
                                @RequestParam("comment") String comment,
-                               @SessionAttribute(name="uuid",required = false) SessionDto sessionDto,
+                               Authentication authentication,
                                Model model
-    ) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+                               ) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginedUser = myProfileService.readUser(userDetails.getName());
         CommentDTO commentDTO = CommentDTO.builder()
                 .boardId(boardId)
                 //.id(id)
@@ -145,15 +157,16 @@ public class BoardController {
             @PathVariable("boardId") Long boardId,
             @PathVariable("commentId") Long commentId,
             @RequestParam("comment") String comment,
-            @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto
+            Authentication authentication
     ) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginedUser = myProfileService.readUser(userDetails.getName());
         BoardDTO boardDTO = boardService.readBoard(boardId);
 
         if (boardDTO != null && boardDTO.getComments() != null) {
             for (CommentDTO commentDTO : boardDTO.getComments()) {
                 if (commentDTO.getId().equals(commentId)) {
-                    if (commentDTO.getUsername().equals(sessionDto.getName())) {
+                    if (commentDTO.getUsername().equals(userDetails.getName())) {
                         commentDTO.setComment(comment);
                         commentDTO.setEditButton(true); // 해당 댓글의 작성자일 경우 editButton 값을 true로 설정
                         commentService.updateComment(commentDTO.getId(), commentDTO, loginedUser);
@@ -171,8 +184,9 @@ public class BoardController {
     @PostMapping("/board/{boardId}/comment/{commentId}/delete")
     public String deleteComment(@PathVariable("boardId") Long boardId,
                                 @PathVariable("commentId") Long commentId,
-                                @SessionAttribute(name="uuid",required = false) SessionDto sessionDto) {
-        User loginedUser = myProfileService.readByName(sessionDto.getName());
+                                Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginedUser = myProfileService.readUser(userDetails.getName());
         commentService.deleteComment(commentId, loginedUser);
         return "redirect:/board/" + boardId;
     }
@@ -198,18 +212,26 @@ public class BoardController {
 
 
     //좋아요 기능
-    @PostMapping("/board/{id}/like")
-    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId,
-                                                  @SessionAttribute(name = "uuid", required = false) SessionDto sessionDto) {
-        User loggedInUser = myProfileService.readByName(sessionDto.getName());
-        Long likeId = myActivityService.likeBoard(loggedInUser.getId(), boardId);
-
-        if (likeId == -1) {
-            return ResponseEntity.ok("좋아요가 취소되었습니다.");
-        } else {
-            return ResponseEntity.ok("좋아요가 반영되었습니다.");
-        }
+//    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
+//    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
+//        boardService.likeBoard(boardId);
+//        return ResponseEntity.ok("좋아요가 반영되었습니다.");
+//    }
+//
+//    @PostMapping("/board/{id}/unlike")
+//    public ResponseEntity<String> unlikeBoard(@PathVariable("id") Long boardId) {
+//        boardService.unlikeBoard(boardId);
+//        return ResponseEntity.ok("좋아요가 취소되었습니다.");
+//    }
+    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
+    public ResponseEntity<String> likeBoard(
+            @PathVariable("id") Long boardId,
+            Authentication authentication
+                                            ) {  // 매개변수명을 boardId로 변경
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loginedUser = myProfileService.readUser(userDetails.getName());
+        myActivityService.likeBoard(loginedUser.getId(), boardId);
+        return ResponseEntity.ok("좋아요가 반영되었습니다.");
     }
-
 
 }

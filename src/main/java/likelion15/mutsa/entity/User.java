@@ -76,8 +76,6 @@ public class User extends BaseEntity {
 //        this.phoneNumber = phoneNumber;
 //    }
 
-    //콘솔에 println(user)을 찍을 때 객체 정보가 들어가서 찍히게 함.
-
     @Override
     public String toString() {
         return "User{" +
