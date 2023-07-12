@@ -58,8 +58,8 @@ public class NoticeController {
             NoticeDto noticeDto,
             // noticeAdd.html파일에서 가져온 파일 정보
             @RequestParam("files") MultipartFile file) {
-        Notice notice =
-                noticeService.createNotice(noticeDto, file);
+
+        noticeService.createNotice(noticeDto, file);
 
         return "redirect:/notice";
     }
@@ -138,4 +138,21 @@ public class NoticeController {
         return "redirect:/notice";
     }
 
+    @GetMapping("/notice/list")
+    public String searchNotices(
+            @RequestParam("keyword") String keyword,
+            @RequestParam("searchOption") String searchOption,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
+        Page<NoticeDto> noticePage = noticeService.searchNoticesPaged(keyword, searchOption, pageable);
+
+        model.addAttribute("noticeList", noticePage.getContent());
+        model.addAttribute("currentPage", noticePage.getNumber() + 1);
+        model.addAttribute("totalPages", noticePage.getTotalPages());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("searchOption", searchOption);
+        return "noticeList";
+    }
 }
