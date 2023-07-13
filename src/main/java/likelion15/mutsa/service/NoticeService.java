@@ -17,10 +17,7 @@ import likelion15.mutsa.repository.NoticeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,5 +110,21 @@ public class NoticeService {
         if (optionalNotice.isPresent())
             noticeRepository.deleteById(id);
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    public Page<NoticeDto> searchNoticesPaged(String keyword, String searchOption, Pageable pageable) {
+        Content content = Content.builder().build();
+        ExampleMatcher matcher = ExampleMatcher.matching();
+
+        if ("title".equals(searchOption)) {
+            return noticeRepository.searchByTitleLike(keyword, pageable).map(NoticeDto::fromEntity);
+        } else if ("titleAndContent".equals(searchOption)) {
+            return noticeRepository.searchByTitleOrContentLike(keyword, pageable).map(NoticeDto::fromEntity);
+        }
+
+        Example<Notice> example = Example.of(Notice.builder().content(content).build(), matcher);
+
+        Page<Notice> noticePage = noticeRepository.findAll(example, pageable);
+        return noticePage.map(NoticeDto::fromEntity);
     }
 }
