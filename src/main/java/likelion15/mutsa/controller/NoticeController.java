@@ -2,6 +2,7 @@ package likelion15.mutsa.controller;
 
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
+import likelion15.mutsa.dto.SessionDto;
 import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.service.FileService;
 import likelion15.mutsa.service.NoticeService;
@@ -9,13 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class NoticeController {
@@ -35,6 +35,7 @@ public class NoticeController {
     public String getNotice(
             @RequestParam(value = "page", defaultValue = "1") int page,
             Model model) {
+
         Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
         Page<NoticeDto> noticePage = noticeService.readNoticeAllPaged(page);
 
@@ -69,6 +70,7 @@ public class NoticeController {
             @PathVariable("id") Long id,
             Model model
     ) {
+
 //        studentService.readStudent(id);
         model.addAttribute(
                 "notice",
@@ -89,7 +91,6 @@ public class NoticeController {
 
     @GetMapping("/notice/{id}/update-view")
     public String updateView(
-
             @PathVariable("id") Long id,
             Model model
     ){
@@ -103,11 +104,11 @@ public class NoticeController {
 
     @PostMapping("/notice/{id}/update")
     public String update(
-
             @PathVariable("id") Long id,
 
             NoticeDto noticeDto
     ) {
+
         // service 활용하기
         noticeService.updateNotice(id, noticeDto);
         // 상세보기 페이지로 redirect
@@ -120,6 +121,7 @@ public class NoticeController {
             Long id,
             Model model
     ) {
+
         NoticeDto noticeDto
                 = noticeService.readNotice(id);
         model.addAttribute("notice", noticeDto);
@@ -131,6 +133,7 @@ public class NoticeController {
             @PathVariable("id")
             Long id
     ) {
+
         noticeService.deleteNotice(id);
         // update 때는 데이터가 남아있지만
         // delete 는 돌아갈 상세보기가 없다
@@ -145,6 +148,7 @@ public class NoticeController {
             @RequestParam(value = "page", defaultValue = "1") int page,
             Model model
     ) {
+
         Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("id").descending()); // 한 페이지에 표시할 게시글 수를 5로 설정, ID 역순으로 정렬
         Page<NoticeDto> noticePage = noticeService.searchNoticesPaged(keyword, searchOption, pageable);
 

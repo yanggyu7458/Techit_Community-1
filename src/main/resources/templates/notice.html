@@ -122,7 +122,7 @@
     <div class="num">[[${notice.id}]]</div>
     <div class="title"><a th:href="@{/notice/{id}(id=${notice.id})}">[[${notice.title}]]</a></div>
     <div class="date">[[${#temporals.format(notice.createAt, 'yyyy-MM-dd HH:mm')}]]</div>
-    <div class="count">조회수</div>
+    <div class="count">[[${notice.viewCount}]]</div>
     <hr>
 </div>
 <a th:href="@{/notice/add-view}">등록</a>

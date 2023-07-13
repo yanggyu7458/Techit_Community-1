@@ -16,6 +16,7 @@ public class NoticeDto {
     private String title;
     @NotBlank(message = "내용을 작성해주세요.")
     private String content;
+    private int viewCount; // 조회수
     private DeletedStatus isDeleted;
     private VisibleStatus status;
     private LocalDateTime createAt; // 작성일
@@ -31,6 +32,7 @@ public class NoticeDto {
         noticeDto.setContent(content.getContent());
         noticeDto.setIsDeleted(content.getIsDeleted());
         noticeDto.setStatus(content.getStatus());
+        noticeDto.setViewCount(entity.getViewCount());
 
         // 작성일 설정
         noticeDto.setCreateAt(entity.getCreateAt());
