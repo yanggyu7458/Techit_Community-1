@@ -39,7 +39,7 @@ public class MyActivityService {
                                 .title(title)
                                 .content(content)
                                 .status(VisibleStatus.VISIBLE)
-                                .isDeleted(DeletedStatus.NONE)
+                                .isDeleted(DeletedStatus.NOT_DELETED)
                                 .build()
                 )
                 .user(userRepository.findById(userId).get())
@@ -56,7 +56,7 @@ public class MyActivityService {
                 .board(boardRepository.findById(boardId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST)))
                 .username(userRepository.findById(userId).get().getName())
-                .isDeleted(DeletedStatus.NONE)
+                .isDeleted(DeletedStatus.NOT_DELETED)
                 .build();
         return commentRepository.save(comment).getId();
     }
@@ -81,7 +81,7 @@ public class MyActivityService {
                     .user(userRepository.findById(userId).get())
                     .board(boardRepository.findById(boardId).get())
                     .isLike(YesOrNo.YES)
-                    .isDeleted(DeletedStatus.NONE)
+                    .isDeleted(DeletedStatus.NOT_DELETED)
                     .build();
         }
         return likesRepository.save(like).getId();
@@ -105,7 +105,7 @@ public class MyActivityService {
                     .user(userRepository.findById(userId).get())
                     .comment(commentRepository.findById(commentId).get())
                     .isLike(YesOrNo.YES)
-                    .isDeleted(DeletedStatus.NONE)
+                    .isDeleted(DeletedStatus.NOT_DELETED)
                     .build();
         }
         return likesRepository.save(like).getId();
