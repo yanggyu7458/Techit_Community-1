@@ -6,6 +6,7 @@ import likelion15.mutsa.entity.embedded.Content;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class Notice extends BaseEntity {
@@ -23,6 +25,9 @@ public class Notice extends BaseEntity {
 
     @Embedded
     private Content content;
+
+    @Column(name = "view_count")
+    private int viewCount;
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "notice")

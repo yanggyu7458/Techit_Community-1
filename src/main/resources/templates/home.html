@@ -10,20 +10,47 @@
 <!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>Home page</h1>
+<img src="home.png">
+<div style="display: flex">
+    <div style="width: 400px; border-style: solid; margin-left: 20px">
+        <div style="display: flex; margin: 0">
+            <h2>게시판</h2>
+            <div style="margin-left: auto"><a class="nav-link" href="/board">더보기</a></div>
+        </div>
+        <div>
+            <div class="body" th:unless="${boardList.isEmpty()}"
+                 th:each="board: ${boardList}">
+                <div class="title"><a th:href="@{/board/{id}(id=${board.id})}">[[${board.title}]]</a></div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 400px; border-style: solid; margin-left: 20px">
+        <div style="display: flex; margin: 0">
+            <h2>공지사항</h2>
+            <div style="margin-left: auto"><a class="nav-link" href="/notice">더보기</a></div>
+        </div>
+        <div>
+            <div class="body" th:unless="${noticeList.isEmpty()}"
+                 th:each="notice: ${noticeList}">
+                <div class="title"><a th:href="@{/notice/{id}(id=${notice.id})}">[[${notice.title}]]</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- 세션에서 로그인 여부를 확인하여 로그인 또는 로그아웃 버튼을 보여줍니다. -->
-<div th:if="${name}">
-    <p th:text="'Logged in as: ' + ${name}"></p>
-    <button><a href="/logout">Log out</a></button>
-</div>
-<div th:unless="${name}">
-    <button><a href="/login">Log in</a></button>
-</div>
+<!--<div th:if="${name}">-->
+<!--    <p th:text="'Logged in as: ' + ${name}"></p>-->
+<!--    <button><a href="/logout">Log out</a></button>-->
+<!--</div>-->
+<!--<div th:unless="${name}">-->
+<!--    <button><a href="/login">Log in</a></button>-->
+<!--</div>-->
 
 
 <!-- 이 코드를 적으면 fragments에 footer 파일이 불러와 집니다(하단 footer) -->
 <div th:replace="~{fragments/footer :: footer}" />
-<div>
-    <a href="/board">게시판으로 이동</a>
-</div>
 </body>
 </html>

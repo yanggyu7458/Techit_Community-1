@@ -1,16 +1,23 @@
 package likelion15.mutsa.controller;
 
 import likelion15.mutsa.config.security.CustomUserDetails;
+import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.JoinDto;
+import likelion15.mutsa.dto.NoticeDto;
+import likelion15.mutsa.service.BoardService;
 import likelion15.mutsa.service.JoinService;
 import likelion15.mutsa.service.LoginService;
+import likelion15.mutsa.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +27,8 @@ public class LoginController {
 
     private final LoginService loginService;
     private final JoinService joinService;
+    private final NoticeService noticeService;
+    private final BoardService boardService;
 
 
     // 로그인 페이지
@@ -59,10 +68,16 @@ public class LoginController {
     }
     @GetMapping("/home")
     public String home(Model model,
+                       @RequestParam(value = "page", defaultValue = "1") int page,
                         Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String nickname = userDetails.getName();
-            model.addAttribute("name", nickname);
+        Page<BoardDTO> board = boardService.readBoardAllPaged(page);
+        Page<NoticeDto> notice = noticeService.readNoticeAllPaged(page);
+
+        model.addAttribute("name", nickname);
+        model.addAttribute("boardList", board);
+        model.addAttribute("noticeList", notice);
         return "home";
     }
 }

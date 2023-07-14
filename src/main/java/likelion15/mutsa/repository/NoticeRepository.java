@@ -14,6 +14,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     @Override
     Optional<Notice> findById(Long id);
 
+
     @Query("SELECT b FROM Notice b WHERE b.content.title like  %:title%" )
     Page<Notice> searchByTitleLike(@Param("title") String keyword, Pageable pageable);
 

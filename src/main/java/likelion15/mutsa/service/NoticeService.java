@@ -1,13 +1,9 @@
 package likelion15.mutsa.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
-import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.entity.File;
 import likelion15.mutsa.entity.FileCon;
-import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -23,14 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -79,6 +70,9 @@ public class NoticeService {
         return noticePage.map(NoticeDto::fromEntity);
     }
 
+    public List<NoticeDto> readNoticeAll() {
+        return noticeList;
+    }
 
 
     // 단일 StudentDto를 주는 메소드
@@ -126,5 +120,14 @@ public class NoticeService {
 
         Page<Notice> noticePage = noticeRepository.findAll(example, pageable);
         return noticePage.map(NoticeDto::fromEntity);
+    }
+
+    public void increaseViewCount(Long id) {
+        Optional<Notice> optionalNotice = noticeRepository.findById(id);
+        if (optionalNotice.isPresent()) {
+            Notice notice = optionalNotice.get();
+            notice.setViewCount(notice.getViewCount() + 1); // 조회수 증가
+            noticeRepository.save(notice);
+        }
     }
 }
