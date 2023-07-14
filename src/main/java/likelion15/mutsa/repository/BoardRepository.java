@@ -23,7 +23,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findAllByUser_IdAndContent_IsDeleted(Long userId, DeletedStatus isDeleted, Pageable pageable);
 
     default Page<Board> findAllByUser_IdAndContent_IsDeleted(Long userId, Pageable pageable) {
-        return findAllByUser_IdAndContent_IsDeleted(userId, DeletedStatus.NONE, pageable);
+        return findAllByUser_IdAndContent_IsDeleted(userId, DeletedStatus.NOT_DELETED, pageable);
     }
 
     // userId로 좋아요한 게시물 전체 조회
@@ -34,7 +34,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findAllByUserIdWithLikes(Long userId, DeletedStatus isDeleted, YesOrNo isLike, Pageable pageable);
 
     default Page<Board> findAllByUserIdWithLikes(Long userId, Pageable pageable) {
-        return findAllByUserIdWithLikes(userId, DeletedStatus.NONE, YesOrNo.YES, pageable);
+        return findAllByUserIdWithLikes(userId, DeletedStatus.NOT_DELETED, YesOrNo.YES, pageable);
     }
 
     // 게시글 삭제
