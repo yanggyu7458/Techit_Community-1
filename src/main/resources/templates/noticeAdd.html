@@ -12,11 +12,11 @@
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
 <h1>공지 등록</h1>
 <form th:action="@{/notice/add}" method="post" style="line-height: 50px" enctype="multipart/form-data">
-    <label for="title">제목: <input id="title" name="title"></label>
+    <label for="title">제목: <input id="title" name="title" required autofocus></label>
     <br>
     파일 선택 : <input type="file" multiple="multiple" name="files">
     <br>
-    <label for="content">내용: <input id="content" name="content" style="width:1000px; height:200px;"></label>
+    <label for="content">내용: <input id="content" name="content" required style="width:1000px; height:200px;"></label>
     <br>
     <input type="submit">
 </form>

@@ -16,13 +16,11 @@ spring:
       matching-strategy: ant_path_matcher
 
   datasource:
-    url: jdbc:mysql://localhost:3306/likelion15
-    username: root
-    password: qwer1234
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:sqlite:db.sqlite
+    driver-class-name: org.sqlite.JDBC
 
   jpa:
-    database: mysql
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
     show-sql: true
     generate-ddl: true
     hibernate:
@@ -35,7 +33,6 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
   thymeleaf:
     prefix: classpath:templates/
@@ -54,6 +51,10 @@ spring:
         default-page-size: 10
         max-page-size: 2000
         one-indexed-parameters: false
+
+#  web:
+#    resources:
+#      static-locations: file:file/,classpath:/static
 
 # log level
 logging.level:

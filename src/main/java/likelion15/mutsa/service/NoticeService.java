@@ -1,13 +1,9 @@
 package likelion15.mutsa.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.NoticeDto;
-import likelion15.mutsa.entity.Board;
+import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.entity.File;
 import likelion15.mutsa.entity.FileCon;
-import likelion15.mutsa.entity.Notice;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -17,23 +13,15 @@ import likelion15.mutsa.repository.NoticeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,6 +70,9 @@ public class NoticeService {
         return noticePage.map(NoticeDto::fromEntity);
     }
 
+    public List<NoticeDto> readNoticeAll() {
+        return noticeList;
+    }
 
 
     // 단일 StudentDto를 주는 메소드
@@ -113,5 +104,30 @@ public class NoticeService {
         if (optionalNotice.isPresent())
             noticeRepository.deleteById(id);
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    public Page<NoticeDto> searchNoticesPaged(String keyword, String searchOption, Pageable pageable) {
+        Content content = Content.builder().build();
+        ExampleMatcher matcher = ExampleMatcher.matching();
+
+        if ("title".equals(searchOption)) {
+            return noticeRepository.searchByTitleLike(keyword, pageable).map(NoticeDto::fromEntity);
+        } else if ("titleAndContent".equals(searchOption)) {
+            return noticeRepository.searchByTitleOrContentLike(keyword, pageable).map(NoticeDto::fromEntity);
+        }
+
+        Example<Notice> example = Example.of(Notice.builder().content(content).build(), matcher);
+
+        Page<Notice> noticePage = noticeRepository.findAll(example, pageable);
+        return noticePage.map(NoticeDto::fromEntity);
+    }
+
+    public void increaseViewCount(Long id) {
+        Optional<Notice> optionalNotice = noticeRepository.findById(id);
+        if (optionalNotice.isPresent()) {
+            Notice notice = optionalNotice.get();
+            notice.setViewCount(notice.getViewCount() + 1); // 조회수 증가
+            noticeRepository.save(notice);
+        }
     }
 }

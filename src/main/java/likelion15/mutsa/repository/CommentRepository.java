@@ -20,7 +20,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByBoardId(Long boardId);
     // username으로 작성된 comment 전체 조회
     default Page<Comment> findAllByUsernameAndIsDeleted(String username, Pageable pageable) {
-        return findAllByUsernameAndIsDeleted(username, DeletedStatus.NONE, pageable);
+        return findAllByUsernameAndIsDeleted(username, DeletedStatus.NOT_DELETED, pageable);
     }
     //findByBoardId
 
@@ -32,7 +32,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByUsernameWithLikes(Long userId, DeletedStatus isDeleted, YesOrNo isLike, Pageable pageable);
 
     default Page<Comment> findAllByUsernameWithLikes(Long userId, Pageable pageable) {
-        return findAllByUsernameWithLikes(userId, DeletedStatus.NONE, YesOrNo.YES, pageable);
+        return findAllByUsernameWithLikes(userId, DeletedStatus.NOT_DELETED, YesOrNo.YES, pageable);
     }
 
     // 댓글 삭제

@@ -1,6 +1,7 @@
 package likelion15.mutsa.service;
 
 import likelion15.mutsa.dto.BoardDTO;
+import likelion15.mutsa.dto.NoticeDto;
 import likelion15.mutsa.entity.*;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -43,6 +44,8 @@ public class BoardService {
         }
         return null;
     }
+
+
     public Page<BoardDTO> readBoardAllPaged(int page) {
         Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending());
         Page<Board> boardPage = boardRepository.findAll(pageable);
