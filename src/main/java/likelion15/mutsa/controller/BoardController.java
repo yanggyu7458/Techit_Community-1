@@ -3,9 +3,11 @@ package likelion15.mutsa.controller;
 import likelion15.mutsa.config.security.CustomUserDetails;
 import likelion15.mutsa.dto.BoardDTO;
 import likelion15.mutsa.dto.CommentDTO;
+import likelion15.mutsa.entity.File;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +16,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
@@ -39,7 +47,10 @@ public class BoardController {
                          Authentication authentication
     ) throws Exception {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
         User loginedUser = myProfileService.readUser(userDetails.getName());
+
+
         boardService.createBoard(boardDTO, file, loginedUser);
         return "redirect:/board";
     }
@@ -69,9 +80,11 @@ public class BoardController {
             boardService.increaseViewCount(id); // 조회수 증가
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             int boardLikeCount = boardService.getCntBoardLikes(id);
+            List<File> fileList = fileService.getFilesByBoardId(id); // 게시글에 해당하는 첨부 파일 목록 조회
 
             model.addAttribute("board", boardDTO);
-            model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
+            //model.addAttribute("file", boardDTO.getFile());  // fileCon 변수를 모델에 추가
+            model.addAttribute("fileList", fileList); // 파일 목록을 모델에 추가
             model.addAttribute("commentList", commentService.readAllComments(id));
             model.addAttribute("sessionDto", userDetails); // sessionDto를 모델에 추가
             model.addAttribute("file", fileService.readFile(id));
@@ -96,12 +109,14 @@ public class BoardController {
             @PathVariable("id")
             Long id,
             BoardDTO boardDTO,
+            @RequestParam("file") MultipartFile file, // MultipartFile 인자로 받아옴
             Authentication authentication
     ) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User loginUser = myProfileService.readUser(userDetails.getName());
+
         //service 활용하기
-        boardService.updateBoard(id, boardDTO, loginUser);
+        boardService.updateBoard(id, boardDTO, file, loginUser);
         //상세보기 페이지로 PRG
         return String.format("redirect:/board/%s", id);
     }
@@ -180,7 +195,6 @@ public class BoardController {
 
         return "redirect:/board/" + boardId;
     }
-
     @PostMapping("/board/{boardId}/comment/{commentId}/delete")
     public String deleteComment(@PathVariable("boardId") Long boardId,
                                 @PathVariable("commentId") Long commentId,
@@ -190,8 +204,6 @@ public class BoardController {
         commentService.deleteComment(commentId, loginedUser);
         return "redirect:/board/" + boardId;
     }
-
-
     @GetMapping("/board/list")
     public String searchBoards(
             @RequestParam("keyword") String keyword,
@@ -209,20 +221,6 @@ public class BoardController {
         model.addAttribute("searchOption", searchOption);
         return "list";
     }
-
-
-    //좋아요 기능
-//    @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
-//    public ResponseEntity<String> likeBoard(@PathVariable("id") Long boardId) {  // 매개변수명을 boardId로 변경
-//        boardService.likeBoard(boardId);
-//        return ResponseEntity.ok("좋아요가 반영되었습니다.");
-//    }
-//
-//    @PostMapping("/board/{id}/unlike")
-//    public ResponseEntity<String> unlikeBoard(@PathVariable("id") Long boardId) {
-//        boardService.unlikeBoard(boardId);
-//        return ResponseEntity.ok("좋아요가 취소되었습니다.");
-//    }
     @PostMapping("/board/{id}/like")  // 경로 변수명을 boardId로 변경
     public ResponseEntity<String> likeBoard(
             @PathVariable("id") Long boardId,
@@ -233,5 +231,4 @@ public class BoardController {
         myActivityService.likeBoard(loginedUser.getId(), boardId);
         return ResponseEntity.ok("좋아요가 반영되었습니다.");
     }
-
 }

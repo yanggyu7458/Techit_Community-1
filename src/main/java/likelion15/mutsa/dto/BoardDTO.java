@@ -2,6 +2,7 @@ package likelion15.mutsa.dto;
 
 import likelion15.mutsa.entity.Board;
 import likelion15.mutsa.entity.Comment;
+import likelion15.mutsa.entity.FileCon;
 import likelion15.mutsa.entity.User;
 import likelion15.mutsa.entity.embedded.Content;
 import likelion15.mutsa.entity.enums.DeletedStatus;
@@ -27,6 +28,7 @@ public class BoardDTO {
     private LocalDateTime createAt; // 작성일
     private MultipartFile file; // 파일을 저장할 필드 추가
     private List<FileConDTO> fileCon;
+    private boolean deleteFile; // 파일 삭제 여부
     private List<CommentDTO> comments;
     private String createdBy;
     private String modifiedBy;
@@ -62,6 +64,16 @@ public class BoardDTO {
             }
             boardDTO.setComments(commentDTOList);
         }
+        List<FileCon> fileConList = entity.getFileCon();
+        if (fileConList != null && !fileConList.isEmpty()) {
+            List<FileConDTO> fileConDTOList = new ArrayList<>();
+            for (FileCon fileCon : fileConList) {
+                FileConDTO fileConDTO = FileConDTO.fromEntity(fileCon);
+                fileConDTOList.add(fileConDTO);
+            }
+            boardDTO.setFileCon(fileConDTOList);
+        }
+
 
         return boardDTO;
     }

@@ -8,6 +8,7 @@ import likelion15.mutsa.entity.enums.VisibleStatus;
 import likelion15.mutsa.entity.enums.YesOrNo;
 import likelion15.mutsa.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -60,6 +62,8 @@ public class BoardService {
                 .createdBy(loginUser.getName())
                 .content(content)
                 .build();
+        log.info(loginUser.getName());
+        log.info(loginUser.getEmail());
 
         if (!file.isEmpty()) { // 첨부 파일이 존재한다면
             File fileEntity = fileService.createFile(file); // 파일 업로드
@@ -69,44 +73,11 @@ public class BoardService {
                     .board(board)
                     .build();
             fileConRepository.save(fileCon); // 엔티티 저장
-
         }
-        // 파일 정보 저장
-//        if (file != null && !file.isEmpty()) {
-//            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-//            UUID uuid = UUID.randomUUID();
-//            String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-//
-//            File fileEntity = File.builder()
-//                    .path(projectPath)
-//                    .name(fileName)
-//                    .size(file.getSize())
-//                    .isDeleted(DeletedStatus.NOT_DELETED)
-//                    .build();
-//
-//            file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
-//
-//            // 파일 정보를 Board 엔티티에 저장
-//            board.setFile(fileEntity);
-//
-//            // FileCon 엔티티 생성
-//            FileCon fileCon = FileCon.builder()
-//                    .file(fileEntity)
-//                    .board(board)
-//                    .build();
-//            fileConRepository.save(fileCon);
-//
-//
-//            // FileConDTO 객체 생성 및 board_id 설정
-//            FileConDTO fileConDTO = new FileConDTO();
-//            fileConDTO.setBoardIdFromEntity(board); // 저장된 board의 id 설정
-//
-//        }
-
         return boardRepository.save(board);
     }
 
-    public Board updateBoard(Long id, BoardDTO boardDTO, User loginUser) {
+    public Board updateBoard(Long id, BoardDTO boardDTO, MultipartFile file, User loginUser) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
@@ -115,6 +86,24 @@ public class BoardService {
                 content.setTitle(boardDTO.getTitle());
                 content.setContent(boardDTO.getContent());
                 board.setContent(content);
+                boolean deleteFile = boardDTO.isDeleteFile();
+
+                if (deleteFile) {
+                    if (board.getFile() != null) {
+                        fileService.deleteFile(board.getFile().getId());
+                        board.setFile(null);
+                    }
+                }
+                if (!file.isEmpty()) { // If a new file is provided
+                    File fileEntity = fileService.createFile(file); // Upload the file
+
+                    FileCon fileCon = FileCon.builder()
+                            .file(fileEntity)
+                            .board(board)
+                            .build();
+                    fileConRepository.save(fileCon);
+                }
+
                 return boardRepository.save(board);
             } else throw new IllegalArgumentException("수정 권한이 없습니다.");
         } throw new IllegalArgumentException("Board not found with id: " + id);

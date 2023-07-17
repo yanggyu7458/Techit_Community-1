@@ -17,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -121,55 +124,39 @@ public class FileService {
         fis.close();
         os.close();
     }
+    public void deleteFile(Long fileId) {
+        Optional<File> optionalFile = fileRepository.findById(fileId);
+        if (optionalFile.isPresent()) {
+            File file = optionalFile.get();
+
+            // 파일 시스템이나 스토리지 서비스에서 파일을 삭제합니다.
+            java.io.File deleteFile = new java.io.File(file.getPath());
+            if (deleteFile.exists()) {
+                if (deleteFile.delete()) {
+                    // 파일 엔티티를 데이터베이스에서 삭제합니다.
+                    fileRepository.delete(file);
+                } else {
+                    throw new IllegalStateException("파일 삭제에 실패했습니다: " + file.getName());
+                }
+            } else {
+                throw new IllegalArgumentException("파일을 찾을 수 없습니다: " + file.getName());
+            }
+        } else {
+            throw new IllegalArgumentException("해당 ID의 파일을 찾을 수 없습니다: " + fileId);
+        }
+    }
+    public List<File> getFilesByBoardId(Long boardId) {
+        List<File> fileList = new ArrayList<>();
+
+        List<FileCon> fileConList = fileConRepository.findByBoard_Id(boardId);
+        for (FileCon fileCon : fileConList) {
+            fileList.add(fileCon.getFile());
+        }
+
+        return fileList;
+    }
 
 
 
-//    public  FileDTO saveFile(MultipartFile file) throws IOException {
-//        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-//        UUID uuid = UUID.randomUUID();
-//        String fileName = uuid + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-//
-//        File fileEntity = File.builder()
-//                .path(projectPath)
-//                .name(fileName)
-//                .size(file.getSize())
-//                .isDeleted(DeletedStatus.NOT_DELETED)
-//                .build();
-//
-//        file.transferTo(new java.io.File(fileEntity.getPath() + "\\" + fileEntity.getName()));
-//
-//        File savedFile = fileRepository.save(fileEntity);
-//        return FileDTO.builder()
-//                .id(savedFile.getId())
-//                .fileName(savedFile.getName())
-//                .filePath(savedFile.getPath())
-//                .fileSize(savedFile.getSize())
-//                .build();
-//    }
-//    @Transactional
-//    public FileDTO getFile(Long id) {
-//        File file = fileRepository.findById(id).get();
-//
-//        FileDTO fileDTO = FileDTO.builder()
-//                .id(id)
-//                .fileName(file.getName())
-//                .filePath(file.getPath())
-//                .fileSize(file.getSize())
-//                .build();
-//        return fileDTO;
-//    }
-//    public void saveFileCon(Long boardId, Long fileId) {
-//        Optional<Board> optionalBoard = boardRepository.findById(boardId);
-//        Board board = optionalBoard.orElseThrow(() -> new IllegalArgumentException("Board not found with id: " + boardId));
-//
-//        Optional<File> optionalFile = fileRepository.findById(fileId);
-//        File file = optionalFile.orElseThrow(() -> new IllegalArgumentException("File not found with id: " + fileId));
-//
-//        FileCon fileCon = new FileCon();
-//        fileCon.setBoard(board);
-//        fileCon.setFile(file);
-//
-//        fileConRepository.save(fileCon);
-//    }
 
 }

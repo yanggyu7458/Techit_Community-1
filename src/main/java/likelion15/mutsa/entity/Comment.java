@@ -21,9 +21,6 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
-//    @Id
-//    @Column(name = "comment_id")
-//    private Long id; // comment_id 수동으로 설정
 
     private Long pid;
 
@@ -37,7 +34,6 @@ public class Comment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DeletedStatus isDeleted;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "FK_COMMENT_BOARD"))

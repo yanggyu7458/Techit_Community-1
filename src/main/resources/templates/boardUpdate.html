@@ -9,8 +9,8 @@
 <body>
 <!-- 이 코드를 적으면 fragments에 bodyheader파일이 불러와 집니다(상단바) -->
 <div th:replace="~{fragments/bodyHeader :: bodyHeader}"/>
-<h1>Update Student</h1>
-<form th:action="@{/{id}/update-view (id=${board.id})}" method="post">
+<h1>게시글 수정</h1>
+<form th:action="@{/{id}/update-view (id=${board.id})}" method="post" enctype="multipart/form-data">
   <label for="title-input">Title:
     <input type="text" id = "title-input" name = "title" th:value="${board.title}">
   </label>
@@ -19,6 +19,18 @@
     <input type="text" id = "content-input" name = "content" th:value="${board.content}">
   </label>
   <br>
+  <!-- Current file display -->
+  <div th:each="fileCon : ${board.fileCon}">
+    <p>Current File: <span th:text="${fileCon.file.fileName}"></span></p>
+    <label for="delete-file-checkbox">
+      <input type="checkbox" id="delete-file-checkbox" name="deleteFile"> 현재 파일 삭제
+    </label>
+  </div>
+
+  <!-- New file upload -->
+  <div>
+    <input type="file" name="file">
+  </div>
   <!--제출 버튼-->
   <input type="submit">
   <a href="/board">Back</a>

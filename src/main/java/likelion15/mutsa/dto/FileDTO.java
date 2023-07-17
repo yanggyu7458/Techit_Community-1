@@ -1,5 +1,6 @@
 package likelion15.mutsa.dto;
 
+import likelion15.mutsa.entity.File;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -14,20 +15,12 @@ public class FileDTO {
     private String filePath;
     private Long fileSize; //크기?
 
-//    public File toEntity() {
-//        File build = File.builder()
-//                .id(id)
-//                .name(fileName)
-//                .path(filePath)
-//                .size(fileSize)
-//                .build();
-//        return build;
-//    }
+    public static FileDTO fromEntity(File entity) {
+        FileDTO fileDTO = new FileDTO();
+        fileDTO.setId(entity.getId());
+        fileDTO.setFileName(entity.getName());
 
-//    public FileDTO(Long id, String fileName, String filePath, Long fileSize) {
-//        this.id = id;
-//        this.fileName = fileName;
-//        this.filePath = filePath;
-//        this.fileSize = fileSize;
-//    }
+        return fileDTO;
+    }
+
 }
